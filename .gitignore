@@ -1,3 +1,6 @@
 *.txt
+*.ods
 dconfig.py
 config.php
+testing.php
+odok-setup\[noMuniorCounty\].sql
