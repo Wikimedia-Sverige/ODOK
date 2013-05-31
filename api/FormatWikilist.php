@@ -28,7 +28,7 @@
 			$text ="{{Användare:André Costa (WMSE)/Skulpturlistor/rad";
 			$text .="\n| id           = ";
 			if (!empty($row['id']))
-				$text .=$placemarkId = $row['source'].'/'.$row['id'];
+				$text .= $row['id'];
 			$text .="\n| id-länk      = ";
 			if (!empty($row['official_url']))
 				$text .=$row['official_url'];
@@ -43,7 +43,7 @@
 			if (!empty($artistName))
 				$text .=$artistName;
 			$text .="\n| årtal        = ";
-			if (!empty($row['year']))
+			if ($row['year'] != '0000')
 				$text .=$row['year'];
 			$text .="\n| beskrivning  = ";
 			if (!empty($row['descr']))
