@@ -199,5 +199,4 @@ class Common:
                 error = 'success: %s, warnings: %s, entries: %d' %(j['success'], 'warnings' in j.keys(), len(j['entities']))
                 if verbose: print error
                 return (None, error)
-
 #done
