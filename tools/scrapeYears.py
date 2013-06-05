@@ -34,7 +34,7 @@ def getArtists(conn, cursor):
         `birth_year` IS NULL
     );"""
     affected_count = cursor.execute(query)
-    print u'got %d artists to update' % affected_count
+    print u'got %d artists with missing years' % affected_count
     artists = []
     for row in cursor:
         (idNo, wikidata, birth_year, death_year) = row
