@@ -199,42 +199,39 @@ class Common:
                 error = 'success: %s, warnings: %s, entries: %d' %(j['success'], 'warnings' in j.keys(), len(j['entities']))
                 if verbose: print error
                 return (None, error)
+    
     @staticmethod
-    def findUnit(contents, start, end, bracketMatching=False, bStart=None, bEnd=None):
+    def findUnit(contents, start, end, brackets=None):
         '''
-        Method for isolating an object in a string.
+        Method for isolating an object in a string. Will not work with either start or end using the ¤ symbol
         @input: 
             * content: the string to look at
             * start: the substring indicateing the start of the object
             * end: the substring indicating the end of the object
-            * bracketMatching: if bracketmatching should be attempted (def. False)
-            * bStart: starting bracket used for matching (def. start)
-            * bEnd: finishing bracket used for matching (def. end)
+            * brackets: a dict of brackets used which must match within the object
         @output:
             the-object, the-remainder-of-the-string
             OR None,None if an error
             OR '','' if no object is found
-        TO DO: make this accept a list of brackets each as a dict (bStart:bEnd)
         '''
         if (contents.find(start) >= 0):
             uStart = contents.find(start) + len(start)
             uEnd = contents.find(end,uStart)
-            if bracketMatching:
-                if not bStart: bStart=start
-                if not bEnd: bEnd=end
-                dummy=u'¤'*len(bEnd)
-                diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
-                if diff<0:
-                    print 'Negative bracket missmatch'
-                    return None, None
-                i=0
-                while(diff >0):
-                    i=i+1
-                    uEnd = contents.replace(bEnd,dummy,i).find(end,uStart)
-                    if uEnd < 0:
-                        print 'Positive (final) bracket missmatch'
-                        return None, None
+            if brackets:
+                for bStart,bEnd in brackets.iteritems():
+                    dummy=u'¤'*len(bEnd)
                     diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
+                    if diff<0:
+                        print 'Negative bracket missmatch for: %s <--> %s' %(bStart,bEnd)
+                        return None, None
+                    i=0
+                    while(diff >0):
+                        i=i+1
+                        uEnd = contents.replace(bEnd,dummy,i).find(end,uStart)
+                        if uEnd < 0:
+                            print 'Positive (final) bracket missmatch for: %s <--> %s' %(bStart,bEnd)
+                            return None, None
+                        diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
             unit = contents[uStart:uEnd]
             remainder = contents[uEnd:]
             return (unit, remainder)
