@@ -5,7 +5,7 @@ Temporary tool for scraping artistYears from sv.wiki articles and udating these 
     once possible use Property:P569 and Property:P570 on wikidata instead
 '''
 import dconfig as dconfig
-from common import Common
+import common as common
 import MySQLdb
 import codecs
 import urllib, urllib2
@@ -52,7 +52,7 @@ def getArticles(artists, verbose=False):
         wikidata.append(a[u'wikidata'])
     # get articles
     dataToArticle={}
-    Common.getManyArticles(wikidata, dataToArticle, verbose=verbose)
+    common.getManyArticles(wikidata, dataToArticle, verbose=verbose)
     #match
     for a in artists:
         a[u'svwiki'] = dataToArticle[a[u'wikidata']]
@@ -107,10 +107,10 @@ def getYearCats(article, verbose=False):
         cats = pages[pages.keys()[0]]['categories']
         for c in cats:
             if c['title'].lower().startswith(u'kategori:avlidna'):
-                if Common.is_number(c['title'].strip()[-4:]): death = int(c['title'].strip()[-4:])
+                if common.is_number(c['title'].strip()[-4:]): death = int(c['title'].strip()[-4:])
                 else: print u'odd year for %s: %s' %(article, c['title'])
             if c['title'].lower().startswith(u'kategori:födda'):
-                if Common.is_number(c['title'].strip()[-4:]): birth = int(c['title'].strip()[-4:])
+                if common.is_number(c['title'].strip()[-4:]): birth = int(c['title'].strip()[-4:])
                 else: print u'odd year for %s: %s' %(article, c['title'])
         return (birth, death)
 
