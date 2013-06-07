@@ -11,7 +11,7 @@ from json import loads
 class Common:
     @staticmethod
     def openFile(filename):
-        '''opens a given file (utf-8) and returns the lines)'''
+        '''opens a given file (utf-8) and returns the lines'''
         fin = codecs.open(filename, 'r', 'utf-8')
         txt = fin.read()
         fin.close()
@@ -32,48 +32,7 @@ class Common:
             return True
         except ValueError:
             return False
-    
-    @staticmethod
-    def file_to_dict(filename, idcol=0, namecol=1, verbose=False):
-        '''reads in a file and passes it to a dict where each row is in turn a dict
-           lines starting with # are treated as comments. Semicolons in the namecol are treated as separate names.
-           Sqare brakets as the real value (i.e. rest is ignored)'''
-        listcols = isinstance(namecol,list)
-        if listcols and len(namecol) != 2:
-            print u'namecol must be a single integer or two integers'
-        lines = Common.openFile(filename)
-        dDict = {}
-        for l in lines:
-            if len(l)==0 or l.startswith(u'#'):
-                continue
-            col = l.split('|')
-            idno = col[idcol]
-            nameparts={}
-            #names can be constructed by two columns (first name, last name)
-            if listcols: #
-                namesF = Common.extractName(col[namecol[0]])
-                namesL = Common.extractName(col[namecol[1]])
-                names=[]
-                for i in range(0,len(namesF)):
-                    names.append(u'%s %s' % (namesF[i],namesL[i]))
-                    nameparts[u'%s %s' % (namesF[i],namesL[i])] = u'%s;%s' %(namesF[i],namesL[i])
-            else:
-                names = Common.extractName(col[namecol])
-                #trying to identify the name parts
-                for name in names:
-                    nameparts[name] = Common.extractNameParts(name)
-                #trying to identify the name parts. Define last name as last word
-            for name in names:
-                if name in dDict.keys():
-                    dDict[name][0].append(idno)
-                else:
-                    npart=''
-                    if name in nameparts.keys(): npart=nameparts[name]
-                    dDict[name] = ([idno,], npart)
-        if verbose:
-            print 'read %s: from %r lines identified %r items.' % (filename, len(lines), len(dDict))
-        return dDict
-    
+        
     @staticmethod
     def extractName(entry):
         '''If field includes square brackets then this ignores any part of name field which lies outside
@@ -96,7 +55,7 @@ class Common:
                 return u'%s;%s' %(parts[1].strip(),parts[0].strip())
         if u' ' in name:
             parts = name.split(u' ')
-            lName = parts[len(parts)-1].strip()
+            lName = parts[-1].strip()
             fName = name[:-len(lName)].strip()
             return u'%s;%s' %(fName,lName)
         return name
@@ -210,11 +169,11 @@ class Common:
             * end: the substring indicating the end of the object
             * brackets: a dict of brackets used which must match within the object
         @output:
-            the-object, the-remainder-of-the-string
+            the-object, lead-in-to-object, the-remainder-of-the-string
             OR None,None if an error
             OR '','' if no object is found
         '''
-        if (contents.find(start) >= 0):
+        if start in contents:
             uStart = contents.find(start) + len(start)
             uEnd = contents.find(end,uStart)
             if brackets:
@@ -223,18 +182,19 @@ class Common:
                     diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
                     if diff<0:
                         print 'Negative bracket missmatch for: %s <--> %s' %(bStart,bEnd)
-                        return None, None
+                        return None, None, None
                     i=0
                     while(diff >0):
                         i=i+1
                         uEnd = contents.replace(bEnd,dummy,i).find(end,uStart)
                         if uEnd < 0:
                             print 'Positive (final) bracket missmatch for: %s <--> %s' %(bStart,bEnd)
-                            return None, None
+                            return None, None, None
                         diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
             unit = contents[uStart:uEnd]
-            remainder = contents[uEnd:]
-            return (unit, remainder)
+            lead_in = contents[:uStart-len(start)]
+            remainder = contents[uEnd+len(end):]
+            return (unit, remainder, lead_in)
         else:
-            return '',''
+            return '','',''
 #done
