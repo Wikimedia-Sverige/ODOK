@@ -28,7 +28,7 @@ def getPage(page, verbose=False):
     req.close()
     pageid = j['query']['pages'].keys()[0]
     if pageid == u'-1':
-        print 'no entry for "%s"' %article
+        print 'no entry for "%s"' %page
         return None
     else:
         content = j['query']['pages'][pageid]['revisions'][0]['*']
@@ -53,12 +53,13 @@ def parseArtwork(contents):
             unit, table, dummy = common.findUnit(table, u'{{Skulpturlista', u'}}', brackets={u'{{':u'}}'})
             if not unit: break
             params={}
-            u = {u'namn':'', u'skulptör':'', u'årtal':'', u'material':'', u'plats':'', u'koordinater':'', u'bild':'', u'header':'', u'namn_link':'', u'skulptör_link':'', u'plats_link':''}
+            u = {u'id':'', u'namn':'', u'skulptör':'', u'årtal':'', u'material':'', u'plats':'', u'koordinater':'', u'bild':'', u'header':'', u'namn_link':'', u'skulptör_link':'', u'plats_link':''}
             u[u'header']=header
             while(True):
                 part, unit, dummy = common.findUnit(unit, u'|', u'\n', brackets={u'[[':u']]', u'{{':u'}}'})
                 if not part: break
                 if u'=' in part:
+                    part = part.replace(u'<small>','').replace(u'</small>','')
                     part=part.strip(' \n\t')
                     #can't use split as coord uses second equality sign
                     pos = part.find(u'=')
@@ -87,24 +88,161 @@ def postProcessing(units):
         if u[u'namn']:
             u[u'namn'], u[u'namn_link'] = common.extractLink(u[u'namn'])
 
-def run(testing=True):
+def getOdokHits(queries, dDict, verbose=False):
+    '''
+    Given constrictions (as a dict) this returns the available ODOK results using the get method of the api
+    @ output: None if successful. Otherwise errormessage
+    '''
+    params={}
+    for k,v in queries.iteritems():
+        params[k] = v.encode('utf-8')
+    apiurl = 'http://wlpa.wikimedia.se/odok-bot/api.php'
+    urlbase = '%s?action=get&limit=100&format=json&' %apiurl
+    url = urlbase+urllib.urlencode(params)
+    if verbose: print url
+    req = urllib2.urlopen(url)
+    j = loads(req.read())
+    req.close()
+    if (j['head']['status'] == 1) or (not 'warning' in j['head'].keys()):
+        for hit in j['body']:
+            idNo = hit['hit']['id']
+            dDict[idNo]=hit['hit']
+        #get all results
+        if 'continue' in j['head'].keys():
+            offset = j['head']['continue']
+            queries['offset']=str(offset)
+            getOdokHits(queries, dDict, verbose=verbose)
+        else:
+            return None
+    else:
+        warning=''
+        if j['head']['warning']: warning=j['head']['warning']
+        error = 'status: %s, warning: %s' %(j['head']['status'], warning)
+        if verbose: print error
+        return error
+
+def findMatches(odok, wiki):
+    '''
+    tries to find matches between scraped items and exisiting odok items
+    identified matches has the odok id added to the wiki object
+    TO DO: Expand to display several alternatives
+    '''
+    #remove any id's which have already been identified
+    matched_ids=[]
+    for w in wiki:
+        if w['id']:
+            if w['id'] in matched_ids:
+                print u'id %s was matched to more than one wiki object!' %w['id']
+            else:
+                matched_ids.append(w['id'])
+    print u'%r out of %r already matched (out of a maximum of %r)' %(len(matched_ids), len(wiki), len(odok))
+    #make lists of odok titles and artists
+    odok_titles={}; odok_artist={}
+    for key, o in odok.iteritems():
+        if key in matched_ids: continue
+        if o['title']: 
+            if o['title'] in odok_titles.keys(): odok_titles[o['title']].append(key)
+            else: odok_titles[o['title']] = [key,]
+        if o['artist']:
+            if o['artist'] in odok_artist.keys(): odok_artist[o['artist']].append(key)
+            else: odok_artist[o['artist']] = [key,]
+    #remove any id's which have already been identified
+    for w in wiki:
+        if w['id']: continue
+        wIdN = None; wIdA=None; match = (None,'')
+        if w['namn'] in odok_titles.keys():
+            wIdN = odok_titles[w['namn']]
+        if w[u'skulptör'] in odok_artist.keys():
+            wIdA = odok_artist[w[u'skulptör']]
+        if wIdN and wIdA: #match on both title and artist
+            if len(wIdN) == 1:
+                if wIdN[0] in wIdA: match = (wIdN[0], 'double match')
+                else: match = (wIdN[0], 'title match but artist missmatch')
+            else:
+                for nId in wIdN:
+                    if nId in wIdA:
+                        match = (nId, 'Non unique title with artist match')
+                        break
+        elif wIdN: #match on title only
+            if len(wIdN) == 1:
+                match = (wIdN[0], 'titel match') 
+        elif wIdA: #match on artist only
+            if len(wIdA) == 1:
+                match = (wIdA[0], 'artist match') 
+        #explicitly ask for verification for each match
+        if match[0]:
+            key=match[0]
+            print u'%s: (%s)' %(match[1], key)
+            print u'W: "%s", "%s", "%s"' %(w[u'namn'], w[u'skulptör'], w[u'årtal'])
+            print u'Ö: "%s", "%s", "%s"' %(odok[key]['title'], odok[key][u'artist'], odok[key][u'year'])
+            while True:
+                inChoice=raw_input('Accept? [Y/N]:')
+                if inChoice == 'Y' or inChoice == 'y':
+                    w['id'] = key
+                    break
+                elif inChoice == 'N' or inChoice == 'n':
+                    break
+
+def fileToHits(filename):
+    '''
+    opens an outputfile from run() and returns it as a list of dicts
+    '''
+    lines = common.openFile(filename)
+    wikiHits = []
+    for l in lines:
+        parts = l.split('|')
+        unit = {}
+        for p in parts:
+            if p:
+                key = p.split(':')[0]
+                value = p[len(key)+1:]
+                unit[key]=value
+        wikiHits.append(unit.copy())
+    return wikiHits
+
+def run(testing=True, pages=[], queries ={}, listFile=None):
     '''
     runs the whole process. if testing=true then outputs to file instead
     '''
-    contents = getPage(page=u'Användardiskussion:André_Costa_(WMSE)/tmp', verbose=True)
-    units = parseArtwork(contents)
-    postProcessing(units)
-    #match units objects in ÖDOK
-    ##fetch all objects matchin a given limitation (e.g. muni=0180)
-    ##match primarily based on title, or title+artist (but ask for each)
+    if testing:
+        pages.append(u'Användardiskussion:André_Costa_(WMSE)/tmp')
+        queries['muni'] = '0180'
+    if listFile:
+        wikiHits=fileToHits(listFile)
+    else:
+        wikiHits=[]
+        for page in pages:
+            contents = getPage(page=page, verbose=False)
+            wikiHits = wikiHits + parseArtwork(contents)
+            print u'wikiHits: %r' %len(wikiHits)
+        postProcessing(wikiHits)
+        #safety backup
+        f=codecs.open('scrapetmp1.txt','w','utf8')
+        for u in wikiHits:
+            for k,v in u.iteritems():
+                if k == u'koordinater':
+                    if v: f.write(u'lat:%r|lon:%r|' %u[u'koordinater'])
+                    else: f.write(u'lat:|lon:|')
+                else: f.write(u'%s:%s|' %(k,v))
+            f.write(u'\n')
+        f.close()
+    #fetch all objects matching a given constriction
+    odokHits={}
+    odok_result = getOdokHits(queries, odokHits)
+    if odok_result:
+        print odok_result
+        exit(0)
+    #match primarily based on title, or title+artist (but ask for each)
+    findMatches(odokHits, wikiHits)
     #compare values (focus on stadsdel, plats, koord, material, bild, artist_link) be distrustful of name_link and beware of <ref>
     #add new values to ÖDOK
-    if testing:
-        f=codecs.open('scrapetmp.txt','w','utf8')
-        for u in units:
-            f.write(u'------\n')
-            if u[u'koordinater']: u[u'koordinater'] = u'lat=%r, lon=%r' % u[u'koordinater']
-            for k,v in u.iteritems():
-                f.write(u'%s:\t\t%s\n' %(k,v))
-        f.close()
+    f=codecs.open('scrapetmp.txt','w','utf8')
+    for u in wikiHits:
+        for k,v in u.iteritems():
+            if k == u'koordinater':
+                if v: f.write(u'lat:%r|lon:%r|' %u[u'koordinater'])
+                else: f.write(u'lat:|lon:|')
+            else: f.write(u'%s:%s|' %(k,v))
+        f.write(u'\n')
+    f.close()
     print 'Done!'
