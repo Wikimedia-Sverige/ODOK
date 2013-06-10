@@ -234,17 +234,23 @@ def latLonFromCoord(coord):
     returns lat, lon as decimals based on string using the Coord-template
     @output (lat,lon) as float
     '''
-    if not coord.startswith(u'{{Coord|'): print 'incorrectly formated coordinate: %s' %coord; return None
+    if not (coord.startswith(u'{{Coord|') or coord.startswith(u'{{coord|')): print 'incorrectly formated coordinate: %s' %coord; return None
     p = coord.split('|')
-    lat_d, lat_m, lat_s, lat_sign = float(p[1].strip()), float(p[2].strip()), float(p[3].strip()), p[4]
-    lon_d, lon_m, lon_s, lon_sign = float(p[5].strip()), float(p[6].strip()), float(p[7].strip()), p[8]
+    if len(p) >= 9:
+        lat_d, lat_m, lat_s, lat_sign = float(p[1].strip()), float(p[2].strip()), float(p[3].strip()), p[4]
+        lon_d, lon_m, lon_s, lon_sign = float(p[5].strip()), float(p[6].strip()), float(p[7].strip()), p[8]
+        lat = lat_d + lat_m/60 + lat_s/3600
+        lon = lon_d + lon_m/60 + lon_s/3600
+    elif len(p) >= 5:
+        lat, lat_sign = float(p[1].strip()), p[2]
+        lon, lon_sign = float(p[3].strip()), p[4]
     if lat_sign == u'N': lat_sign=1
     elif lat_sign == u'S': lat_sign=-1
     else: print 'incorrectly formated coordinate: %s' %coord; return None
     if lon_sign == u'E': lon_sign=1
     elif lon_sign == u'W': lon_sign=-1
     else: print 'incorrectly formated coordinate: %s' %coord; return None
-    lat = lat_sign*(lat_d + lat_m/60 + lat_s/3600)
-    lon = lon_sign*(lon_d + lon_m/60 + lon_s/3600)
+    lat = lat_sign*lat
+    lon = lon_sign*lon
     return (lat,lon)
 #done
