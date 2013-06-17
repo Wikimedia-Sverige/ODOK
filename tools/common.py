@@ -227,7 +227,18 @@ def extractLink(text):
                     center=center[:pos]
                     if center.endswith(' '): # the first space separating text and bracket is ignored
                         center = center[:-1]
-    return (pre+center+post, link.strip())
+    return ((pre+center+post).strip(), link.strip())
+
+def extractAllLinks(text):
+    '''
+    Given wikitiext this checks for any wikilinks
+    @output: (plain_text, list of link)
+    '''
+    wikilinks=[]
+    while '[[' in text:
+        text, link = extractLink(text)
+        wikilinks.append(link)
+    return text, wikilinks
 
 def latLonFromCoord(coord):
     '''
