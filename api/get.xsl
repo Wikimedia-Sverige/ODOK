@@ -3,14 +3,14 @@
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:template match="/">
-	<xsl:choose>
-		<xsl:when test="callback/head/status=1">
-			<xsl:call-template name="Display_Success"/>
-		</xsl:when>
-		<xsl:otherwise>
-			<xsl:call-template name="Display_Fail"/>
-		</xsl:otherwise>
-	</xsl:choose>	
+    <xsl:choose>
+        <xsl:when test="callback/head/status=1">
+            <xsl:call-template name="Display_Success"/>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:call-template name="Display_Fail"/>
+        </xsl:otherwise>
+    </xsl:choose>   
 </xsl:template>
 
 <!-- **************Display_Success****************************************** -->
@@ -50,7 +50,6 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
         <th>Official url</th>
         <th>Same_as</th>
         <th>Free</th>
-        <th>Artist_id</th>
         <th>Owner</th>
       </tr>
       <xsl:for-each select="callback/body/hit">
@@ -64,10 +63,10 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
           <td><xsl:value-of select="type"/></td>
           <td><xsl:value-of select="material"/></td>
           <td><xsl:call-template name="Display_Bool">
-				  <xsl:with-param name="bool">
-					  <xsl:value-of select="inside"/>
-				  </xsl:with-param>
-			  </xsl:call-template></td>
+                  <xsl:with-param name="bool">
+                      <xsl:value-of select="inside"/>
+                  </xsl:with-param>
+              </xsl:call-template></td>
           <td><xsl:value-of select="address"/></td>
           <td><xsl:value-of select="county"/></td>
           <td><xsl:value-of select="muni"/></td>
@@ -76,20 +75,19 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
           <td><xsl:call-template name="Display_Image-link"/></td>
           <td><xsl:value-of select="source"/></td>
           <td><xsl:call-template name="Display_Bool">
-				  <xsl:with-param name="bool">
-					  <xsl:value-of select="ugc"/>
-				  </xsl:with-param>
-			  </xsl:call-template></td>
+                  <xsl:with-param name="bool">
+                      <xsl:value-of select="ugc"/>
+                  </xsl:with-param>
+              </xsl:call-template></td>
           <td><xsl:value-of select="changed"/></td>
           <td><xsl:value-of select="created"/></td>
-          <td><xsl:value-of select="wiki_article"/></td>
+          <td><xsl:call-template name="Display_Wikidata-link"/></td>
           <td><xsl:call-template name="Display_Cat-link"/></td>
           <td><xsl:value-of select="official_url"/></td>
           <td><xsl:value-of select="same_as"/></td>
           <td><xsl:value-of select="free"/></td>
-          <td><xsl:value-of select="artist_id"/></td>
           <td><xsl:value-of select="owner"/></td>
-	      </tr>
+          </tr>
       </xsl:for-each>
   </table>
   </body>
@@ -97,42 +95,48 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 </xsl:template>
 <!-- **************Display_Fail****************************************** -->
 <xsl:template name="Display_Fail">
-  <html>
-  <body>
-    <h2>Result</h2>
-      Status: <xsl:value-of select="callback/head/status"/><br/>
-      Error_number: <xsl:value-of select="callback/head/error_number"/><br/>
-      Error_message: <xsl:value-of select="callback/head/error_message"/><br/>
-      <xsl:if test="callback/head/warning != ''">
-         Warning: <xsl:value-of select="callback/head/warning"/><br/>
-      </xsl:if>
-  </body>
-  </html>
+    <html>
+    <body>
+        <h2>Result</h2>
+            Status: <xsl:value-of select="callback/head/status"/><br/>
+            Error_number: <xsl:value-of select="callback/head/error_number"/><br/>
+            Error_message: <xsl:value-of select="callback/head/error_message"/><br/>
+        <xsl:if test="callback/head/warning != ''">
+            Warning: <xsl:value-of select="callback/head/warning"/><br/>
+        </xsl:if>
+    </body>
+    </html>
 </xsl:template>
 
 <!-- **************Sub-Templates****************************************** -->
 <xsl:template name="Display_Cat-link">
-            <a><xsl:attribute name="href">
-            http://commons.wikimedia.org/wiki/Category:<xsl:value-of select="commons_cat"/></xsl:attribute> 
-            <xsl:value-of select="commons_cat"/> 
-            </a>
+    <a><xsl:attribute name="href">
+        http://commons.wikimedia.org/wiki/Category:<xsl:value-of select="commons_cat"/></xsl:attribute> 
+        <xsl:value-of select="commons_cat"/> 
+    </a>
 </xsl:template>  
 <xsl:template name="Display_Image-link">
-            <a><xsl:attribute name="href">
-            http://commons.wikimedia.org/wiki/File:<xsl:value-of select="image"/></xsl:attribute> 
-            <xsl:value-of select="image"/> 
-            </a>
+    <a><xsl:attribute name="href">
+        http://commons.wikimedia.org/wiki/File:<xsl:value-of select="image"/></xsl:attribute> 
+        <xsl:value-of select="image"/> 
+    </a>
+</xsl:template>
+<xsl:template name="Display_Wikidata-link">
+    <a><xsl:attribute name="href">
+        https://www.wikidata.org/wiki/<xsl:value-of select="wiki_article"/></xsl:attribute> 
+        <xsl:value-of select="wiki_article"/> 
+    </a>
 </xsl:template>  
 <xsl:template name="Display_Bool">
-	<xsl:param name="bool" />
-	<xsl:choose>
-		<xsl:when test="$bool=1">
-			&#10004;
-		</xsl:when>
-		<xsl:otherwise>
-			&#10008;
-		</xsl:otherwise>
-	</xsl:choose>
+    <xsl:param name="bool" />
+    <xsl:choose>
+        <xsl:when test="$bool=1">
+            &#10004;
+        </xsl:when>
+        <xsl:otherwise>
+            &#10008;
+        </xsl:otherwise>
+    </xsl:choose>
 </xsl:template> 
-     
+
 </xsl:stylesheet>
