@@ -6,19 +6,19 @@
  **/
 
 class GoogleMaps {
-	function output() {
-		$request_url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-		$kml_url = urlencode( str_replace('format=googlemaps', 'format=dynamickml', $request_url) );
-		header( 'Location: https://maps.google.com/maps?q='.$kml_url.'&hl=sv&ll=63.470145,23.378906&z=4' ) ;	
-	}
+    function output() {
+        $request_url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        $kml_url = urlencode( str_replace('format=googlemaps', 'format=dynamickml', $request_url) );
+        header( 'Location: https://maps.google.com/maps?q='.$kml_url.'&hl=sv&ll=63.470145,23.378906&z=4' ) ;    
+    }
 }
 
 
 class FormatDynamicKml {
 
     function output() {
-		header( "Content-Type: application/vnd.google-earth.kml+xml" );
-		$request_url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        header( "Content-Type: application/vnd.google-earth.kml+xml" );
+        $request_url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         $replCount = 1;
         $kml_url = htmlspecialchars( str_replace('format=dynamickml', 'format=kml', $request_url, $replCount) );
         $desc = 'Öppen databas över offentlig konst i Sverige för <a 
