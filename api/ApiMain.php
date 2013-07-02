@@ -59,6 +59,10 @@
                     null);
                     $errors=1;
                 }
+                #if kml output format then make sure has_coords is set
+                if($_GET['format']=='kml' and !isset($_GET['has_coords'])){
+                    $constraints['coords'] = ApiBase::requireCoords();
+                }
             }
             if(!$errors){   
                 #switch by action; return results array
