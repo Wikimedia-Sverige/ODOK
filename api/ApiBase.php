@@ -506,5 +506,41 @@
                 }
             }
         }
+        #Given an article this returns the intro of this article. Also removes any cooridinates tag
+        function getArticleIntro($article) {
+            if ($article) {
+                $maxChar = 250; #Could for some reason not set this through param in function call
+                $apiurl = 'http://sv.wikipedia.org/w/api.php?';
+                $query = Array( 'action'=>'query',
+                                'prop'=>'extracts',
+                                'format'=>'php',
+                                'exchars'=>$maxChar,
+                                'exintro'=>'',
+                                'explaintext'=>'',
+                                'titles'=>$article
+                               );
+                $queryUrl = $apiurl.http_build_query($query, $enc_type='PHP_QUERY_RFC3986');
+                #$queryUrl = $apiurl.'action=query&prop=extracts&format=php&exchars='.$maxChar.'&exintro=&titles='.rawurlencode($article);
+                $page = ApiBase::get_curl_data($queryUrl);
+                if ( is_null($page) )
+                    return null;
+                else{
+                    $response = unserialize($page);
+                    $pageId = key($response['query']['pages']);
+                    if($pageId!=-1){
+                        $intro = $response['query']['pages'][$pageId]['extract'];
+                        if (ApiBase::startswith($intro,'Koordinater:')){
+                            $pos = strpos($intro, "\n");
+                            $intro = trim(substr($intro, $pos));
+                        }
+                        return $intro;
+                    }
+                }
+            }
+        }
+        #string comparison
+        function startsWith($haystack, $needle){
+            return !strncmp($haystack, $needle, strlen($needle));
+        }
     }
 ?>
