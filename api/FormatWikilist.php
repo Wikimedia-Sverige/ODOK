@@ -101,8 +101,10 @@
                 $counter=2;
                 foreach ($artist_info as $ai){
                     if($ai['wiki']){
-                        $desc .= "[[".ApiBase::getArticleFromWikidata($ai['wiki'], $getUrl=false);
-                        $desc .= "|".$ai['name'];
+                        $article = ApiBase::getArticleFromWikidata($ai['wiki'], $getUrl=false);
+                        $desc .= "[[".$article;
+                        if ($article != $ai['name'])
+                            $desc .= "|".$ai['name'];
                         $desc .= "]]";
                     } else
                         $desc .= $ai['name'];
