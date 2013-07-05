@@ -1,6 +1,7 @@
 <?php
     /*
      * Creates a KML file of the desired output
+     * Might be better to build this so that descriptions are only added on request (to avoid unncessary api calls)
      */
     class FormatKml{
         private function initialise(){
@@ -109,8 +110,10 @@
                         if (!empty($row['descr']))
                                 $desc .= '</li><br/><li>'.htmlspecialchars($row['descr']);
                         if (!empty($row['wiki_article'])){
+                            #get descrition from wikipage if none existed
+                            if (empty($row['descr']))
+                                $desc .= '</li><br/><li>'.ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false));
                             $desc .= '</li><br/><li>'.htmlspecialchars('Läs mer om konstverket på ');
-                            #$desc .= '<a href="https://wikidata.org/wiki/' . rawurlencode($row['wiki_article']) . '">';
                             $desc .= '<a href="'.ApiBase::getArticleFromWikidata($row['wiki_article']).'">';
                             $desc .= 'Wikipedia';
                             $desc .= '</a>.';
