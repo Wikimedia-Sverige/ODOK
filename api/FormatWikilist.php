@@ -12,7 +12,7 @@
         const row_template = 'Användare:André Costa (WMSE)/Skulpturlistor/rad';
         
         private function writeHeader(){
-            /* Closing table and adding cateogires? */
+            /* Starting table */
             $text = "{{".self::header_template."}}\n";
             # potential of adding parameters (based on search parameters)
             return $text;
@@ -25,9 +25,10 @@
         }
         
         private function writeRow($row, $muni_names, $county_names){
-            #mod get fromWikidata... to either return url or just article name
-            #format indoors ("inside")
-            #material
+            /* 
+             * outputs a template row for the given hit
+             * Ignores any entries with a "same_as" value
+             */
             global $row_template;
             $row = $row['hit'];
             if (!empty($row['same_as'])){
@@ -129,8 +130,7 @@
         }
         
         function outputWarning($head){
-            if (!empty($head['continue']))
-                $text = $head['hits'];
+            $text = $head['hits'];
             if (!empty($head['warning']))
                 $text .="\nWarning: ".$head['warning'];
             if (!empty($text))
