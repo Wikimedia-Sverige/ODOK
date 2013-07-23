@@ -6,16 +6,20 @@
      *   stick variables in head (and hide from row) based on query
      *      e.g. if query involves municipalityName=Malmö then: {{../huvud|kommun=Malmö}} and {{../rad|gömKommun=|...}} remove kommun from output
      */
+    
     class FormatWikilist{
+        const header_template = 'Användare:André Costa (WMSE)/Skulpturlistor/huvud';
+        const row_template = 'Användare:André Costa (WMSE)/Skulpturlistor/rad';
+        
         private function writeHeader(){
             /* Closing table and adding cateogires? */
-            $text = "{{Användare:André Costa (WMSE)/Skulpturlistor/huvud}}\n";
+            $text = "{{".self::header_template."}}\n";
             # potential of adding parameters (based on search parameters)
             return $text;
         }
         
         private function writeEnder(){
-            /* Closing tavle and adding cateogires? */
+            /* Closing table and adding cateogires? */
             $text = "|}\n";
             return $text;
         }
@@ -24,8 +28,13 @@
             #mod get fromWikidata... to either return url or just article name
             #format indoors ("inside")
             #material
+            global $row_template;
             $row = $row['hit'];
-            $text ="{{Användare:André Costa (WMSE)/Skulpturlistor/rad";
+            if (!empty($row['same_as'])){
+                $text = "<!-- ".$row['id']." is a duplicate of ".$row['same_as']." -->\n";
+                return $text;
+            }
+            $text ="{{".self::row_template;
             $text .="\n| id           = ";
             if (!empty($row['id']))
                 $text .= $row['id'];
