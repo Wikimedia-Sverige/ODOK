@@ -10,7 +10,7 @@ from json import loads
 
 def openFile(filename):
     '''opens a given file (utf-8) and returns the lines'''
-    fin = codecs.open(filename, 'r', 'utf-8')
+    fin = codecs.open(filename, 'r', 'utf8')
     txt = fin.read()
     fin.close()
     lines = txt.split('\n')
@@ -54,64 +54,51 @@ def extractNameParts(name):
         return u'%s;%s' %(fName,lName)
     return name
 
-def getWikidata(article, verbose=False):
-    '''returns the wikidata enitity id of an article'''
-    wikiurl = u'https://www.wikidata.org'
-    apiurl = '%s/w/api.php' %wikiurl
-    urlbase = '%s?action=wbgetentities&format=json&sites=svwiki&props=info&titles=' %apiurl
-    url = urlbase+urllib.quote(article.encode('utf-8'))
-    req = urllib2.urlopen(url)
-    j = loads(req.read())
-    req.close()
-    if (j['success'] == 1) or (not 'warnings' in j.keys()) or (not len(j['entities'])==1):
-        if j['entities'].keys()[0] == u'-1':
-            if verbose: print 'no entry'
-            return (None, 'no entry')
-        else:
-            if verbose: print u'Found the wikidata entry at %s' %j['entities'].keys()[0]
-            return (j['entities'].keys()[0],'')
-    else:
-        error = 'success: %s, warnings: %s, entries: %d' %(j['success'], 'warnings' in j.keys(), len(j['entities']))
-        if verbose: print error
-        return (None, error)
-
-def getManyWikidata(articles, dDict, verbose=False):
-    '''returns the wikidata enitity ids of a list of articles'''
+def getWikidata(articles, dDict=None, verbose=False, language='sv', family='wikipedia', old=True):
+    '''
+    returns the wikidata enitity id of an article/list of articles or a comment if none can be found
+    @input:  article/list of articles
+             dDict: dictionary to which to add the results as {article:wikidata} [None]
+             verbose: verbose output from wdFormat [False]
+             language/family: language and family for api [sv/wikipedia]
+             old: option for backwards compatibility wherby only wikidata_entity/None is returned (for a list of articles) [True]
+    @output: single article suplied: (wikidata entity, comment) formated through wdFormat()
+             list of articles supplied: dictonary as {article:wikidata}
+    TO DO: Once "old" can be removed pDict may be bypassed in favour of dDict
+    '''
+    if not dDict:
+        dDict ={}
+    single=False
     if not isinstance(articles,list):
-        print '"getManyWikidata" requiresa list of articles. for individual articles use "getWikidata" instead'
-        return None
-    #do an upper limit check (max 50 titles per request allowed)
-    if len(articles) > 50:
-        i=0
-        while True:
-            getManyWikidata(articles[i:i+50], dDict, verbose=verbose)
-            i=i+50
-            if i+50 > len(articles):
-                getManyWikidata(articles[i:], dDict, verbose=verbose)
-                break
-    elif len(articles) > 0:
-        wikiurl = u'https://www.wikidata.org'
-        apiurl = '%s/w/api.php' %wikiurl
-        urlbase = '%s?action=wbgetentities&format=json&sites=svwiki&props=info|sitelinks&titles=' %apiurl
-        url = urlbase+urllib.quote('|'.join(articles).encode('utf-8'))
-        if verbose: print url
-        req = urllib2.urlopen(url)
-        j = loads(req.read())
-        req.close()
-        if (j['success'] == 1) or (not 'warnings' in j.keys()) or (not len(j['entities'])==1):
-            for k, v in j['entities'].iteritems():
-                if k.startswith(u'q'):
-                    title = v['sitelinks']['svwiki']['title']
-                    dDict[title] = k
-                    if verbose: print u'%s: Found the wikidata entry at %s' %(title,k)
-                else:
-                    title = v['title']
-                    dDict[title] = None
-                    if verbose: print '%s: no entry' %title
+        if isinstance(articles,str):
+            articles = [articles,]
+            single=True
         else:
-            error = 'success: %s, warnings: %s, entries: %d' %(j['success'], 'warnings' in j.keys(), len(j['entities']))
-            if verbose: print error
-            return (None, error)
+            print '"getWikidata()" requires a list of articles or a single article as the first parameter.'
+            return None
+    pDict ={}
+    getPageInfo(articles, pDict, language=language, family=family)
+    if single:
+        return wdFormat(pDict[articles[0]], verbose=verbose)
+    elif old:
+        for k, v in pDict.iteritems():
+            pInfo = wdFormat(v, verbose=verbose)
+            if pInfo[0]:
+                dDict[k] = pInfo[0]
+            else:
+                dDict[k] = None
+        return dDict #in case one was not supplied
+    else:
+        for k, v in pDict.iteritems():
+            dDict[k] = v
+        return dDict #in case one was not supplied
+
+def getManyWikidata(articles, dDict, verbose=False, language='sv', family='wikipedia'):
+    '''
+    DEPRECATED, use new getWikidata() instead. Make sure old call is not followed by a call to getPageInfo()
+    '''
+    print 'getManyWikidata() is DEPRECATED use new getWikidata() instead'
+    return getWikidata(article, dDict=dDict, verbose=verbose, language=language, family=family)
 
 def getManyArticles(wikidata, dDict, verbose=False):
     '''returns the articles of a list of wikidata enitity ids'''
@@ -188,12 +175,24 @@ def findUnit(contents, start, end, brackets=None):
     else:
         return '','',''
 
-def extractLink(text):
+def extractLink(text, kill_tags=False):
     '''
     Given wikitiext this checks for the first wikilink
     Limitations: Only identifies the first wikilink
+    kill_tags also strips out (but doesn't keep) and tags (i.e. <bla> something </bla>)
     @output: (plain_text, link)
     '''
+    if kill_tags:
+        while '<' in text and '>' in text:
+            tag, dummy, dummy = findUnit(text, u'<', u'>')
+            endtag = u'</'+tag+u'>'
+            tag = u'<'+tag+u'>'
+            if endtag in text:
+                dummy, remainder, lead_in = findUnit(text, tag, endtag)
+            else:
+                dummy, remainder, lead_in = findUnit(text, u'<', u'>')
+            text = lead_in.strip()+' '+remainder.strip()
+    
     if not u'[[' in text: return (text, '')
     interior, dummy, dummy = findUnit(text, u'[[', u']]')
     wikilink = u'[['+interior+u']]'
@@ -229,14 +228,14 @@ def extractLink(text):
                         center = center[:-1]
     return ((pre+center+post).strip(), link.strip())
 
-def extractAllLinks(text):
+def extractAllLinks(text, kill_tags=False):
     '''
     Given wikitiext this checks for any wikilinks
     @output: (plain_text, list of link)
     '''
     wikilinks=[]
     while '[[' in text:
-        text, link = extractLink(text)
+        text, link = extractLink(text, kill_tags=kill_tags)
         wikilinks.append(link)
     return text, wikilinks
 
@@ -264,4 +263,99 @@ def latLonFromCoord(coord):
     lat = lat_sign*lat
     lon = lon_sign*lon
     return (lat,lon)
+
+def getPageInfo(articles, dDict, verbose=False, language='sv', family='wikipedia'):
+    '''
+    Given a list of articles this tells us if the page is either of
+    * Non-existent (red link)
+    * A redirect (and returns real page)
+    * A disambiguity page
+    * Normal page
+    and whether the page corresponds to a wikidata entry (and returns the wikidata id)
+    @input: a list of pagenames or a single pagename
+    @output: fills in the supplied dict with the supplied pagenames and a dict of properties with possible parameters being: redirected, missing, disambiguation, wikidata
+    '''
+    if not isinstance(articles,list):
+        if isinstance(articles,str):
+            articles = [articles,]
+        else:
+            print '"getPageInfo" requires a list of pagenames or a single pagename.'
+            return None
+    #do an upper limit check (max 50 titles per request allowed)
+    if len(articles) > 50:
+        i=0
+        while True:
+            getPageInfo(articles[i:i+50], dDict, verbose=verbose, language=language, family=family)
+            i=i+50
+            if i+50 > len(articles):
+                getPageInfo(articles[i:], dDict, verbose=verbose, language=language, family=family)
+                break
+    elif len(articles) > 0:
+        apiurl = u'https://%s.%s.org/w/api.php' %(language, family)
+        urlbase = u'%s?action=query&prop=pageprops&format=json&redirects=&titles=' %apiurl
+        url = urlbase+urllib.quote('|'.join(articles).encode('utf-8'))
+        if verbose: print url
+        req = urllib2.urlopen(url)
+        j = loads(req.read())
+        req.close()
+        
+        #start with redirects
+        rDict = {}
+        if 'redirects' in j['query'].keys():
+            redirects = j['query']['redirects'] #a list
+            for r in redirects:
+                rDict[r['to']] = r['from']
+        
+        #then pages
+        pages = j['query']['pages'] #a dict
+        for k, v in pages.iteritems():
+            page = {}
+            title = v['title']
+            #check if redirected
+            if title in rDict.keys():
+                page['redirect'] = title
+                title = rDict[title]
+            #missing
+            if 'missing' in v.keys():
+                page['missing'] = True
+            #properties
+            if 'pageprops' in v.keys():
+                u = v['pageprops']
+                if 'disambiguation' in u.keys():
+                    page['disambiguation'] = True
+                if 'wikibase_item' in u.keys():
+                    page['wikidata'] = u['wikibase_item']
+            dDict[title] = page.copy()
+
+def getAdvancedWikidata(article, verbose=False, language='sv', family='wikipedia'):
+    '''
+    Given a single article this checks for a corresponding wikidata entry
+    and formats the output
+    DEPRECATED, use new getWikidata() instead
+    '''
+    print 'getAdvancedWikidata() is DEPRECATED use new getWikidata() instead'
+    return getWikidata(article, verbose=verbose, language=language, family=family)
+
+def wdFormat(pInfo, verbose=False):
+    '''
+    Formats a single entry from the output of getPageInfo()
+    * If the page is not a disambiguation page and a wikidata entry is found then this 
+      is returned as the first parameter
+    * Else if the page is a DISAMBIGUATION, RED LINK or LACKS A WIKIDATA ENTITY this is returned as a second 
+      parameter (disambig, redLink, normal)
+    @ output (wikidata entity, comment)
+    '''
+    if 'disambiguation' in pInfo.keys():
+        if verbose: print u'%s: was a disambiguation page' % article
+        return (None, 'disambig')
+    elif 'wikidata' in pInfo.keys():
+        if verbose: print u'%s: has wikidata entry at %s' %(article,pInfo['wikidata'])
+        return (pInfo['wikidata'], None)
+    elif 'missing' in pInfo.keys():
+        if verbose: print u'%s: was a red link' % article
+        return (None, 'redLink')
+    else:
+        if verbose: print u'%s: needs a wikidata entry' % article
+        #add mechanism for creating wikidata entry
+        return (None, 'normal')
 #done
