@@ -529,9 +529,14 @@
                     $pageId = key($response['query']['pages']);
                     if($pageId!=-1){
                         $intro = $response['query']['pages'][$pageId]['extract'];
-                        if (ApiBase::startswith($intro,'Koordinater:')){
-                            $pos = strpos($intro, "\n");
-                            $intro = trim(substr($intro, $pos));
+                        #remove any coordinates templates
+                        $pos = strpos($intro, "Koordinater:");
+                        if ($pos !== false){
+                            $newintro = trim(substr($intro, 0, $pos));
+                            $endpos = strpos($intro, "\n", $pos+1);
+                            if ($endpos !== false)
+                                $newintro .= ' '.trim(substr($intro, $endpos));
+                            $intro=$newintro;
                         }
                         return $intro;
                     }
