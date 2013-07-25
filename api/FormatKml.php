@@ -13,6 +13,10 @@
             $xml->setIndent(true);
             $xml->setIndentString('    ');
             $xml->startDocument('1.0', 'UTF-8');
+            return ($xml);
+        }
+        
+        private function setProperties(XMLWriter $xml){
             $xml->startElement('kml');
             $xml->writeAttribute('xmlns','http://www.opengis.net/kml/2.2');
             
@@ -40,7 +44,6 @@
                         $xml->endElement();
                     $xml->endElement();
                 $xml->endElement();
-            return ($xml);
         }
         
         private function finalise(XMLWriter $xml){
@@ -119,7 +122,6 @@
                             $desc .= '</a>.';
                         }
                         $desc .= '</li></ul>';
-                        $desc .= '</ul>';
                         $xml->writeCData($desc);
                     $xml->endElement();
                     $xml->startElement('styleUrl');
@@ -134,12 +136,21 @@
             }
         }
         
+        function outputWarning(XMLWriter $xml, $head){
+            $text = $head['hits'];
+            if (!empty($head['warning']))
+                $text .="\nWarning: ".$head['warning'];
+            if (!empty($text))
+                $xml->writeComment($text);
+        }
+        
         function output($results){
             if($results['head']['status'] == '0') #Fall back to xml if errors
                 Format::outputXml($results);
             else{
                 $xml = self::initialise();
-                
+                self::outputWarning($xml, $results['head']);
+                self::setProperties($xml);
                 #Output each row in the body
                 $muni_names = ApiBase::getMuniNames();
                 foreach($results['body'] as $row)
