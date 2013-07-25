@@ -402,7 +402,7 @@ def updatesToDatabase(odok, wiki, quick=False):
     linked_artists = {}
     mapping = {u'namn':'title', u'skulptör':'artist', u'årtal':'year', 
                u'material':'material', u'plats':'address', u'header':'district', 
-               u'lat':'lat', u'lon':'lon', u'bild':'image'}
+               u'lat':'lat', u'lon':'lon', u'bild':'image', u'typ':'type'}
     #non-trivial mappings u'namn_link':'wiki_article'
     for w in wiki:
         if not w['id']: continue
@@ -410,6 +410,8 @@ def updatesToDatabase(odok, wiki, quick=False):
         changes = {}
         skipped = {}
         for k, v in mapping.iteritems():
+            if not k in w.keys(): #for postponed file some fields might be missing
+                continue
             no_Tags, dummy = common.extractLink(w[k], kill_tags=True)
             if not no_Tags: #skip if w[k] is empty (or only a tag)
                 continue
@@ -435,13 +437,13 @@ def updatesToDatabase(odok, wiki, quick=False):
                             break
         
         #register any artist_links so that these can be compared to existing links
-        if w[u'skulptör_link']:
+        if u'skulptör_link' in w.keys() and w[u'skulptör_link']: #postponed might not have u'skulptör_link'
             for a in w[u'skulptör_link']:
                 if a in linked_artists.keys(): linked_artists[a].append(w['id'])
                 else: linked_artists[a] = [w['id'],]
         
         #article_links must be checked manually since link may be depictive rather than of the actual object.
-        if w['namn_link'] and not o[u'wiki_article']:
+        if (u'namn_link' in w.keys() and w['namn_link']) and not o[u'wiki_article']: #postponed might not have u'namn_link'
             keys=w['namn_link']
             print u'Potential title link for "%s" ("%s" on wiki)' %(o['title'], w['namn'])
             for r in range(0,len(keys)):
