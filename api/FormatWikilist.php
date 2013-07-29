@@ -8,8 +8,8 @@
      */
     
     class FormatWikilist{
-        const header_template = 'Användare:André Costa (WMSE)/Skulpturlistor/huvud';
-        const row_template = 'Användare:André Costa (WMSE)/Skulpturlistor/rad';
+        const header_template = 'Offentligkonstlista-huvud';
+        const row_template = 'Offentligkonstlista';
         
         private function writeHeader(){
             /* Starting table */
@@ -36,6 +36,7 @@
                 return $text;
             }
             $text ="{{".self::row_template;
+            # potential of adding marking parameters as hidden (based on search parameters)
             $text .="\n| id           = ";
             if (!empty($row['id']))
                 $text .= $row['id'];
