@@ -5,6 +5,7 @@
      *   bettwer way of outputting all objects of a given query (i.e. continue/offset param)
      *   stick variables in head (and hide from row) based on query
      *      e.g. if query involves municipalityName=Malmö then: {{../huvud|kommun=Malmö}} and {{../rad|gömKommun=|...}} remove kommun from output
+     *           if multiple things are specified (eg muni=1234|5678) then make into separate tables with this as header
      */
     
     class FormatWikilist{
@@ -101,6 +102,8 @@
             $text .="\n| commonscat   = ";
             if (!empty($row['commons_cat']))
                 $text .=$row['commons_cat'];
+            if (!empty($row['cmt']))
+                $text .="\n| fotnot       = ".$row['cmt'];
             $text .="\n}}\n";
             return $text;
         }
