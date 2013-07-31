@@ -11,6 +11,7 @@ import MySQLdb
 import codecs
 
 YEARS_AFTER_BIRTH = 150 #Number of years since birth before considering the work to be free (if year of death is unknown)
+YEARS_AFTER_DEATH = 70  #Number of years since death before considering the work to be free
 
 def connectDatabase():
     '''
@@ -35,18 +36,18 @@ def tagUnfree(conn, cursor, testing):
                 AND (
                     `birth_year` IS NOT NULL
                     AND
-                    `birth_year` + 70 > YEAR(CURRENT_TIMESTAMP)
+                    `birth_year` + %r > YEAR(CURRENT_TIMESTAMP)
                     )
             )
             OR
             (
                 `death_year` IS NOT NULL
                 AND
-                `death_year` + 70 > YEAR(CURRENT_TIMESTAMP)
+                `death_year` + %r > YEAR(CURRENT_TIMESTAMP)
             )
         )
     );"""
-    affected_count = cursor.execute(query, (u'unfree',))
+    affected_count = cursor.execute(query, (u'unfree', YEARS_AFTER_DEATH, YEARS_AFTER_DEATH))
     #do something with the reply
     print u'-----------\n unfree (%d)\nid | free | title | artist' %affected_count
     for row in cursor:
@@ -77,19 +78,53 @@ def tagFree(conn, cursor, testing):
             (
                 `death_year` IS NOT NULL
                 AND
-                `death_year` + 70 < YEAR(CURRENT_TIMESTAMP)
+                `death_year` + %r < YEAR(CURRENT_TIMESTAMP)
             )
         )
     );"""
-    affected_count = cursor.execute(query, (u'pd', YEARS_AFTER_BIRTH))
+    affected_count = cursor.execute(query, (u'pd', YEARS_AFTER_BIRTH, YEARS_AFTER_DEATH))
     #do something with the reply
     print u'-----------\n free (%d)\nid | free | title | artist' %affected_count
     for row in cursor:
         print ' | '.join(row)
 
+def tagOldUnknown(conn, cursor, testing):
+    '''
+    identifies unfree/free objects based on author being unknown and (construction) year being known and :
+    * unfree:  year + YEARS_AFTER_DEATH > NOW
+    * free:    year + YEARS_AFTER_BIRTH < NOW
+    '''
+    #Unfree if year + YEARS_AFTER_DEATH > NOW
+    if testing: query=u"""##would set free=%s\nSELECT `id`, `free`, `title`, `artist` FROM `main_table` """
+    else: query = u"""UPDATE `main_table` SET free=%s """
+    query=query+u"""WHERE
+    `free` = '' AND
+    `artist` = '' AND NOT
+    `year` = 0 AND
+    `year` + %r > YEAR(CURRENT_TIMESTAMP);"""
+    affected_count = cursor.execute(query, (u'unfree', YEARS_AFTER_DEATH))
+    #do something with the reply
+    print u'-----------\n unfree no artist (%d)\nid | free | title | artist' %affected_count
+    for row in cursor:
+        print ' | '.join(row)
+    
+    #Free if year + YEARS_AFTER_BIRTH < NOW
+    if testing: query=u"""##would set free=%s\nSELECT `id`, `free`, `title`, `artist` FROM `main_table` """
+    else: query = u"""UPDATE `main_table` SET free=%s """
+    query=query+u"""WHERE
+    `free` = '' AND
+    `artist` = '' AND NOT
+    `year` = 0 AND
+    `year` + %r < YEAR(CURRENT_TIMESTAMP);"""
+    affected_count = cursor.execute(query, (u'pd', YEARS_AFTER_BIRTH))
+    #do something with the reply
+    print u'-----------\n free no artist (%d)\nid | free | title | artist' %affected_count
+    for row in cursor:
+        print ' | '.join(row)
+
 def showMultipleArtists(conn, cursor):
     '''
-    identifies free objects with multiple artists missing a copyright statys
+    identifies free objects with multiple artists missing a copyright status
     '''
     query = u"""SELECT `id`, `free`, `title`, `artist` FROM `main_table` WHERE `free` = '' AND `id` IN
     (SELECT a.`object` FROM `artist_links` a
@@ -107,6 +142,7 @@ def run(testing=True):
     (conn, cursor) = connectDatabase()
     tagUnfree(conn, cursor, testing=testing)
     tagFree(conn, cursor, testing=testing)
+    tagOldUnknown(conn, cursor, testing=testing)
     showMultipleArtists(conn, cursor)
     conn.commit() 
     conn.close()
