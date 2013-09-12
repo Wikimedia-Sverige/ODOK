@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Offentlig konst i Sverige</title>
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0px; padding: 0px; background: url(Stockholm._Gustav_II_Adolfs_crop.JPG); background-repeat: repeat-x}
+      ul   { list-style-type: none; padding:0; margin:0; //consider adding "width:50%;" if bubble size can be controlled}
+      #map {
+        height: 85%;//whilst infobox
+      }
+      @font-face{
+        font-family: 'Varela';
+        src: url("varela.woff") format("woff");
+      }
+    </style>
+    <script src="OpenLayers-2.8/OpenLayers.js"></script>
+    <script>
+      function init() {
+        //load basic OSM map
+        map = new OpenLayers.Map("map");
+        //var mapnik         = new OpenLayers.Layer.OSM();
+        var mapQuest       = new OpenLayers.Layer.OSM("MapQuest Open",                                                   
+        ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+        "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+        "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+        "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"],
+        {attribution: "&copy; <a href='http://www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='http://www.openstreetmap.org/copyright' title='ODbL'>open license</a>. Tiles Courtesy of <a href='http://www.mapquest.com/'>MapQuest</a> <img src='http://developer.mapquest.com/content/osm/mq_logo.png'>" });
+        var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
+        var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+        var position       = new OpenLayers.LonLat(18.0162, 59.3145).transform( fromProjection, toProjection);
+        var zoom           = 13; 
+        //map.addLayer(mapnik);
+        map.addLayer(mapQuest);
+        map.setCenter(position, zoom );
+        
+        //var kmlUrl = "http://wlpa.wikimedia.se/odok-bot/site/dump.kml?fulhack=true";
+        var kmlLayer = new OpenLayers.Layer.Vector("KML", {
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: "dump.kml",
+                format: new OpenLayers.Format.KML({
+                    extractStyles: true, 
+                    extractAttributes: true,
+                    maxDepth: 2
+                })
+            })
+        })
+        map.addLayer(kmlLayer);
+        //map.zoomToExtent(kmlLayer.getDataExtent());
+        
+        //Add a selector control to the kmllayer with popup functions
+        var controls = {
+            selector: new OpenLayers.Control.SelectFeature(kmlLayer, { onSelect: createPopup, onUnselect: destroyPopup })
+        };
+        map.addControl(controls['selector']);
+        controls['selector'].activate();
+      }
+      function createPopup(feature) {
+        feature.popup = new OpenLayers.Popup.FramedCloud("pop",
+            feature.geometry.getBounds().getCenterLonLat(),
+            null,
+            '<div class="markerContent">'+feature.attributes.description+'</div>',
+            null,
+            true,
+            function() { destroyPopup(feature); }
+        );
+        //feature.popup.closeOnMove = true;
+        map.addPopup(feature.popup);
+      }
+      
+      function destroyPopup(feature) {
+        feature.popup.destroy();
+        feature.popup = null;
+      }
+    </script>
+  </head>
+  <body onload="init();">
+    <div style="font-family:Varela; text-align:justify; background:white; padding:5px; border:2px solid red; width:50%; margin-left: auto; margin-right: auto ;">
+        V&auml;lkommen! P&aring; denna sida kommer Wikimedia Sveriges databas &ouml;ver offentlig konst att presenteras. 
+        Till dess att sidan &auml;r f&auml;rdig kan ni f&aring; information genom att bes&ouml;ka v&aring;r <a href="https://se.wikimedia.org/wiki/Projekt:Öppen_databas_för_offentlig_konst">projektsida</a>.<br/><br/>
+        
+        Nedan kan ni se de objekt i Stockholms kommun f&ouml;r vilka vi har koordinater. Kartan kommer att kompletteras allt eftersom vi identifierar koordinater f&ouml;r fler av konstverken.<br/>
+    </div>
+    <div id="map"></div>
+    <footer style="font-size:small">
+    	<div style="float:left; text-align:left;">Ett projekt från <a href="https://donera.wikimedia.se/">Wikimedia Sverige</a> med stöd av <a href="http://www.vinnova.se">Vinnova</a>.</div>
+        <div style="float:right; text-align:right;">Bakgrundsbild: <a href="https://commons.wikimedia.org/wiki/File:Stockholm._Gustav_II_Adolfs_ryttarstaty_p%C3%A5_Gustav_Adolfs_torg.JPG">Stockholm. Gustav II Adolfs ryttarstaty p&aring; Gustav Adolfs torg</a> av Lars (Lon) Olsson, <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.sv">CC BY-SA 3.0</a></div>
+    </footer>
+    <!-- Piwik -->
+    <script type="text/javascript">
+        var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.wikimedia.se/" : "http://piwik.wikimedia.se/");
+        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+        try {
+            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+            piwikTracker.trackPageView();
+            piwikTracker.enableLinkTracking();
+        } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.wikimedia.se/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
+  </body>
+</html>
