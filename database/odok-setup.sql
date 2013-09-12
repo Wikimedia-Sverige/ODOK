@@ -1,6 +1,7 @@
 DROP TRIGGER IF EXISTS `main_table`.`audit_trigger`;
 DROP TRIGGER IF EXISTS `main_table`.`created_trigger`;
 DROP TABLE IF EXISTS `artist_links`;
+DROP TABLE IF EXISTS `aka_table`;
 DROP TABLE IF EXISTS `audit_table`;
 DROP TABLE IF EXISTS `main_table`;
 DROP TABLE IF EXISTS `muni_table`;
@@ -39,6 +40,17 @@ CREATE TABLE  `source_table` (
   #`updates`    bit(1)          NOT NULL DEFAULT 0,         # Did they request updated data? t/f = 1/0
   PRIMARY KEY   `id` (`id`),
   INDEX         `name` (`name`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `aka_table` (
+  `id`          int             NOT NULL AUTO_INCREMENT,    # Unique id for the aka
+  `title`       varchar(255)    NOT NULL,                   # The alternative title
+  `main_id`     varchar(25)     NOT NULL REFERENCES source_table(id),   # id for the object
+  PRIMARY KEY   `id` (`id`),
+  INDEX         `title` (`title`),
+  INDEX         `main_id` (`main_id`),
+  #Because mysql does not support inline referenes
+  FOREIGN KEY (main_id)      REFERENCES main_table(id)
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `artist_table` (
