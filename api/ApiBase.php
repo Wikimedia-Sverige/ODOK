@@ -489,16 +489,16 @@
                     if($response['success']==1){
                         if(!is_array($entity)){
                             if($getUrl)
-                                return 'https:'.$response['entities'][lcfirst($entity)]['sitelinks']['svwiki']['url'];
+                                return 'https:'.$response['entities'][ucfirst($entity)]['sitelinks']['svwiki']['url'];
                             else
-                                return $response['entities'][lcfirst($entity)]['sitelinks']['svwiki']['title'];
+                                return $response['entities'][ucfirst($entity)]['sitelinks']['svwiki']['title'];
                         }else{
                             $eArray=Array();
                             foreach ($entity as $e){
                                 if($getUrl)
-                                    $eArray[$e] = 'https:'.$response['entities'][lcfirst($e)]['sitelinks']['svwiki']['url'];
+                                    $eArray[$e] = 'https:'.$response['entities'][ucfirst($e)]['sitelinks']['svwiki']['url'];
                                 else
-                                    $eArray[$e] = $response['entities'][lcfirst($e)]['sitelinks']['svwiki']['title'];
+                                    $eArray[$e] = $response['entities'][ucfirst($e)]['sitelinks']['svwiki']['title'];
                             }
                             return $eArray;
                         }
