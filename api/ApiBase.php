@@ -123,10 +123,12 @@
                     case 'created':
                     case 'image':
                     case 'coords':
+                    case 'cmt':
                     case 'inside':
                     case 'ugc':
                     case 'artist':
                     case 'title':
+                    case 'wiki':
                         #these are already in mysql format
                         $query .= $value.'
                 AND ';
@@ -220,7 +222,7 @@
                              'district', 'bbox', 'BBOX', 'source', 'changed',
                              'created', 'wiki_article', 'commons_cat',
                              'official_url', 'free', 'owner', 'has_cmt',
-                             'is_inside', 'has_ugc', 'has_image', 'has_coords');
+                             'is_inside', 'has_ugc', 'has_image', 'has_coords', 'has_wiki');
             if(empty($_GET))
                 return null;
             else{
@@ -253,6 +255,7 @@
                         case 'has_coords':
                         case 'has_cmt':
                         case 'has_image':
+                        case 'has_wiki':
                             $val = self::boolParam($key, $value);
                             if (!empty($val)){
                                 $keyparts = explode('_', $key);
@@ -383,6 +386,12 @@
                             return '`'.mysql_real_escape_string($key).'` = ""';
                         else
                             return '`'.mysql_real_escape_string($key).'` != ""';
+                        break;
+                    case 'wiki':
+                        if ($value=='false')
+                            return '`wiki_article` = ""';
+                        else
+                            return '`wiki_article` != ""';
                         break;
                     case 'coords':
                         if ($value=='false')
