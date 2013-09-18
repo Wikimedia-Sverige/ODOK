@@ -83,7 +83,7 @@
             }
             $text .="\n| län          = ";
             if (!empty($row['county']))
-                $text .=$county_names[$row['county']];
+                $text .=$row['county'];
             $text .="\n| kommun       = ";
             if (!empty($row['muni']))
                 $text .=$muni_names[$row['muni']];
