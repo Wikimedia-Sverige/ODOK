@@ -68,7 +68,7 @@
                         $desc = '';
                         if (!empty($row['image'])){
                             $imgsize = 100;
-                            $desc .= '<a href="http://commons.wikimedia.org/wiki/File:' . rawurlencode($row['image']) . '">';
+                            $desc .= '<a href="http://commons.wikimedia.org/wiki/File:' . rawurlencode($row['image']) . '" target="_blank">';
                             $desc .= '<img src="' . ApiBase::getImageFromCommons($row['image'],$imgsize) . '" align="right" />';
                             $desc .= '</a>';
                             $styleUrl = '#monPicStyle';
@@ -86,7 +86,7 @@
                             foreach ($artist_info as $ai){
                                 if($ai['wiki']){
                                     #$desc .= '<a href="https://wikidata.org/wiki/' . rawurlencode($ai['wiki']) . '">';
-                                    $desc .= '<a href="'.ApiBase::getArticleFromWikidata($ai['wiki']).'">';
+                                    $desc .= '<a href="'.ApiBase::getArticleFromWikidata($ai['wiki']).'" target="_blank">';
                                     $desc .= ''.htmlspecialchars($ai['name']);
                                     $desc .= '</a>';
                                 } else
@@ -117,7 +117,7 @@
                             if (empty($row['descr']))
                                 $desc .= '</li><br/><li>'.ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false));
                             $desc .= '</li><br/><li>'.htmlspecialchars('Läs mer om ');
-                            $desc .= '<a href="'.ApiBase::getArticleFromWikidata($row['wiki_article']).'">';
+                            $desc .= '<a href="'.ApiBase::getArticleFromWikidata($row['wiki_article']).'" target="_blank">';
                             $desc .= htmlspecialchars('konstverket på Wikipedia');
                             $desc .= '</a>.';
                         }
