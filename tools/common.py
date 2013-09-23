@@ -146,7 +146,7 @@ def findUnit(contents, start, end, brackets=None):
         * end: the substring indicating the end of the object
         * brackets: a dict of brackets used which must match within the object
     @output:
-        the-object, lead-in-to-object, the-remainder-of-the-string
+        the-object, the-remainder-of-the-string, lead-in-to-object
         OR None,None if an error
         OR '','' if no object is found
     '''
@@ -263,6 +263,27 @@ def latLonFromCoord(coord):
     lat = lat_sign*lat
     lon = lon_sign*lon
     return (lat,lon)
+
+def getPage(page, verbose=False, language='sv', family='wikipedia'):
+    '''
+    Given an article this returns the contents of (the latest rivision of) the page
+    @ input: pagetitle to look at
+    @ output: contents of page
+    '''
+    apiurl = u'https://%s.%s.org/w/api.php' %(language, family)
+    urlbase = '%s?action=query&prop=revisions&format=json&rvprop=content&rvlimit=1&titles=' %apiurl
+    url = urlbase+urllib.quote(page.encode('utf-8'))
+    if verbose: print url
+    req = urllib2.urlopen(url)
+    j = loads(req.read())
+    req.close()
+    pageid = j['query']['pages'].keys()[0]
+    if pageid == u'-1':
+        if verbose: print 'no entry for "%s"' %page
+        return None
+    else:
+        content = j['query']['pages'][pageid]['revisions'][0]['*']
+        return content
 
 def getPageInfo(articles, dDict, verbose=False, language='sv', family='wikipedia'):
     '''

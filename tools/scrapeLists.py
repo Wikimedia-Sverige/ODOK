@@ -5,10 +5,10 @@
  How to use: 
  
  == Initial scraping ==
- 1. Identify pages with relevant lists. stora pagenames as list <pages>
- 2. Idnetify municipalitynumber as <muniNo>
+ 1. Identify pages with relevant lists. store pagenames as list <pages>
+ 2. Identify municipalitynumber as <muniNo>
  3. Do initial scrape:
-        run(testing=False, pages=<pages>, queries={'muni':'<muniNo>'})
+        run(testing=False, pages=<pages>, queries={'muni':'<muniNo>'}, tmpFile=u'scrapetmp.txt')
  3.1 Results are outputted into <scrapetmp.txt>
  3.2 For further scrapes use
         run(testing=False, queries={'muni':'<muniNo>'}, listFile=u'scrapetmp1.txt')
@@ -20,7 +20,7 @@
         commitUpdatesFil('tmpUpdates.txt', testing=False)
  ?must original artistLinks be dealt with here?
  5. Do the longer manual update (can be done repetedly)
-        runUpdates(u'tmpPostponed.txt', queries={'muni':'<muniNo>'})
+        runUpdates(u'tmpPostponed.txt', queries={'muni':'<muniNo>'})   !Note that this loses and _link parameters in the postponed file
         commitUpdatesFil('tmpUpdates.txt', testing=False)
  6. Linked artists can be dealt with separately
         runArtistLinks(u'tmpArtistLinks.txt', verbose=False)
@@ -38,28 +38,6 @@ import codecs
 import urllib, urllib2
 from json import loads
 import time
-
-def getPage(page, verbose=False):
-    '''
-    Queries the sv.Wikipedia API to return the contents of a given page
-    @ input: page to look at
-    @ output: contents of page
-    '''
-    wikiurl = u'https://sv.wikipedia.org'
-    apiurl = '%s/w/api.php' %wikiurl
-    urlbase = '%s?action=query&prop=revisions&format=json&rvprop=content&rvlimit=1&titles=' %apiurl
-    url = urlbase+urllib.quote(page.encode('utf-8'))
-    if verbose: print url
-    req = urllib2.urlopen(url)
-    j = loads(req.read())
-    req.close()
-    pageid = j['query']['pages'].keys()[0]
-    if pageid == u'-1':
-        print 'no entry for "%s"' %page
-        return None
-    else:
-        content = j['query']['pages'][pageid]['revisions'][0]['*']
-        return content
 
 def parseArtwork(contents, pagename):
     '''
@@ -263,7 +241,7 @@ def fileToHits(filename):
         wikiHits.append(unit.copy())
     return wikiHits
 
-def run(testing=True, pages=[], queries ={}, listFile=None):
+def run(testing=True, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp.txt'):
     '''
     runs the scrape-and-match process. if testing=true then outputs to file instead
     '''
@@ -275,12 +253,12 @@ def run(testing=True, pages=[], queries ={}, listFile=None):
     else:
         wikiHits=[]
         for page in pages:
-            contents = getPage(page=page, verbose=False)
+            contents = common.getPage(page=page, verbose=False)
             wikiHits = wikiHits + parseArtwork(contents, page)
             print u'wikiHits: %r' %len(wikiHits)
         postProcessing(wikiHits)
         #safety backup
-        f=codecs.open('scrapetmp1.txt','w','utf8')
+        f=codecs.open(u'%s1%s' %(tmpFile[:-4],tmpFile[-4:]),'w','utf8')
         for u in wikiHits:
             for k,v in u.iteritems():
                 if isinstance(v,list): #i.e. the non-empty  _link parameters
@@ -298,7 +276,7 @@ def run(testing=True, pages=[], queries ={}, listFile=None):
     findMatches(odokHits, wikiHits)
     #compare values (focus on stadsdel, plats, koord, material, bild, artist_link) be distrustful of name_link and beware of <ref>
     #add new values to ÖDOK
-    f=codecs.open('scrapetmp.txt','w','utf8')
+    f=codecs.open(tmpFile,'w','utf8')
     for u in wikiHits:
         for k,v in u.iteritems():
                 if isinstance(v,list): #i.e. the non-empty  _link parameters
@@ -308,16 +286,16 @@ def run(testing=True, pages=[], queries ={}, listFile=None):
     f.close()
     print 'Done!'
 
-def outputMissing(listFile, county, muni):
+def outputMissing(listFile, county, muni, wikilist=u'scrapetmp-Sthlm.txt'):
     '''given the previous list file this outputs any unmatched entries'''
-    wiki=fileToHits(u'scrapetmp-Sthlm.txt')
+    wiki=fileToHits(wikilist)
     missing = []
     for w in wiki:
         if not w['id']:
             missing.append(w.copy())
     print 'Missing %r out of %r' %(len(missing), len(wiki))
     f=codecs.open('%s-missing.%s' %(listFile[:-4],listFile[-3:]),'w','utf8')
-    f.write(u'{{Användare:André Costa (WMSE)/Skulpturlistor/huvud|kommun=%s}}\n' %muni)
+    f.write(u'{{Offentligkonstlista-huvud|kommun=%s}}\n' %muni)
     for m in missing:
         f.write(u'%s\n' %wikiListFormat(m,county, muni))
     f.write(u'|}\n')
@@ -364,7 +342,7 @@ def wikiListFormat(w, county, muni):
     if w[u'bild']: bild=w[u'bild']
     else: bild = ''
     
-    txt = u'''{{Användare:André Costa (WMSE)/Skulpturlistor/rad|gömKommun=
+    txt = u'''{{Offentligkonstlista|gömKommun=
 | id           = 
 | id-länk      = 
 | titel        = %s
