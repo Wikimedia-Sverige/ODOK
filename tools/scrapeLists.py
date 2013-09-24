@@ -302,8 +302,22 @@ def outputMissing(listFile, county, muni, wikilist=u'scrapetmp-Sthlm.txt'):
     f.close()
     print 'Done!'
 
+def outputAll(listFile, county, muni):
+    '''given the previous list file this outputs any unmatched entries'''
+    wiki=fileToHits(listFile)
+    missing = []
+    f=codecs.open('%s-asList.%s' %(listFile[:-4],listFile[-3:]),'w','utf8')
+    f.write(u'{{Offentligkonstlista-huvud|kommun=%s}}\n' %muni)
+    for w in wiki:
+        f.write(u'%s\n' %wikiListFormat(w,county, muni))
+    f.write(u'|}\n')
+    f.close()
+    print 'Done!'
+
 def wikiListFormat(w, county, muni):
     '''given a list entry this outputs a wikilist row'''
+    if w[u'id']: idNo=w[u'id']
+    else: idNo = ''
     
     if w[u'namn']:
         title = w[u'namn']
@@ -314,7 +328,9 @@ def wikiListFormat(w, county, muni):
     if w[u'skulptör']:
         artist = w[u'skulptör']
         if w[u'skulptör_link']: 
-            if len(w[u'skulptör_link'])==1: artist = u'[[%s|%s]]' %(w[u'skulptör_link'][0], artist)
+            if len(w[u'skulptör_link'])==1:
+                if w[u'skulptör_link'][0] == w[u'skulptör']: artist = u'[[%s]]' %artist
+                else: artist = u'[[%s|%s]]' %(w[u'skulptör_link'][0], artist)
             else: artist = u'%s: [[%s]]' %(artist, ']]; [['.join(w[u'skulptör_link']))
     else: artist = ''
     
@@ -343,7 +359,7 @@ def wikiListFormat(w, county, muni):
     else: bild = ''
     
     txt = u'''{{Offentligkonstlista|gömKommun=
-| id           = 
+| id           = %s
 | id-länk      = 
 | titel        = %s
 | artikel      = 
@@ -362,7 +378,7 @@ def wikiListFormat(w, county, muni):
 | lon          = %s
 | bild         = %s
 | commonscat   = 
-}}''' %(title, artist, year, w['page'], material, plats, county, muni, stadsdel, lat, lon, bild)
+}}''' %(idNo, title, artist, year, w['page'], material, plats, county, muni, stadsdel, lat, lon, bild)
     return txt
 
 #==============================================================================
