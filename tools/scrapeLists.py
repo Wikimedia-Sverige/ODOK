@@ -358,7 +358,7 @@ def wikiListFormat(w, county, muni):
     if w[u'bild']: bild=w[u'bild']
     else: bild = ''
     
-    txt = u'''{{Offentligkonstlista|gömKommun=
+    txt = u'''{{Offentligkonstlista|döljKommun=
 | id           = %s
 | id-länk      = 
 | titel        = %s
@@ -371,14 +371,12 @@ def wikiListFormat(w, county, muni):
 | fri          = 
 | plats        = %s
 | inomhus      = 
-| län          = %s
-| kommun       = %s
 | stadsdel     = %s
 | lat          = %s
 | lon          = %s
 | bild         = %s
 | commonscat   = 
-}}''' %(idNo, title, artist, year, w['page'], material, plats, county, muni, stadsdel, lat, lon, bild)
+}}''' %(idNo, title, artist, year, w['page'], material, plats, stadsdel, lat, lon, bild)
     return txt
 
 #==============================================================================
