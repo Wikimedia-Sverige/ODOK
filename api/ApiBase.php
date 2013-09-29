@@ -264,6 +264,7 @@
                             break;
                         case 'artist':
                         case 'title':
+                        case 'address':
                             $params[$key] = self::softParam($key, $value);
                             break;
                         default:
