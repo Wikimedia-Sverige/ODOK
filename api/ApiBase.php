@@ -128,6 +128,7 @@
                     case 'ugc':
                     case 'artist':
                     case 'title':
+                    case 'address':
                     case 'wiki':
                         #these are already in mysql format
                         $query .= $value.'
