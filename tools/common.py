@@ -79,10 +79,10 @@ def getWikidata(articles, dDict=None, verbose=False, language='sv', family='wiki
     pDict ={}
     getPageInfo(articles, pDict, language=language, family=family)
     if single:
-        return wdFormat(pDict[articles[0]], verbose=verbose)
+        return wdFormat(articles[0], pDict[articles[0]], verbose=verbose)
     elif old:
         for k, v in pDict.iteritems():
-            pInfo = wdFormat(v, verbose=verbose)
+            pInfo = wdFormat(k, v, verbose=verbose)
             if pInfo[0]:
                 dDict[k] = pInfo[0]
             else:
@@ -101,7 +101,10 @@ def getManyWikidata(articles, dDict, verbose=False, language='sv', family='wikip
     return getWikidata(article, dDict=dDict, verbose=verbose, language=language, family=family)
 
 def getManyArticles(wikidata, dDict, verbose=False):
-    '''returns the articles of a list of wikidata enitity ids'''
+    '''
+    DEPRECATED to WikiDataApi.getArticles()
+    returns the articles of a list of wikidata enitity ids
+    '''
     if not isinstance(wikidata,list):
         print '"getManyArticles" requiresa list of articles. for individual wikidata entities use "getArticles" instead'
         return None
@@ -266,6 +269,7 @@ def latLonFromCoord(coord):
 
 def getPage(page, verbose=False, language='sv', family='wikipedia'):
     '''
+    DEPRECATED to WikiApi.getPage()
     Given an article this returns the contents of (the latest revision of) the page
     @ input: pagetitle to look at
     @ output: contents of page
@@ -287,12 +291,13 @@ def getPage(page, verbose=False, language='sv', family='wikipedia'):
 
 def getPageTimestamp(page, verbose=False, language='sv', family='wikipedia'):
     '''
+    DEPRECATED to WikiApi.getTimestamp()
     Given an article this returns the timestamp of (the latest revision of) the page
     @ input: pagetitle to look at
     @ output: timestamp in ISO 8601 format
     '''
     apiurl = u'https://%s.%s.org/w/api.php' %(language, family)
-    urlbase = '%s?action=query&prop=revisions&format=json&rvprop=timestamp&rvlimit=1&rvdir=newer&titles=' %apiurl
+    urlbase = '%s?action=query&prop=revisions&format=json&rvprop=timestamp&rvlimit=1&titles=' %apiurl
     url = urlbase+urllib.quote(page.encode('utf-8'))
     if verbose: print url
     req = urllib2.urlopen(url)
@@ -308,6 +313,7 @@ def getPageTimestamp(page, verbose=False, language='sv', family='wikipedia'):
 
 def getPageInfo(articles, dDict, verbose=False, language='sv', family='wikipedia'):
     '''
+    DEPRECATED to WikiApi.getPageInfo()
     Given a list of articles this tells us if the page is either of
     * Non-existent (red link)
     * A redirect (and returns real page)
@@ -366,7 +372,7 @@ def getPageInfo(articles, dDict, verbose=False, language='sv', family='wikipedia
                 if 'disambiguation' in u.keys():
                     page['disambiguation'] = True
                 if 'wikibase_item' in u.keys():
-                    page['wikidata'] = u['wikibase_item']
+                    page['wikidata'] = u['wikibase_item'].upper()
             dDict[title] = page.copy()
 
 def getAdvancedWikidata(article, verbose=False, language='sv', family='wikipedia'):
@@ -378,7 +384,7 @@ def getAdvancedWikidata(article, verbose=False, language='sv', family='wikipedia
     print 'getAdvancedWikidata() is DEPRECATED use new getWikidata() instead'
     return getWikidata(article, verbose=verbose, language=language, family=family)
 
-def wdFormat(pInfo, verbose=False):
+def wdFormat(article, pInfo, verbose=False):
     '''
     Formats a single entry from the output of getPageInfo()
     * If the page is not a disambiguation page and a wikidata entry is found then this 
