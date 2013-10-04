@@ -456,14 +456,13 @@
          * Given the filename on Commons this returns the url of the
          * thumbnail of the given size
          * From: https://fisheye.toolserver.org/browse/erfgoed/api/includes/CommonFunctions.php
+         * ToDO: replace with 'https://commons.wikimedia.org/w/thumb.php?f=' . $a['image'] . '&width=' . $this->thumb_width
          */
         function getImageFromCommons($filename, $size) {
             if ($filename and $size) {
                 $filename = ucfirst($filename);
                 $filename = str_replace(' ', '_', $filename);
-                $md5hash=md5($filename);
-                //urlencode($filename);
-                $url = "http://upload.wikimedia.org/wikipedia/commons/thumb/" . $md5hash[0] . "/" . $md5hash[0] . $md5hash[1] . "/" . $filename . "/" . $size . "px-" . $filename;
+                $url = "https://commons.wikimedia.org/w/thumb.php?f=" . $filename . "&width=" . $size;
                 return $url;
             }
         }
