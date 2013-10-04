@@ -218,7 +218,7 @@
         function readConstraints(){
             #define list of allowed generic constraints
             #Should material be added (if so it's soft)? Left out for now due to municipal concerns
-            $allowed = Array('title', 'artist', 'year', 'type', 'address', 
+            $allowed = Array('id', 'title', 'artist', 'year', 'type', 'address', 
                              'county', 'muni', 'county_name', 'muni_name', 
                              'district', 'bbox', 'BBOX', 'source', 'changed',
                              'created', 'wiki_article', 'commons_cat',
