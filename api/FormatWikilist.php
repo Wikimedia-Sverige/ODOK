@@ -116,10 +116,13 @@
                 foreach ($artist_info as $ai){
                     if($ai['wiki']){
                         $article = ApiBase::getArticleFromWikidata($ai['wiki'], $getUrl=false);
-                        $desc .= "[[".$article;
-                        if ($article != $ai['name'])
-                            $desc .= "|".$ai['name'];
-                        $desc .= "]]";
+                        if ($article){ #as wikidata is no guarantee of sv.wiki article (e.g. Finnish artist)
+                            $desc .= "[[".$article;
+                            if ($article != $ai['name'])
+                                $desc .= "|".$ai['name'];
+                            $desc .= "]]";
+                        } else
+                            $desc .= $ai['name'];
                     } else
                         $desc .= $ai['name'];
                     if (count($artist_info) >= $counter){
