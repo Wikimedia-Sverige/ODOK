@@ -56,6 +56,7 @@ def extractNameParts(name):
 
 def getWikidata(articles, dDict=None, verbose=False, language='sv', family='wikipedia', old=True):
     '''
+    #largely replaced by WikiApi.getPageInfo() - only the simplified formating is  not included
     returns the wikidata enitity id of an article/list of articles or a comment if none can be found
     @input:  article/list of articles
              dDict: dictionary to which to add the results as {article:wikidata} [None]
@@ -105,6 +106,7 @@ def getManyArticles(wikidata, dDict, verbose=False):
     DEPRECATED to WikiDataApi.getArticles()
     returns the articles of a list of wikidata enitity ids
     '''
+    print 'getManyArticles() is DEPRECATED use new WikiDataApi.getArticles() instead'
     if not isinstance(wikidata,list):
         print '"getManyArticles" requiresa list of articles. for individual wikidata entities use "getArticles" instead'
         return None
@@ -147,6 +149,8 @@ def findUnit(contents, start, end, brackets=None):
         * content: the string to look at
         * start: the substring indicateing the start of the object
         * end: the substring indicating the end of the object
+            if end is not found then the rest of the string is returned
+            if explicitly set to None then it is assumed that start-string also marks the end of an object. In this case the end-string is returned as part of the remainder
         * brackets: a dict of brackets used which must match within the object
     @output:
         the-object, the-remainder-of-the-string, lead-in-to-object
@@ -154,8 +158,17 @@ def findUnit(contents, start, end, brackets=None):
         OR '','' if no object is found
     '''
     if start in contents:
+        #If end is left blank
+        if end==None:
+            noEnd=True
+            end = start
+        else:
+            noEnd=False
+        
         uStart = contents.find(start) + len(start)
         uEnd = contents.find(end,uStart)
+        if uEnd < 0: #process till end of string
+            uEnd = None
         if brackets:
             for bStart,bEnd in brackets.iteritems():
                 dummy=u'¤'*len(bEnd)
@@ -173,7 +186,13 @@ def findUnit(contents, start, end, brackets=None):
                     diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
         unit = contents[uStart:uEnd]
         lead_in = contents[:uStart-len(start)]
-        remainder = contents[uEnd+len(end):]
+        if uEnd: #i.e. if not until end of string
+            if noEnd:
+                remainder = contents[uEnd:]
+            else:
+                remainder = contents[uEnd+len(end):]
+        else:
+            remainder = ''
         return (unit, remainder, lead_in)
     else:
         return '','',''
@@ -274,6 +293,7 @@ def getPage(page, verbose=False, language='sv', family='wikipedia'):
     @ input: pagetitle to look at
     @ output: contents of page
     '''
+    print 'getPage() is DEPRECATED use new WikiDataApi.getPage() instead'
     apiurl = u'https://%s.%s.org/w/api.php' %(language, family)
     urlbase = '%s?action=query&prop=revisions&format=json&rvprop=content&rvlimit=1&titles=' %apiurl
     url = urlbase+urllib.quote(page.encode('utf-8'))
@@ -296,6 +316,7 @@ def getPageTimestamp(page, verbose=False, language='sv', family='wikipedia'):
     @ input: pagetitle to look at
     @ output: timestamp in ISO 8601 format
     '''
+    print 'getPageTimestamp() is DEPRECATED use new WikiDataApi.getTimestamp() instead'
     apiurl = u'https://%s.%s.org/w/api.php' %(language, family)
     urlbase = '%s?action=query&prop=revisions&format=json&rvprop=timestamp&rvlimit=1&titles=' %apiurl
     url = urlbase+urllib.quote(page.encode('utf-8'))
@@ -323,6 +344,7 @@ def getPageInfo(articles, dDict, verbose=False, language='sv', family='wikipedia
     @input: a list of pagenames or a single pagename
     @output: fills in the supplied dict with the supplied pagenames and a dict of properties with possible parameters being: redirected, missing, disambiguation, wikidata
     '''
+    print 'getPageInfo() is DEPRECATED use new WikiDataApi.getPageInfo() instead'
     if not isinstance(articles,list):
         if isinstance(articles,str):
             articles = [articles,]
