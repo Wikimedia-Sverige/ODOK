@@ -211,9 +211,9 @@ class WikiApi(object):
             print  "Fetching pages embeding: " + templatename + "...fetching more"
             #print jsonr['query-continue']['embeddedin']['eicontinue']
             jsonr = self.httpPOST("query", [('list', 'embeddedin'),
-                                            ('eititle', categoryname.encode('utf-8')),
+                                            ('eititle', templatename.encode('utf-8')),
                                             ('eilimit', '500'),
-                                            ('einamespace', str(cmnamespace)),
+                                            ('einamespace', str(einamespace)),
                                             ('eicontinue', str(jsonr['query-continue']['embeddedin']['eicontinue']))])
             for page in jsonr['query']['embeddedin']:
                 members.append((page['title']))
@@ -235,7 +235,7 @@ class WikiApi(object):
         #action=query&prop=revisions&format=json&rvprop=timestamp&generator=embeddedin&geititle=Mall%3A!&geinamespace=0&geilimit=500
         jsonr = self.httpPOST("query", [('prop', 'revisions'),
                                         ('rvprop', 'timestamp'),
-                                        ('generator', 'embeddedin')
+                                        ('generator', 'embeddedin'),
                                         ('geititle', templatename.encode('utf-8')),
                                         ('geinamespace', str(einamespace)),
                                         ('geilimit', '500')])
@@ -245,6 +245,7 @@ class WikiApi(object):
         
         #{"query-continue":{"embeddedin":{"geicontinue":"10|Offentligkonstlista|1723456"}},"query":{"pages":{"1718037":{"pageid":1718037,"ns":0,"title":"Lista...","revisions":[{"timestamp":"2013-08-24T13:01:49Z"}]}}}}
         for page in jsonr['query']['pages']:
+            page = jsonr['query']['pages'][page]
             members.append({'title':page['title'], 'timestamp':page['revisions'][0]['timestamp']})
         
         while 'query-continue' in jsonr:
@@ -252,13 +253,14 @@ class WikiApi(object):
             #print jsonr['query-continue']['embeddedin']['geicontinue']
             jsonr = self.httpPOST("query", [('prop', 'revisions'),
                                         ('rvprop', 'timestamp'),
-                                        ('generator', 'embeddedin')
+                                        ('generator', 'embeddedin'),
                                         ('geititle', templatename.encode('utf-8')),
                                         ('geinamespace', str(einamespace)),
                                         ('geilimit', '500'),
                                         ('geicontinue',str(jsonr['query-continue']['embeddedin']['geicontinue']))])
             for page in jsonr['query']['pages']:
-                members.append((page['title'], page['revisions'][0]['timestamp']))
+                page = jsonr['query']['pages'][page]
+                members.append({'title':page['title'], 'timestamp':page['revisions'][0]['timestamp']})
         
         print  "Fetching pages embeding: " + templatename + "...complete"
         return members
@@ -277,7 +279,7 @@ class WikiApi(object):
         '''
         #if only one article given
         if not isinstance(articles,list):
-            if isinstance(articles,str):
+            if (isinstance(article,str) or isinstance(article,unicode)):
                 articles = [articles,]
             else:
                 print '"getPageInfo" requires a list of pagenames or a single pagename.'
@@ -347,7 +349,7 @@ class WikiApi(object):
         '''
         #if only one article given
         if not isinstance(articles,list):
-            if isinstance(articles,str):
+            if (isinstance(article,str) or isinstance(article,unicode)):
                 articles = [articles,]
             else:
                 print '"getPage()" requires a list of pagenames or a single pagename.'
@@ -422,9 +424,12 @@ class WikiApi(object):
         jsonr = self.httpPOST('logout',[('','')])
     
     @classmethod
-    def setUpWiki(cls, user, password, wp_site, verbose):
+    def setUpApi(cls, user, password, site, verbose=False):
+        '''
+        Creates a WikiApi object, log in and aquire an edit token
+        '''
         #Provide url and identify (either talk-page url)
-        wiki = cls('%s/w/api.php' %wp_site,"%s/wiki/User_talk:%s" %(wp_site, user))
+        wiki = cls('%s/w/api.php' %site,"%s/wiki/User_talk:%s" %(site, user))
         
         #Login
         wiki.login(user,password, verbose=verbose)
@@ -455,7 +460,7 @@ class WikiDataApi(WikiApi):
         '''
         #if only one article given
         if not isinstance(entities,list):
-            if isinstance(entities,str):
+            if (isinstance(entities,str) or isinstance(entities,unicode)):
                 entities = [entities,]
             else:
                 print '"getArticles" requires a list of entity_ids or a single entity_id.'
@@ -515,7 +520,7 @@ class WikiDataApi(WikiApi):
         :return: the entityId of the new object
                 If an error is encountered it returns None
         '''
-        if not isinstance(article,str): #does this give trouble with utf-8 strings?
+        if not (isinstance(article,str) or isinstance(article,unicode)): #does this give trouble with utf-8 strings?
             print '"makeEntity" requires a single article name as its parameter'
             return None
         
@@ -539,7 +544,9 @@ class WikiDataApi(WikiApi):
         #possible errors
         if u'error' in jsonr.keys():
             if (jsonr[u'error'][u'code'] == u'failed-save' and jsonr[u'error'][u'messages'][u'0'][u'name'] == u'wikibase-error-sitelink-already-used'):
-                print u'%s:%s already saved as %s' %(site, article, jsonr[u'error'][u'messages'][u'0'][u'parameters'][2])
+                entity = jsonr[u'error'][u'messages'][u'0'][u'parameters'][2]
+                print u'%s:%s already saved as %s' %(site, article, entity)
+                return entity
             elif (jsonr[u'error'][u'code'] == u'no-external-page') :
                 print u'%s:%s does not exist' %(site, article)
             else:
