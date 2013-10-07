@@ -214,9 +214,9 @@
             $queries = explode('&', $_SERVER['QUERY_STRING']);
             foreach ($queries as $q) {
                 $v = explode('=',$q);
-                $v[1] = strlen($v[1]);
-                if ($v[1]>=$maxChar){
-                    throw new CharacterLimitException('Each parameter must be less than ' .$maxChar. ' characters. The parameter "' .$v[0]. '" was ' .$v[1]. ' characters.');
+                $v[1] = strlen(urldecode($v[1]));
+                if ($v[1]>$maxChar){
+                    throw new CharacterLimitException('Each parameter must be no more than ' .$maxChar. ' bytes. The parameter "' .$v[0]. '" was ' .$v[1]. ' bytes.');
                 }
             }
         }
