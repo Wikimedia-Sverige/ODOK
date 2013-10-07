@@ -224,6 +224,7 @@
                              'created', 'wiki_article', 'commons_cat',
                              'official_url', 'free', 'owner', 'has_cmt',
                              'is_inside', 'has_ugc', 'has_image', 'has_coords', 'has_wiki');
+            $maxValues = 50;
             if(empty($_GET))
                 return null;
             else{
@@ -233,6 +234,10 @@
                             continue;
                         }
                         elseif (!in_array($key, $allowed)){
+                            continue;
+                        }
+                        elseif (substr_count($value, '|') > $maxValues){
+                            throw new LimitException('You can enter a maximum of '. $maxValues .' values per parameter (you entered '. substr_count($value, '|') .' values for the parameter "'. $key .'")');
                             continue;
                         }
                         switch ($key){
@@ -455,8 +460,6 @@
         /* 
          * Given the filename on Commons this returns the url of the
          * thumbnail of the given size
-         * From: https://fisheye.toolserver.org/browse/erfgoed/api/includes/CommonFunctions.php
-         * ToDO: replace with 'https://commons.wikimedia.org/w/thumb.php?f=' . $a['image'] . '&width=' . $this->thumb_width
          */
         function getImageFromCommons($filename, $size) {
             if ($filename and $size) {
@@ -558,4 +561,6 @@
             return !strncmp($haystack, $needle, strlen($needle));
         }
     }
+    
+    class LimitException extends Exception { }
 ?>

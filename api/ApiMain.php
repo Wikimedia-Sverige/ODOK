@@ -58,6 +58,12 @@
                 #deal with general constraints
                 try{
                     $constraints = ApiBase::readConstraints();
+                }catch (LimitException $e) {
+                    $results = ApiBase::makeErrorResult(
+                    '602',
+                    $e->getMessage(),
+                    null);
+                    $errors=1;
                 }catch (Exception $e) {
                     $results = ApiBase::makeErrorResult(
                     '600',
