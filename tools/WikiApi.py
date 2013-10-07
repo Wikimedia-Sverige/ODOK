@@ -56,7 +56,7 @@ class WikiApi(object):
         #self.sitecurl.setopt(pycurl.PROXY, 'http://localhost:8888') #Proxy if needed
     
     
-    def httpPOST(self, action, params, depth=0, timeoutretry=0):
+    def httpPOST(self, action, params, depth=0, timeoutretry=0, debug=False):
         """
 
         :param action: The action, pass as str
@@ -71,6 +71,9 @@ class WikiApi(object):
         #Set curl http request
         self.sitecurl.setopt(pycurl.URL, self.apiaction(action))
         self.sitecurl.setopt(pycurl.HTTPPOST, params)
+        
+        if debug:
+            print self.sitecurl.getinfo(pycurl.EFFECTIVE_URL)
 
         #Try the curl http request
         try:
@@ -194,7 +197,7 @@ class WikiApi(object):
         
         print "Fetching pages embeding: " + templatename
         members = []
-        #action=query&list=embeddedin&cmtitle=Tempålate:!
+        #action=query&list=embeddedin&cmtitle=Template:!
         jsonr = self.httpPOST("query", [('list', 'embeddedin'),
                                         ('eititle', templatename.encode('utf-8')),
                                         ('einamespace', str(einamespace)),
