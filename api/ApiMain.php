@@ -11,7 +11,13 @@
     class ApiMain{
         function search(){
             # Database info (including username+pass) in external file
-            require_once('./../../../../andre/config.php');
+            if ( file_exists('./../../../../andre/config.php')){
+                require_once('./../../../../andre/config.php');
+            } elseif (file_exists('config.php')){
+                require_once('config.php');
+            } else {
+                die( 'Couldn\'t find config file ');
+            }
             
             include('Format.php');       #formats the output
             include('ApiBase.php');      #functions used by multiple modules
