@@ -43,7 +43,7 @@
             $results['head'] = Array(
                             'status' => '0',
                             'error_number'  => $error_num, 
-                            'error_message' => $error_msg.' For documentation please consult action=help'
+                            'error_message' => $error_msg.' For documentation please consult action=help.'
                     );
             if (!empty($warning))
                 $results['head']['warning'] = $warning;
@@ -208,6 +208,18 @@
             } 
             return Array($offset, $warning);
         }
+        /* Test if any of the parameters is to large for $_GET to handle */
+        function largeParam(){
+            $maxChar = 512;
+            $queries = explode('&', $_SERVER['QUERY_STRING']);
+            foreach ($queries as $q) {
+                $v = explode('=',$q);
+                $v[1] = strlen($v[1]);
+                if ($v[1]>=$maxChar){
+                    throw new CharacterLimitException('Each parameter must be less than ' .$maxChar. ' characters. The parameter "' .$v[0]. '" was ' .$v[1]. ' characters.');
+                }
+            }
+        }
         #reads in paramters to deal with constraints
         /* NOTE: 
          *    if someone adds two params with same name then only the last one is considered
@@ -225,6 +237,9 @@
                              'official_url', 'free', 'owner', 'has_cmt',
                              'is_inside', 'has_ugc', 'has_image', 'has_coords', 'has_wiki');
             $maxValues = 50;
+            try{
+                ApiBase::largeParam();
+            }catch (Exception $e){throw $e;}
             if(empty($_GET))
                 return null;
             else{
@@ -237,7 +252,7 @@
                             continue;
                         }
                         elseif (substr_count($value, '|') > $maxValues){
-                            throw new LimitException('You can enter a maximum of '. $maxValues .' values per parameter (you entered '. substr_count($value, '|') .' values for the parameter "'. $key .'")');
+                            throw new ValueLimitException('You can enter a maximum of '. $maxValues .' values per parameter (you entered '. substr_count($value, '|') .' values for the parameter "'. $key .'").');
                             continue;
                         }
                         switch ($key){
@@ -562,5 +577,6 @@
         }
     }
     
-    class LimitException extends Exception { }
+    class CharacterLimitException extends Exception { } //max 512 characters in a parameter or else $_GET fails (external limit)
+    class ValueLimitException extends Exception { } //max 50 values in a parameter
 ?>

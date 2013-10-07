@@ -50,7 +50,7 @@
         
             /*
              * If no errors were found during connection
-             * let's proceed with out queries
+             * let's proceed with our queries
              */
             if(!$errors){
                 mysql_query("SET CHARACTER SET utf8");
@@ -58,9 +58,15 @@
                 #deal with general constraints
                 try{
                     $constraints = ApiBase::readConstraints();
-                }catch (LimitException $e) {
+                }catch (ValueLimitException $e) {
                     $results = ApiBase::makeErrorResult(
                     '602',
+                    $e->getMessage(),
+                    null);
+                    $errors=1;
+                }catch (CharacterLimitException $e) {
+                    $results = ApiBase::makeErrorResult(
+                    '603',
                     $e->getMessage(),
                     null);
                     $errors=1;
