@@ -176,14 +176,29 @@ def findUnit(contents, start, end, brackets=None):
                 if diff<0:
                     print 'Negative bracket missmatch for: %s <--> %s' %(bStart,bEnd)
                     return None, None, None
-                i=0
-                while(diff >0):
-                    i=i+1
-                    uEnd = contents.replace(bEnd,dummy,i).find(end,uStart)
-                    if uEnd < 0:
-                        print 'Positive (final) bracket missmatch for: %s <--> %s' %(bStart,bEnd)
-                        return None, None, None
-                    diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
+                #two cases either end is one of these brackets or not
+                if end in bEnd: #end is part of endBracket
+                    i=0
+                    while(diff >0):
+                        i=i+1
+                        uEnd = contents.replace(bEnd,dummy,i).find(end,uStart)
+                        if uEnd < 0:
+                            print 'Positive (final) bracket missmatch for: %s <--> %s' %(bStart,bEnd)
+                            return None, None, None
+                        diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
+                else: #end is different from endBracket (e.g. a '|')
+                    i=0
+                    while(diff >0):
+                        i=i+1
+                        uEnd = contents.find(end,uEnd+len(end))
+                        if uEnd < 0:
+                            diff = contents[uStart:].count(bStart) - contents[uStart:].count(bEnd)
+                            if diff>0:
+                                print 'Positive (final) bracket missmatch for: %s <--> %s' %(bStart,bEnd)
+                                return None, None, None
+                        else:
+                            diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
+                        
         unit = contents[uStart:uEnd]
         lead_in = contents[:uStart-len(start)]
         if uEnd: #i.e. if not until end of string
