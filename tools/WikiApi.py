@@ -7,7 +7,7 @@
 
 #----------------------------------------------------------------------------------------
 
-import pycurl, ujson, cStringIO
+import pycurl, ujson, cStringIO, urllib
 import time
 import traceback
 
@@ -38,6 +38,7 @@ class WikiApi(object):
         self.userName = None
         self.tokens = []
         self.edittoken = None
+        self.reqlimit = None
 
         #Response buffer
         self.responsebuffer= cStringIO.StringIO()
@@ -55,15 +56,84 @@ class WikiApi(object):
         self.sitecurl.setopt(pycurl.HTTPHEADER,["Expect:", "Connection: Keep-Alive", "Keep-Alive: 60"])
         #self.sitecurl.setopt(pycurl.PROXY, 'http://localhost:8888') #Proxy if needed
     
-    
-    def httpPOST(self, action, params, depth=0, timeoutretry=0, debug=False):
+    def _httpREQ(self, action, params, func, timeoutretry=0, debug=False):
         """
-
+        A more generic version allowing either POST or GET requests
         :param action: The action, pass as str
         :param params: The params to be posted
-        :param depth: A counter used for recursive failed stashes
+        :param func: a function (self.httpPOST or selfhttpGET)
+        :param timeoutretry: A counter for timeoutretries
+        :return: json object
+        """
+        
+        #Do the get/post thing
+        ##self.sitecurl.setopt(pycurl.HTTPGET/POST, params)
+        ##Set curl http request
+        ##self.sitecurl.setopt(pycurl.URL, self.apiaction(action))
+        
+        #Clear response buffer
+        self.responsebuffer.truncate(0)
+        
+        if debug:
+            print self.sitecurl.getinfo(pycurl.EFFECTIVE_URL)
+
+        #Try the curl http request
+        try:
+            time.sleep(self.Delay.ALLREQUESTS)
+            self.sitecurl.perform()
+        except pycurl.error, error:
+            errno, errstr = error
+            print( 'An error occurred: ' + str(errno) + ':', errstr)
+            traceback.print_exc()
+
+            #Response Timed Out, Retry up to 3 times
+            if(errno == 28):
+                if(timeoutretry < 3):
+                    time.sleep(2)
+                    func(action,params,timeoutretry=(timeoutretry+1))
+        
+        if debug:
+            print self.responsebuffer.getvalue()
+        json = ujson.loads(self.responsebuffer.getvalue())
+        
+        if self.clearresponsebufferafterresponse:
+            self.responsebuffer.truncate(0)
+
+        return json
+    
+    def httpGET(self, action, params, timeoutretry=0, debug=False):
+        """
+        :param action: The action, pass as str
+        :param params: The params to be gotten (in addition to action)
         :param timeoutretry: A counter for timeoutretries
         :return:
+        """
+        #Set curl http request
+        self.sitecurl.setopt(pycurl.HTTPGET, 1)
+        self.sitecurl.setopt(pycurl.URL, self.apiaction(action)+'&'+urllib.urlencode(params))
+        
+        return self._httpREQ(action, params, self.httpGET, timeoutretry=timeoutretry, debug=debug)
+    
+    def httpPOST(self, action, params, timeoutretry=0, debug=False):
+        """
+        :param action: The action, pass as str
+        :param params: The params to be posted
+        :param timeoutretry: A counter for timeoutretries
+        :return: json object
+        """
+        
+        #Set curl http request
+        self.sitecurl.setopt(pycurl.URL, self.apiaction(action))
+        self.sitecurl.setopt(pycurl.HTTPPOST, params)
+        
+        return self._httpREQ(action, params, self.httpPOST, timeoutretry=timeoutretry, debug=debug)
+    
+    def httpPOSTold(self, action, params, timeoutretry=0, debug=False):
+        """
+        :param action: The action, pass as str
+        :param params: The params to be posted
+        :param timeoutretry: A counter for timeoutretries
+        :return: json object
         """
         #Clear response buffer
         self.responsebuffer.truncate(0)
@@ -88,19 +158,10 @@ class WikiApi(object):
             if(errno == 28):
                 if(timeoutretry < 3):
                     time.sleep(2)
-                    self.httpPOST(action,params,depth,timeoutretry=(timeoutretry+1))
+                    self.httpPOST(action,params,timeoutretry=(timeoutretry+1))
         
         #print self.responsebuffer.getvalue()
         json = ujson.loads(self.responsebuffer.getvalue())
-        if "servedby" in json: #Some sort of error
-            if "error" in json:
-                if "code" in json["error"]:
-                    #Bug 36587
-                    if json["error"]["code"] == "internal_api_error_UploadChunkFileException":
-                        if(depth < 3):
-                            time.sleep(2)
-                            self.httpPOST(action,params,(depth + 1))
-            #maybe throw something?
         
         if self.clearresponsebufferafterresponse:
             self.responsebuffer.truncate(0)
@@ -293,7 +354,7 @@ class WikiApi(object):
             dDict ={}
         
         #do an upper limit check and split into several requests if necessary
-        reqlimit = 50 #max 50 titles per request allowed
+        reqlimit = self.reqlimit #max 50 titles per request allowed
         articles = list(set(articles)) #remove dupes
         if len(articles) > reqlimit:
             i=0
@@ -363,7 +424,7 @@ class WikiApi(object):
             dDict ={}
         
         #do an upper limit check and split into several requests if necessary
-        reqlimit = 50 #max 50 titles per request allowed
+        reqlimit = self.reqlimit #max 50 titles per request allowed
         articles = list(set(articles)) #remove dupes
         if len(articles) > reqlimit:
             i=0
@@ -425,14 +486,40 @@ class WikiApi(object):
     
     def logout(self):
         jsonr = self.httpPOST('logout',[('','')])
-    
+
+    def limitByBytes(self, valList, reqlimit=None):
+        '''
+        php $_GET is limited to 512 bytes per request and parameter
+        This function therefore provides a way of limiting the number
+        of values further than reqlimit to respect this limitation.
+        :param valList: a list of values to be compressed into one parameter
+        :param reqlimit: (optional) the number of values to send in each request
+        :return: a new reqlimit
+        '''
+        byteLimit = 512.0
+        if reqlimit == None:
+            reqlimit = len(valList)
+        while True:
+            byteLength = len('|'.join(valList[:reqlimit]).encode('utf-8'))
+            num = byteLength/byteLimit
+            if num <1:
+                break
+            reqlimit = int(reqlimit/num)
+            if reqlimit <1:
+                print '%r byte limit broken by a single parameter! What to do?' %int(byteLimit)
+                return None #Should do proper error handling
+        return reqlimit
+
     @classmethod
-    def setUpApi(cls, user, password, site, verbose=False):
+    def setUpApi(cls, user, password, site, reqlimit=50, verbose=False):
         '''
         Creates a WikiApi object, log in and aquire an edit token
         '''
         #Provide url and identify (either talk-page url)
         wiki = cls('%s/w/api.php' %site,"%s/wiki/User_talk:%s" %(site, user))
+        
+        #Set reqlimit for wp.apis
+        wiki.reqlimit = reqlimit
         
         #Login
         wiki.login(user,password, verbose=verbose)
@@ -474,7 +561,7 @@ class WikiDataApi(WikiApi):
             dDict ={}
         
         #do an upper limit check and split into several requests if necessary
-        reqlimit = 50 #max 50 titles per request allowed
+        reqlimit = self.reqlimit #max 50 titles per request allowed
         entities = list(set(entities)) #remove dupes
         if len(entities) > reqlimit:
             i=0
