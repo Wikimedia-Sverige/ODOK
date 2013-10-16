@@ -155,6 +155,7 @@
                 switch ($column){
                     case 'lat':
                     case 'lon':
+                    case 'year':
                         $query .= '`'.mysql_real_escape_string($column).'` IS NOT NULL
                 AND ';
                         break;

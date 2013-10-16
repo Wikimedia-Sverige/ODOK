@@ -78,13 +78,13 @@ CREATE TABLE  `main_table` (
   `title`       varchar(255)    NOT NULL DEFAULT '',        # Namn of artwork
   `artist`      varchar(255)    NOT NULL DEFAULT '',        # Artist
   `descr`       text            NOT NULL DEFAULT '',        # Description (free text)
-  `year`        smallint(4)     NOT NULL DEFAULT '0000',    # year, 0000 if unknown
+  `year`        smallint(4)     DEFAULT NULL,               # year, NULL if unknown
   `year_cmt`    text            NOT NULL DEFAULT '',        # Comment about year (e.g. why unknown or to specify completionyear or erectionyear etc.)
   `type`        varchar(255)    NOT NULL DEFAULT '',        # type of artwork (table?)
   `material`    varchar(255)    NOT NULL DEFAULT '',        # material the artwork is made of (freetext) (Could make it a separate table)
   `inside`      bit(1)          NOT NULL,                   # indoors or outdoors, for FoP
   `address`     varchar(255)    NOT NULL DEFAULT '',        # address/placement of object
-  `county`      varchar(2)      NOT NULL REFERENCES county_table(id),   # coutny code, 00 if unknown
+  `county`      varchar(2)      NOT NULL REFERENCES county_table(id),   # county code, 00 if unknown
   `muni`        smallint(4)     NOT NULL REFERENCES muni_table(id),     # municipal code, 0000 if unknown
   `district`    varchar(255)    NOT NULL DEFAULT '',        # district of city or town in a rural municipality
   `lat`         double          DEFAULT NULL,               # WGS84 latitude (decimal format)

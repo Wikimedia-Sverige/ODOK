@@ -1,6 +1,9 @@
 <?php   
     /*
      * Outputs the query as a wikilist
+     * BUG:
+     *   If some but not all artists have artist_table entries then only these are included
+     *   Semicolon separated artists are put into same parameter unless they have artist_table entries
      * TO DO:
      *   bettwer way of outputting all objects of a given query (i.e. continue/offset param)
      *   stick variables in head (and hide from row) based on query
@@ -55,7 +58,7 @@
             if (!empty($artistName))
                 $text .=$artistName;
             $text .="\n| årtal        = ";
-            if ($row['year'] != '0000')
+            if (!empty($row['year']))
                 $text .=$row['year'];
             $text .="\n| beskrivning  = ";
             if (!empty($row['descr']))
@@ -132,8 +135,10 @@
                 }
                 return $desc; 
             }
-            elseif (!empty($row['artist']))
+            elseif (!empty($row['artist'])){
+                #TODO split by semicolon...
                 return $row['artist'];
+            }
         }
         
         function outputWarning($head){
