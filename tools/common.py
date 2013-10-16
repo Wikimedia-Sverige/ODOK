@@ -271,9 +271,10 @@ def extractAllLinks(text, kill_tags=False):
     @output: (plain_text, list of link)
     '''
     wikilinks=[]
-    while '[[' in text:
-        text, link = extractLink(text, kill_tags=kill_tags)
+    text, link = extractLink(text, kill_tags=kill_tags)
+    while link:
         wikilinks.append(link)
+        text, link = extractLink(text, kill_tags=kill_tags)
     return text, wikilinks
 
 def latLonFromCoord(coord):
