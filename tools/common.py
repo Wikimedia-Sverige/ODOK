@@ -230,7 +230,7 @@ def extractLink(text, kill_tags=False):
                 dummy, remainder, lead_in = findUnit(text, u'<', u'>')
             text = lead_in.strip()+' '+remainder.strip()
     
-    if not u'[[' in text: return (text, '')
+    if not u'[[' in text: return (text.strip(), '')
     interior, dummy, dummy = findUnit(text, u'[[', u']]')
     wikilink = u'[['+interior+u']]'
     pos = text.find(wikilink)
