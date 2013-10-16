@@ -1,5 +1,6 @@
 *.txt
 *.ods
+*.log
 dconfig.py
 config.php
 testing.php
