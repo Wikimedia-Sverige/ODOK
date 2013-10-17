@@ -102,25 +102,24 @@
                             if (!empty($row['year']))
                                 $desc .= ' - '.htmlspecialchars($row['year']);
                         }elseif (!empty($row['year']))
-                                $desc .= htmlspecialchars($row['year']);
+                            $desc .= htmlspecialchars($row['year']);
                         $desc .= '</li><li> '; #Muni - address
                         $desc .= htmlspecialchars($muni_names[$row['muni']]);
                         if (!empty($row['district']))
                             $desc .= ' ('.htmlspecialchars($row['district']).')';
                         if (!empty($row['address']))
-                                $desc .= ' - '.htmlspecialchars($row['address']);
+                            $desc .= ' - '.htmlspecialchars($row['address']);
                         #Description
-                        if (!empty($row['descr']))
-                                $desc .= '</li><br/><li>'.htmlspecialchars($row['descr']);
                         if (!empty($row['wiki_article'])){
-                            #get descrition from wikipage if none existed
-                            if (empty($row['descr']))
-                                $desc .= '</li><br/><li>'.ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false));
+                            #get descrition from wikipage
+                            $desc .= '</li><br/><li>'.ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false));
                             $desc .= '</li><br/><li>'.htmlspecialchars('Läs mer om ');
                             $desc .= '<a href="'.ApiBase::getArticleFromWikidata($row['wiki_article']).'" target="_blank">';
                             $desc .= htmlspecialchars('konstverket på Wikipedia');
                             $desc .= '</a>.';
                         }
+                        else if (!empty($row['descr']))
+                            $desc .= '</li><br/><li>'.htmlspecialchars($row['descr']);
                         $desc .= '</li></ul>';
                         $xml->writeCData($desc);
                     $xml->endElement();
