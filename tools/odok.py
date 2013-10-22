@@ -7,7 +7,6 @@
 
 import WikiApi as wikiApi
 import MySQLdb
-import dconfig as config
 #import pycurl
 
 class OdokApi(wikiApi.WikiApi):
@@ -28,7 +27,7 @@ class OdokApi(wikiApi.WikiApi):
         exit(2)
         
     @classmethod
-    def setUpApi(cls, user=config.odok_user, site=config.odok_site, verbose=False):
+    def setUpApi(cls, user, site, verbose=False):
         '''
         Creates a OdokApi object
         '''
@@ -110,30 +109,27 @@ class OdokSQL():
         edit=False
     '''
     
-    def connectDatabase(self, edit=False):
+    def connectDatabase(self, host, db, user, passwd):
         '''
         Connect to the mysql database, if it fails, go down in flames
         '''
-        if edit:
-            conn = MySQLdb.connect(host=config.db_server, db=config.db, user = config.db_edit, passwd = config.db_edit_password, use_unicode=True, charset='utf8')
-        else:
-            conn = MySQLdb.connect(host=config.db_server, db=config.db, user = config.db_read, passwd = config.db_read_password, use_unicode=True, charset='utf8')
+        conn = MySQLdb.connect(host=host, db=db, user=user, passwd=passwd, use_unicode=True, charset='utf8')
         cursor = conn.cursor()
         return (conn, cursor)
     
     def closeConnections(self):
         '''
-        Closes the connection to the database and closes the logfile
+        Closes the connection to the database and returns the logfile
         '''
         self.conn.commit() 
         self.conn.close()
-        self.flog.close()
+        return self.log
     
-    def __init__(self, edit=False, testing=False):
+    def __init__(self, host, db, user, passwd, testing=False):
         '''
         Establish connection to database, set up logfile and determine testing
         '''
-        self.flog = codecs.open('odokWriter.log','w','utf8') # logfile
+        self.log = u''
         #whitelist of editable tables. Excludes muni/county as these are largely inert
         self.tables={'main':'main_table', 'artist':'artist_table', 'source':'source_table', 'artist_links':'artist_links', 'aka':'aka_table'}
         #whitelist of editable parameters (per table)
@@ -153,31 +149,117 @@ class OdokSQL():
         self.testing=testing  # outputs to logfile instead of writing to database
         self.conn = None
         self.cursor = None
-        (self.conn, self.cursor) = self.connectDatabase(edit=edit)
+        (self.conn, self.cursor) = self.connectDatabase(host=host, db=db, user=user, passwd=passwd)
+    
+    def query(self, query, params, testing=False):
+        '''
+        Sends a query to the databse and returns the result
+        :param query: the SQL safe query
+        :param params: the parameters to stick into the query
+        :returns: list of rows
+        '''
+        #if not isinstance(params, tuple):
+        #    params = tuple(params)
+        
+        if testing:
+            print query %self.conn.literal((params,))
+            return None
+        
+        self.cursor.execute(query, (params,))
+        
+        #return results
+        result=[]
+        row = self.cursor.fetchone()
+        while row is not None:
+            result.append(row)
+            row = self.cursor.fetchone()
+        return result
+    
+    @classmethod
+    def setUp(cls, host, db, user, passwd, testing=False):
+        '''create an OdokSQL object'''
+        odok = cls(host=host, db=db, user=user, passwd=passwd, testing=testing)
+        return odok
 #End of OdokSQL()
 
 class OdokWriter(OdokSQL):
-    @classmethod
-    def setUp(self, testing=False):
-        '''create an OdokWriter'''
-        odok = cls(edit=True, testing=testing)
-        return odok
-    
     #some of OdokSQL.__init__ should probably be here instead to govern accessible fields
     #make a general updater/adder followed by more specific add artist etc. which requires a dict of a certain type and checks formating duplication etc.
     #make sure commit/respone handeling is done by the more general OdokSQL
-
+    
+    def updateTable(self, key, changes, table='main'):
+        """
+        Makes a single update to the database
+        :param table: table to update
+        :param key: id to update
+        :parm changes: list with {param:value}-pairs to be updated
+        :return: None if successful
+        """
+        if not table in self.tables.keys():
+            self.log = self.log + u'updateTable: %s is not a valid table\n' %table
+            return None
+        elif not changes:
+            self.log = self.log + u'updateTable: no changes given\n'
+            return None
+            
+        query = u"""UPDATE %s SET""" %self.tables[table]
+        vals=[]
+        for k, v in changes.iteritems():
+            if k in self.parameters[table]:
+                query = u"""%s %s=%%s,""" %(query, k)
+                vals.append(v)
+            else:
+                self.log = self.log + u'%s is not a valid parameter for %s\n' %(k, table)
+        query = u"""%s WHERE id = %%s; """ %query[:-1]
+        #break this out into OdokSQL.commit(self, query, vals)
+        if self.testing:
+            #not that this may give unicodeerror related to how literal works
+            self.log = self.log + query %self.conn.literal(tuple(vals)+(key,)) + u'\n'
+        else:
+            try:
+                self.cursor.execute(query, (tuple(vals)+(key,)))
+                self.conn.commit()
+            except MySQLdb.Warning, e:
+                return e.message
+        return None
 
 class OdokReader(OdokSQL):
-    @classmethod
-    def setUp(self, testing=False):
-        '''create an OdokReader'''
-        odok = cls(edit=False, testing=testing)
-        return odok
-    
     #Special searches needed for new uploads and temporary searches not yet included in api
     #e.g.
     #ArtistApi:
     ##writeToDatabase.getArtistByWiki()
+    
+    def findAkas(self, idNo):
+        '''
+        given one id in main_table find and return the corresponding akas from aka_table
+        SHOULD BE IN ApiGet
+        '''
+        q = u"""SELECT `id`, `title`, `main_id` FROM `aka_table` WHERE `main_id` = %s;"""
+        rows = self.query(q, idNo)
+        if len(rows) == 0:
+            results = []
+        else:
+            results = []
+            for r in rows:
+                results.append({'id':str(r[0]), 'aka':r[1], 'main_id':r[2]})
+        return results
+    
+    def findArtist(self, idNo):
+        '''
+        given one id in main_table find and return the corresponding artists from artist_table mapped via artist_links
+        SHOULD BE IN ApiArtist
+        '''
+        q = u"""SELECT `id`, `first_name`, `last_name`, `wiki` FROM `artist_table` WHERE `id` IN 
+                (SELECT a.`artist` FROM `artist_links` a WHERE a.`object` = %s);"""
+        rows = self.query(q, idNo)
+        if len(rows) == 0:
+            results = []
+        else:
+            results = []
+            for r in rows:
+                results.append({'id':str(r[0]), 'first_name':r[1], 'last_name':r[2], 'wiki':r[3].upper()})
+        return results
+        
+    
 
 #End of OdokSQL()
