@@ -31,6 +31,12 @@
                                 $xml->text('http://maps.google.com/mapfiles/kml/paddle/ylw-blank.png');
                             $xml->endElement();
                         $xml->endElement();
+                        $xml->startElement('hotSpot');
+                            $xml->writeAttribute('x','0.5');
+                            $xml->writeAttribute('y','0');
+                            $xml->writeAttribute('xunits','fraction');
+                            $xml->writeAttribute('yunits','fraction');
+                        $xml->endElement();
                     $xml->endElement();
                 $xml->endElement();
                 $xml->startElement('Style');
@@ -41,6 +47,12 @@
                             $xml->startElement('href');
                                 $xml->text('http://maps.google.com/mapfiles/kml/paddle/blu-circle.png');
                             $xml->endElement();
+                        $xml->endElement();
+                        $xml->startElement('hotSpot');
+                            $xml->writeAttribute('x','0.5');
+                            $xml->writeAttribute('y','0');
+                            $xml->writeAttribute('xunits','fraction');
+                            $xml->writeAttribute('yunits','fraction');
                         $xml->endElement();
                     $xml->endElement();
                 $xml->endElement();
