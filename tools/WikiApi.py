@@ -329,6 +329,42 @@ class WikiApi(object):
         print  "Fetching pages embeding: " + templatename + "...complete"
         return members
     
+    def getCategoryMembers(self, categoryname, cmnamespace, debug=False):
+        '''
+        Returns a list of all pages in a given category (and namespace)
+        :param categoryname: The category to look in (including "Category:")
+        :param cmnamespace: namespace to limit the search to (0=main)
+        :return: list of pagenames
+        '''
+        print "Fetching categorymembers: " + categoryname
+        members = []
+        #action=query&list=categorymembers&cmtitle=Category:Physics
+        jsonr = self.httpPOST("query", [('list', 'categorymembers'),
+                                        ('cmtitle', categoryname.encode('utf-8')),
+                                        ('cmnamespace', str(cmnamespace)),
+                                        ('cmlimit', '500')])
+        if debug:
+            print u'getCategoryMembers() categoryname:%s \n' %categoryname
+            print jsonr
+        
+        #{"query":{"categorymembers":[{"pageid":22688097,"ns":0,"title":"Branches of physics"}]},"query-continue":{"categorymembers":{"cmcontinue":"page|200a474c4f5353415259204f4620434c4153534943414c2050485953494353|3445246"}}}
+        for page in jsonr['query']['categorymembers']:
+            members.append((page['title']))
+        
+        while 'query-continue' in jsonr:
+            print  "Fetching categorymembers: " + categoryname + "...fetching more"
+            #print jsonr['query-continue']['categorymembers']['cmcontinue']
+            jsonr = self.httpPOST("query", [('list', 'categorymembers'),
+                                        ('cmtitle', categoryname.encode('utf-8')),
+                                        ('cmnamespace', str(cmnamespace)),
+                                        ('cmlimit', '500'),
+                                        ('cmcontinue',str(jsonr['query-continue']['categorymembers']['cmcontinue']))])
+            for page in jsonr['query']['categorymembers']:
+                members.append((page['title']))
+        
+        print  "Fetching categorymembers: " + categoryname + "...complete"
+        return members
+    
     def getPageInfo(self, articles, dDict=None, debug=False):
         '''
         Given a list of articles this tells us if the page is either
@@ -343,7 +379,7 @@ class WikiApi(object):
         '''
         #if only one article given
         if not isinstance(articles,list):
-            if (isinstance(article,str) or isinstance(article,unicode)):
+            if (isinstance(articles,str) or isinstance(articles,unicode)):
                 articles = [articles,]
             else:
                 print '"getPageInfo" requires a list of pagenames or a single pagename.'
@@ -413,7 +449,7 @@ class WikiApi(object):
         '''
         #if only one article given
         if not isinstance(articles,list):
-            if (isinstance(article,str) or isinstance(article,unicode)):
+            if (isinstance(articles,str) or isinstance(articles,unicode)):
                 articles = [articles,]
             else:
                 print '"getPage()" requires a list of pagenames or a single pagename.'
@@ -452,7 +488,7 @@ class WikiApi(object):
         
         return dDict #in case one was not supplied
     
-    def editText(self, title, newtext, comment, minor=False,bot=True,userassert='bot', nocreate=False, debug=False):
+    def editText(self, title, newtext, comment, minor=False, bot=True, userassert='bot', nocreate=False, debug=False, append=False):
         print("Editing " + title.encode('utf-8','ignore'))
         requestparams = [('title',  title.encode('utf-8')),
                          ('text', newtext.encode('utf-8')),
@@ -466,6 +502,8 @@ class WikiApi(object):
             requestparams.append(('assert', userassert))
         if nocreate:
             requestparams.append(('nocreate','true'))
+        if append:
+            requestparams.append(('appendtext',newtext.encode('utf-8')))
 
         jsonr = self.httpPOST("edit", requestparams)
         if debug:
