@@ -158,14 +158,14 @@ class OdokSQL():
         :param params: the parameters to stick into the query
         :returns: list of rows
         '''
-        #if not isinstance(params, tuple):
-        #    params = tuple(params)
+        if not isinstance(params, tuple):
+            params = (params,)
         
         if testing:
-            print query %self.conn.literal((params,))
+            print query %self.conn.literal(params)
             return None
         
-        self.cursor.execute(query, (params,))
+        self.cursor.execute(query, params)
         
         #return results
         result=[]
@@ -188,13 +188,13 @@ class OdokWriter(OdokSQL):
     #make sure commit/respone handeling is done by the more general OdokSQL
     
     def updateTable(self, key, changes, table='main'):
-        """
+        '''
         Makes a single update to the database
         :param table: table to update
         :param key: id to update
         :parm changes: list with {param:value}-pairs to be updated
         :return: None if successful
-        """
+        '''
         if not table in self.tables.keys():
             self.log = self.log + u'updateTable: %s is not a valid table\n' %table
             return None
@@ -260,6 +260,30 @@ class OdokReader(OdokSQL):
                 results.append({'id':str(r[0]), 'first_name':r[1], 'last_name':r[2], 'wiki':r[3].upper()})
         return results
         
-    
+    def getArtistByWiki(self, wikidata):
+        '''
+        given a list of wikidata entities this checks id any are present in the artist_table
+        :param wikidata: list of wikidataentities (or a single wikidata entity)
+        :returns: dictionary of artist matching said entities with artistID as keys {first_name, last_name, wiki, birth_date, death_date, birth_year, death_year}
+        SHOULD BE IN ApiArtist
+        '''
+        #if only one entity given
+        if not isinstance(wikidata,list):
+            if (isinstance(wikidata,str) or isinstance(wikidata,unicode)):
+                wikidata = [wikidata,]
+            else:
+                print '"getArtistByWiki()" requires a list of wikidata entities or a single entity.'
+                return None
+        result = {}
+        
+        format_strings = ','.join(['%s'] * len(wikidata))
+        q = u"""SELECT id, first_name, last_name, wiki, birth_date, death_date, birth_year, death_year FROM `artist_table` WHERE wiki IN (%s)""" % format_strings
+        rows = self.query(q, tuple(wikidata))
+        
+        for r in rows:
+            (artistID, first_name, last_name, wiki, birth_date, death_date, birth_year, death_year) = r
+            result[str(artistID)] = {'first_name':first_name, 'last_name':last_name, 'wiki':wiki, 'birth_date':birth_date, 'death_date':death_date, 'birth_year':birth_year, 'death_year':death_year}
+        
+        return result
 
 #End of OdokSQL()
