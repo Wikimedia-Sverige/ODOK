@@ -651,6 +651,9 @@ class WikiDataApi(WikiApi):
         if not (isinstance(article,str) or isinstance(article,unicode)): #does this give trouble with utf-8 strings?
             print '"makeEntity" requires a single article name as its parameter'
             return None
+        if not article or len(article.strip()) == 0:
+            print '"makeEntity" does not allow an empty parameter'
+            return None
         
         #if lang and label:
             #data = u'{"sitelinks":{"%s":{"site":"%s","title":"%s"}},"labels":{"%s":{"language":"%s","value":"%s"}}}' %(site, site, article, lang, lang, label)
