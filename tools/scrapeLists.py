@@ -32,12 +32,10 @@
  runUpdates(u'scrapetmp-Sthlm.txt', queries={'muni':'0180'}, quick=True)
 '''
 import dconfig as dconfig
+import WikiApi as wikiApi
+import odok as odokConnect
 import common as common
-import MySQLdb
 import codecs
-import urllib, urllib2
-from json import loads
-import time
 
 def parseArtwork(contents, pagename):
     '''
@@ -94,38 +92,18 @@ def postProcessing(units):
         if u[u'namn']:
             u[u'namn'], u[u'namn_link'] = common.extractAllLinks(u[u'namn'])
 
-def getOdokHits(queries, dDict, verbose=False):
+def getOdokHits(dbApi, queries, dDict, verbose=False):
     '''
     Given constrictions (as a dict) this returns the available ODOK results using the get method of the api
     @ output: None if successful. Otherwise errormessage
     '''
-    params={}
-    for k,v in queries.iteritems():
-        params[k] = v.encode('utf-8')
-    apiurl = 'http://wlpa.wikimedia.se/odok-bot/api.php'
-    urlbase = '%s?action=get&limit=100&format=json&' %apiurl
-    url = urlbase+urllib.urlencode(params)
-    if verbose: print url
-    req = urllib2.urlopen(url)
-    j = loads(req.read())
-    req.close()
-    if (j['head']['status'] == 1) or (not 'warning' in j['head'].keys()):
-        for hit in j['body']:
-            idNo = hit['hit']['id']
-            dDict[idNo]=hit['hit']
-        #get all results
-        if 'continue' in j['head'].keys():
-            offset = j['head']['continue']
-            queries['offset']=str(offset)
-            getOdokHits(queries, dDict, verbose=verbose)
-        else:
-            return None
-    else:
-        warning=''
-        if j['head']['warning']: warning=j['head']['warning']
-        error = 'status: %s, warning: %s' %(j['head']['status'], warning)
-        if verbose: print error
-        return error
+    hits = dbApi.getQuery(queries)
+    if not hits:
+        return 'error in getOdokHits()'
+    for hit in hits:
+        idNo = hit['id']
+        dDict[idNo]=hit
+    return None
 
 def wash(surname):
     '''
@@ -245,15 +223,17 @@ def run(testing=True, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp.
     '''
     runs the scrape-and-match process. if testing=true then outputs to file instead
     '''
+    wpApi = wikiApi.WikiApi.setUpApi(user=dconfig.w_username, password=dconfig.w_password, site=dconfig.wp_site)
+    dbApi = odokConnect.OdokApi.setUpApi(user=dconfig.odok_user, site=dconfig.odok_site)
     if testing:
-        pages.append(u'Användardiskussion:André_Costa_(WMSE)/tmp')
+        pages.append(u'Användardiskussion:André Costa (WMSE)/tmp')
         queries['muni'] = '0180'
     if listFile:
         wikiHits=fileToHits(listFile)
     else:
         wikiHits=[]
         for page in pages:
-            contents = common.getPage(page=page, verbose=False)
+            contents = wpApi.getPage(page)[page]
             wikiHits = wikiHits + parseArtwork(contents, page)
             print u'wikiHits: %r' %len(wikiHits)
         postProcessing(wikiHits)
@@ -268,7 +248,7 @@ def run(testing=True, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp.
         f.close()
     #fetch all objects matching a given constriction
     odokHits={}
-    odok_result = getOdokHits(queries, odokHits)
+    odok_result = getOdokHits(dbApi, queries, odokHits)
     if odok_result:
         print odok_result
         exit(0)
@@ -389,6 +369,7 @@ def updatesToDatabase(odok, wiki, quick=False):
     object and prepares an update statement.
     setting quick to true puts any updates requiring decision making into the postponed output
     '''
+    wpApi = wikiApi.WikiApi.setUpApi(user=dconfig.w_username, password=dconfig.w_password, site=dconfig.wp_site)
     updated = {}
     postponed = {}
     linked_artists = {}
@@ -447,9 +428,9 @@ def updatesToDatabase(odok, wiki, quick=False):
                     break
                 elif common.is_number(inChoice) and int(inChoice) in range(0,len(keys)):
                     #NEW START
-                    name_wikidata, wdCmt = common.getWikidata(keys[int(inChoice)], verbose=True)
-                    if name_wikidata:
-                        changes[u'wiki_article'] = name_wikidata
+                    wdInfo = wpApi.getPageInfo(keys[int(inChoice)], debug=True)[keys[int(inChoice)]]
+                    if 'wikidata' in wdInfo.keys() and wdInfo['wikidata']: #if exists and not empty
+                        changes[u'wiki_article'] = wdInfo['wikidata']
                     break
         #add changes
         if changes:
@@ -471,9 +452,10 @@ def runUpdates(listFile, testing=True, queries ={}, quick=False):
     listFile can be replaced by the postponed output
     add support for an updates_file: can read it in using fileToHits but must then break-out id 
     '''
+    dbApi = odokConnect.OdokApi.setUpApi(user=dconfig.odok_user, site=dconfig.odok_site)
     wiki=fileToHits(listFile)
     odok={}
-    odok_result = getOdokHits(queries, odok)
+    odok_result = getOdokHits(dbApi, queries, odok)
     if odok_result:
         print odok_result
         exit(0)
@@ -546,6 +528,8 @@ def runArtistLinks(filename, verbose=False):
     '''
     takes the "artistLinks" outputfile from runUpdates() and analyses it
     '''
+    wpApi = wikiApi.WikiApi.setUpApi(user=dconfig.w_username, password=dconfig.w_password, site=dconfig.wp_site)
+    
     wikiHits = fileToHits(filename)
     artists = {}
     for w in wikiHits:
@@ -555,15 +539,17 @@ def runArtistLinks(filename, verbose=False):
     
     #check which of these has a wikidata entry
     wdList=[]
-    dDict = common.getWikidata(artists.keys(), verbose=verbose)
+    dDict = wpApi.getPageInfo(artists.keys(), debug=verbose)
     for k, v in dDict.iteritems():
-        artists[k]['wikidata'] = v
-        if v: wdList.append(v)
+        if 'wikidata' in v.keys():
+            artists[k]['wikidata'] = v['wikidata']
+            wdList.append(v['wikidata'])
+        else:
+            artists[k]['wikidata'] = None
     
     #Check for disambiguation pages and deal with pages without wikidata entries - REBUILT getWikidata/getPageInfo means this could be combined with previous
     pageList = dDict.keys()
-    pageInfo={}
-    common.getPageInfo(pageList, pageInfo, verbose=verbose)
+    pageInfo=wpApi.getPageInfo(pageList, debug=verbose)
     for k, v in pageInfo.iteritems():
         if 'missing' in v.keys():
             del artists[k]
