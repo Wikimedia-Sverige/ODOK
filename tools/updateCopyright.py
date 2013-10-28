@@ -6,22 +6,14 @@ ToDO:
     tag free objects with multiple artists
     update unfree object once it becomes free (relies on multi-artistfix)
 '''
-import dconfig as dconfig
-import MySQLdb
+import odok as odokConnect
+import dconfig as config
 import codecs
 
 YEARS_AFTER_BIRTH = 150 #Number of years since birth before considering the work to be free (if year of death is unknown)
 YEARS_AFTER_DEATH = 70  #Number of years since death before considering the work to be free
 
-def connectDatabase():
-    '''
-    Connect to the mysql database, if it fails, go down in flames
-    '''
-    conn = MySQLdb.connect(host=dconfig.db_server, db=dconfig.db, user = dconfig.db_username, passwd = dconfig.db_password, use_unicode=True, charset='utf8')
-    cursor = conn.cursor()
-    return (conn, cursor)
-
-def tagUnfree(conn, cursor, testing):
+def tagUnfree(dbWriteSQL, testing):
     '''
     identifies unfree objects based on the birth and/or death year of the artist
     also tags any object with multiple artists
@@ -47,13 +39,13 @@ def tagUnfree(conn, cursor, testing):
             )
         )
     );"""
-    affected_count = cursor.execute(query, (u'unfree', YEARS_AFTER_DEATH, YEARS_AFTER_DEATH))
+    affected_count, results = dbWriteSQL.query(query, (u'unfree', YEARS_AFTER_DEATH, YEARS_AFTER_DEATH), expectReply=True, testing=testing)
     #do something with the reply
     print u'-----------\n unfree (%d)\nid | free | title | artist' %affected_count
-    for row in cursor:
+    for row in results:
         print ' | '.join(row)
 
-def tagFree(conn, cursor, testing):
+def tagFree(dbWriteSQL, testing):
     '''
     identifies free objects based on the birth and/or death year of the artist
     skips any object with multiple artists
@@ -82,13 +74,13 @@ def tagFree(conn, cursor, testing):
             )
         )
     );"""
-    affected_count = cursor.execute(query, (u'pd', YEARS_AFTER_BIRTH, YEARS_AFTER_DEATH))
+    affected_count, results = dbWriteSQL.query(query, (u'pd', YEARS_AFTER_BIRTH, YEARS_AFTER_DEATH), expectReply=True, testing=testing)
     #do something with the reply
     print u'-----------\n free (%d)\nid | free | title | artist' %affected_count
-    for row in cursor:
+    for row in results:
         print ' | '.join(row)
 
-def tagOldUnknown(conn, cursor, testing):
+def tagOldUnknown(dbWriteSQL, testing):
     '''
     identifies unfree/free objects based on author being unknown and (construction) year being known and :
     * unfree:  year + YEARS_AFTER_DEATH > NOW
@@ -102,10 +94,10 @@ def tagOldUnknown(conn, cursor, testing):
     `artist` = '' AND NOT
     `year` = 0 AND
     `year` + %r > YEAR(CURRENT_TIMESTAMP);"""
-    affected_count = cursor.execute(query, (u'unfree', YEARS_AFTER_DEATH))
+    affected_count, results = dbWriteSQL.query(query, (u'unfree', YEARS_AFTER_DEATH), expectReply=True, testing=testing)
     #do something with the reply
     print u'-----------\n unfree no artist (%d)\nid | free | title | artist' %affected_count
-    for row in cursor:
+    for row in results:
         print ' | '.join(row)
     
     #Free if year + YEARS_AFTER_BIRTH < NOW
@@ -116,13 +108,13 @@ def tagOldUnknown(conn, cursor, testing):
     `artist` = '' AND NOT
     `year` = 0 AND
     `year` + %r < YEAR(CURRENT_TIMESTAMP);"""
-    affected_count = cursor.execute(query, (u'pd', YEARS_AFTER_BIRTH))
+    affected_count, results = dbWriteSQL.query(query, (u'pd', YEARS_AFTER_BIRTH), expectReply=True, testing=testing)
     #do something with the reply
     print u'-----------\n free no artist (%d)\nid | free | title | artist' %affected_count
-    for row in cursor:
+    for row in results:
         print ' | '.join(row)
 
-def showMultipleArtists(conn, cursor):
+def showMultipleArtists(dbWriteSQL, testing):
     '''
     identifies free objects with multiple artists missing a copyright status
     '''
@@ -132,17 +124,16 @@ def showMultipleArtists(conn, cursor):
             SELECT `object`, COUNT(*) c FROM `artist_links` GROUP BY `object` HAVING c > 1
         ) b ON a.`object`=b.`object`
     );"""
-    affected_count = cursor.execute(query)
+    affected_count, results = dbWriteSQL.query(query, None, expectReply=True, testing=testing)
     #do something with the reply
     print u'-----------\n with multiple artists and no status (%d)\nid | free | title | artist' %affected_count
-    for row in cursor:
+    for row in results:
         print ' | '.join(row)
 
 def run(testing=True):
-    (conn, cursor) = connectDatabase()
-    tagUnfree(conn, cursor, testing=testing)
-    tagFree(conn, cursor, testing=testing)
-    tagOldUnknown(conn, cursor, testing=testing)
-    showMultipleArtists(conn, cursor)
-    conn.commit() 
-    conn.close()
+    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
+    tagUnfree(dbWriteSQL, testing=testing)
+    tagFree(dbWriteSQL, testing=testing)
+    tagOldUnknown(dbWriteSQL, testing=testing)
+    showMultipleArtists(dbWriteSQL, testing=testing)
+    dbWriteSQL.closeConnections()
