@@ -151,21 +151,26 @@ class OdokSQL():
         self.cursor = None
         (self.conn, self.cursor) = self.connectDatabase(host=host, db=db, user=user, passwd=passwd)
     
-    def query(self, query, params, testing=False):
+    def query(self, query, params, testing=False, expectReply=False):
         '''
+        NEEDS to deal with no params (i.e. a commit) 
         Sends a query to the databse and returns the result
         :param query: the SQL safe query
         :param params: the parameters to stick into the query
+        :param expectReply:if a reply from the execute statement is expected (e.g. from COUNT(*))
         :returns: list of rows
         '''
-        if not isinstance(params, tuple):
+        if not params:
+            params=tuple()
+        elif not isinstance(params, tuple):
             params = (params,)
         
         if testing:
-            print query %self.conn.literal(params)
-            return None
+            self.log = u'%s\n%s' %(self.log, query %self.conn.literal(params))
+            if expectReply: return (None,None)
+            else: return None
         
-        self.cursor.execute(query, params)
+        reply = self.cursor.execute(query, params)
         
         #return results
         result=[]
@@ -173,7 +178,11 @@ class OdokSQL():
         while row is not None:
             result.append(row)
             row = self.cursor.fetchone()
-        return result
+        
+        if expectReply:
+            return (reply, result)
+        else:
+            return result
     
     @classmethod
     def setUp(cls, host, db, user, passwd, testing=False):
