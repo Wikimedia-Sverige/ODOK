@@ -1,26 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 '''
-Temporary tool for scraping artistYears from sv.wiki articles and udating these in the ÖDOK database
-    once possible use Property:P569 and Property:P570 on wikidata instead
+    Tool for scraping artistYears from sv.wiki articles and udating these in the ÖDOK database
+    once possible use Property:P569 and Property:P570 on wikidata instead/as well
 '''
-import dconfig as dconfig
+import dconfig as config
+import odok as odokConnect
+import WikiApi as wikiApi
 import common as common
-import MySQLdb
 import codecs
-import urllib, urllib2
-from json import loads
-import time
 
-def connectDatabase():
-    '''
-    Connect to the mysql database, if it fails, go down in flames
-    '''
-    conn = MySQLdb.connect(host=dconfig.db_server, db=dconfig.db, user = dconfig.db_username, passwd = dconfig.db_password, use_unicode=True, charset='utf8')
-    cursor = conn.cursor()
-    return (conn, cursor)
-
-def getArtists(conn, cursor):
+def getArtists(dbWriteSQL):
     '''
     Queries the ÖDOK database and returns all artists with a wikidata entry
     missing at least one year.
@@ -33,15 +23,15 @@ def getArtists(conn, cursor):
         OR
         `birth_year` IS NULL
     );"""
-    affected_count = cursor.execute(query)
+    affected_count, results = dbWriteSQL.query(query, None, expectReply=True)
     print u'got %d artists with missing years' % affected_count
     artists = []
-    for row in cursor:
+    for row in results:
         (idNo, wikidata, birth_year, death_year) = row
-        artists.append({u'id':idNo, u'wikidata':wikidata.lower(), u'birth_year':birth_year, u'death_year':death_year, u'svwiki':None})
+        artists.append({u'id':idNo, u'wikidata':wikidata, u'birth_year':birth_year, u'death_year':death_year, u'svwiki':None})
     return artists
 
-def getArticles(artists, verbose=False):
+def getArticles(wdApi, artists, verbose=False):
     '''
     Queries Wikidata's API to find the articles corresponding to each wikidata entry
     @ input: list of aritst each as a dict {id, wikidata, birth_year, death_year, svwiki}
@@ -50,26 +40,34 @@ def getArticles(artists, verbose=False):
     wikidata=[]
     for a in artists:
         wikidata.append(a[u'wikidata'])
+    
     # get articles
-    dataToArticle={}
-    common.getManyArticles(wikidata, dataToArticle, verbose=verbose)
+    dataToArticle = wdApi.getArticles(wikidata, debug=verbose, site=u'svwiki')
     #match
     for a in artists:
         a[u'svwiki'] = dataToArticle[a[u'wikidata']]
 
-def getYears(artists, verbose=False):
+def getYears(wpApi, artists, verbose=False):
     '''
-    Identifies any artists with updated years
+    Identifies any artists with updated years by looking at the relevant categoires at the sv.Wikipedia page for said artist
     @ input: list of aritst each as a dict {id, wikidata, birth_year, death_year, svwiki}
     @ output list of changed artists each as a dict {id, wikidata, birth_year, death_year, svwiki}
     '''
-    #due to a oddly designed limit on categories each page must be queried separately
+    withSvWiki = {}
+    for a in artists:
+        if a[u'svwiki'] and a[u'svwiki']['title']:
+            withSvWiki[a[u'id']] = a[u'svwiki']['title']
+    catDict = wpApi.getPageCategories(withSvWiki.values(), nohidden=True, dDict=None, debug=verbose)
+    
     changedArtists=[]
     for a in artists:
         changed = False
-        if a[u'svwiki']:
-            #time.sleep(1) #wait for 1 second
-            (birth, death) = getYearCats(a[u'svwiki'], verbose=verbose)
+        idNo = a[u'id']
+        if idNo in withSvWiki.keys():
+            if not withSvWiki[idNo] in catDict.keys():
+                print 'no entry for "%s". This should never happen!' %withSvWiki[idNo]
+                continue
+            (birth, death) = getYearCats(catDict[withSvWiki[idNo]],withSvWiki[idNo])
             if not a[u'birth_year'] and birth:
                 changed = True
                 a[u'birth_year'] = birth
@@ -81,48 +79,36 @@ def getYears(artists, verbose=False):
     print u'Identified %r changed artists' % len(changedArtists)
     return changedArtists
 
-def getYearCats(article, verbose=False):
+def getYearCats(catList, article):
     '''
-    Queries the sv.Wikipedia API to find categories in an article related to birth/death
+    Analyses the sv.Wikipedia categories in an article to isolate information related to birth/death
+    @ input: list of categories
     @ output: (birth_year, death_year)
     '''
     birth=None
     death=None
-    wikiurl = u'https://sv.wikipedia.org'
-    apiurl = '%s/w/api.php' %wikiurl
-    urlbase = '%s?action=query&prop=categories&format=json&clshow=!hidden&titles=' %apiurl
-    url = urlbase+urllib.quote(article.encode('utf-8'))
-    if verbose: print url
-    req = urllib2.urlopen(url)
-    j = loads(req.read())
-    req.close()
-    pages = j['query']['pages']
-    if pages.keys()[0] == u'-1':
-        print 'no entry for "%s"' %article
-        return (birth, death)
-    elif not 'categories' in pages[pages.keys()[0]].keys():
-        print 'no category for "%s"' %article
-        return (birth, death)
+    
+    if not catList:
+        print 'no category for "%s" or page did not exist' %article
     else:
-        cats = pages[pages.keys()[0]]['categories']
-        for c in cats:
-            if c['title'].lower().startswith(u'kategori:avlidna'):
-                if common.is_number(c['title'].strip()[-4:]): death = int(c['title'].strip()[-4:])
-                else: print u'odd year for %s: %s' %(article, c['title'])
-            if c['title'].lower().startswith(u'kategori:födda'):
-                if common.is_number(c['title'].strip()[-4:]): birth = int(c['title'].strip()[-4:])
-                else: print u'odd year for %s: %s' %(article, c['title'])
-        return (birth, death)
+        for c in catList:
+            if c.lower().startswith(u'kategori:avlidna'):
+                if common.is_number(c.strip()[-4:]): death = int(c.strip()[-4:])
+                else: print u'odd year for %s: %s' %(article, c)
+            elif c.lower().startswith(u'kategori:födda'):
+                if common.is_number(c.strip()[-4:]): birth = int(c.strip()[-4:])
+                else: print u'odd year for %s: %s' %(article, c)
+    return (birth, death)
 
-def uppdateArtist(conn, cursor, artists, testing):
+def uppdateArtist(dbWriteSQL, artists, testing):
     '''
     SQL UPDATE artist_table
         to do: times out even for only a few updates...
     '''
-    query = u""""""
-    vals = []
+    print u'got %d artists to update' % len(artists)
     for a in artists:
-        query = query+u"""UPDATE `artist_table` SET """
+        vals = []
+        query = u"""UPDATE `artist_table` SET """
         if a[u'birth_year']:
             query = query+u"""`birth_year`=%r"""
             vals.append(a[u'birth_year'])
@@ -132,25 +118,27 @@ def uppdateArtist(conn, cursor, artists, testing):
             vals.append(a[u'death_year'])
         query = query+u""" WHERE `id` = %s;\n"""
         vals.append(a[u'id'])
-    if testing:
-        f=codecs.open('scrapeYears.sql','w','utf8')
-        f.write(query[:-1] %conn.literal(tuple(vals)))
-        f.close()
-    else:
-        affected_count = cursor.execute(query[:-1], tuple(vals))
-        print u'got %d artists to update' % affected_count
+        dbWriteSQL.query(query[:-1], tuple(vals), expectReply=False, testing=testing)
 
 def run(testing=True):
     '''
-    runs the whole process. if testing=true then outputs to file instead
+    runs the whole process. if testing=True then outputs to file instead
     '''
-    (conn, cursor) = connectDatabase()
-    artists = getArtists(conn, cursor)
-    getArticles(artists, verbose=False)
-    changedArtists = getYears(artists)
+    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
+    wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site)
+    wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site)
+    
+    artists = getArtists(dbWriteSQL)
+    getArticles(wdApi, artists, verbose=False)
+    changedArtists = getYears(wpApi, artists)
     for c in changedArtists:
-        print '%d\t%r\t%r\t%s' %(c[u'id'], c[u'birth_year'], c[u'death_year'], c[u'svwiki'])
+        print '%d\t%r\t%r\t%s' %(c[u'id'], c[u'birth_year'], c[u'death_year'], c[u'svwiki']['title'])
     if len(changedArtists)>0:
-        uppdateArtist(conn, cursor, changedArtists, testing)
-    conn.close()
+        uppdateArtist(dbWriteSQL, changedArtists, testing)
+    output = dbWriteSQL.closeConnections()
+    if testing:
+        f=codecs.open('scrapeYears.sql','w','utf8')
+        f.write(output)
+        f.close()
+        print u'File with sqlcode to be run can be found at scrapeYears.sql'
     print u'Done!'
