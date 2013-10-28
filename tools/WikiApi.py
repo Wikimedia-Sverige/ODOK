@@ -519,6 +519,100 @@ class WikiApi(object):
             exit()
             #time.sleep(.2)
     
+    def getPageCategories(self, articles, nohidden=False, dDict=None, debug=False):
+        '''
+        Returns the articles of a pageGiven an article this returns the contents of (the latest revision of) the page
+        :param articles: a list of pagenames (or a single pagename) to look at
+        :param dDict: (optional) a dict object into which output is placed
+        :return: dict of contents with pagenames as key pagename:listofCategories
+        '''
+        #if only one article given
+        if not isinstance(articles,list):
+            if (isinstance(articles,str) or isinstance(articles,unicode)):
+                articles = [articles,]
+            else:
+                print '"getPageCategories()" requires a list of pagenames or a single pagename.'
+                return None
+        
+        #if no initial dict suplied
+        if dDict is None:
+            dDict ={}
+        
+        #do an upper limit check and split into several requests if necessary
+        reqlimit = self.reqlimit #max 50 titles per request allowed
+        articles = list(set(articles)) #remove dupes
+        if len(articles) > reqlimit:
+            i=0
+            while (i+reqlimit < len(articles)):
+                self.getPageCategories(articles[i:i+reqlimit], nohidden=nohidden, dDict=dDict, debug=debug)
+                i=i+reqlimit
+            #less than reqlimit left
+            articles = articles[i:]
+            if len(articles) < 1: #i.e. exactly divisible by reqlimit
+                return dDict
+        
+        #Single run
+        #%s?action=query&prop=categories&format=json&clshow=!hidden&titles=
+        if nohidden:
+            clshow = '!hidden'
+        else:
+            clshow = ''
+        jsonr = self.httpPOST("query", [('prop', 'categories'),
+                                        ('cllimit', '500'),
+                                        ('clshow', clshow),
+                                        ('titles', '|'.join(articles).encode('utf-8'))])
+        
+        if debug:
+            print u'getPageCategories() : articles= %s\n' %'|'.join(articles)
+            print jsonr
+        
+        #{"query":{"pages":{"497":{"pageid":497,"ns":0,"title":"Edvin \u00d6hrstr\u00f6m","categories":[{"ns":14,"title":"Kategori:Avlidna 1994"},{"ns":14,"title":"Kategori:F\u00f6dda 1906"}]}}}}
+        for page in jsonr['query']['pages']:
+            page = jsonr['query']['pages'][page]
+            
+            #find cats
+            categories=[]
+            if not 'categories' in page.keys(): #if page is missing or has no categories
+                categories=None
+            else:
+                for cat in page['categories']:
+                    categories.append(cat['title'])
+            #stash
+            title = page['title']
+            if title in dDict.keys(): # since clcontinue may split categories into two batches
+                dDict[title] = dDict[title] + categories
+            else:
+                dDict[title] = categories
+        
+        while 'query-continue' in jsonr:
+            print  "Fetching pagecategories: " + '|'.join(articles) + "...fetching more"
+            #print jsonr['query-continue']['categorymembers']['clcontinue']
+            jsonr = self.httpPOST("query", [('prop', 'categories'),
+                                        ('cllimit', '500'),
+                                        ('clshow', clshow),
+                                        ('titles', '|'.join(articles).encode('utf-8'))
+                                        ('clcontinue',str(jsonr['query-continue']['categories']['clcontinue']))])
+            
+            for page in jsonr['query']['pages']:
+                page = jsonr['query']['pages'][page]
+                
+                #find cats
+                categories=[]
+                if not 'categories' in page.keys(): #if page is missing or has no categories
+                    categories=None
+                else:
+                    for cat in page['categories']:
+                        categories.append(cat['title'])
+                #stash
+                title = page['title']
+                if title in dDict.keys(): # since clcontinue may split categories into two batches
+                    dDict[title] = dDict[title] + categories
+                else:
+                    dDict[title] = categories
+        
+        print  "Fetching pagecategories: " + '|'.join(articles)+ "...complete"
+        return dDict #in case one was not supplied
+    
     def apiaction(self, action):
         return self._apiurl + "?action=" + action + "&format=json"
     
