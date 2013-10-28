@@ -85,13 +85,58 @@ class OdokApi(wikiApi.WikiApi):
             print self.failiure(jsonr)
             return None
         
-        #{"query":{"embeddedin":[{"pageid":5,"ns":0,"title":"Abbek\u00e5s"}]},"query-continue":{"embeddedin":{"eicontinue":"10|!|65"}}}
         for hit in jsonr['body']:
             members.append(hit['hit'])
         
-        #print  "Fetching pages with ids: " + '|'.join(idList) + "...complete"
         return members
+    
+    def getQuery(self, queries, members=None, debug=False):
+        '''
+        Returns list of all objects matching the provided query (blunt function which should be avoided if possible)
+        :param queries: A dictionary of parameter value pairs to limit the search by. THese must be formated and limited correctly
+        :param members: (optional) A list to which to add the results (internal use)
+        :return: list odok objects (dicts)
+        '''
+        #if no initial list supplied
+        if members is None:
+            members =[]
+        
+        #do a limited reqlimit check
+        for k,v in queries.iteritems():
+            v = v.split('|')
+            reqlimit = self.limitByBytes(v, self.reqlimit)
+            if len(v)> reqlimit:
+                print '''getQuery() requires input to be correctly formated and limited\n
+                         this request had %r/%r parameters for %s''' %(len(v), reqlimit, k)
+                return None
+        
+        #Single run
+        if not 'limit' in queries.keys():
+            queries['limit'] = str(100)
+        requestparams=[]
+        for k,v in queries.iteritems():
+            requestparams.append((k, v.encode('utf-8')))
+        jsonr = self.httpGET("get", requestparams, debug=debug)
 
+        if debug:
+            print u'getQuery(): queries=%s\n' %queries
+            print jsonr
+        
+        #find errors
+        if not jsonr['head']['status'] == '1':
+            print self.failiure(jsonr)
+            return None
+        
+        for hit in jsonr['body']:
+            members.append(hit['hit'])
+        
+        if 'continue' in jsonr['head'].keys():
+            offset = jsonr['head']['continue']
+            queries['offset'] = str(offset)
+            self.getQuery(queries, members=members, debug=debug)
+        
+        return members
+    
 #End of OdokApi()
 
 class OdokSQL():
@@ -231,6 +276,8 @@ class OdokWriter(OdokSQL):
             except MySQLdb.Warning, e:
                 return e.message
         return None
+    
+    #def insertIntoTable(self, table, values):
 
 class OdokReader(OdokSQL):
     #Special searches needed for new uploads and temporary searches not yet included in api
