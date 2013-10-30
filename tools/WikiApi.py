@@ -424,21 +424,10 @@ class WikiApi(object):
                     rDict[r['to']] = [r['from'],]
         
         #then pages
-        redirectFix=None
         pages = jsonr['query']['pages'] #a dict
         for k, v in pages.iteritems():
             page = {}
             title = v['title']
-            #check if redirected
-            if title in rDict.keys():
-                #need to make sure search didn't look for both redirecting and real title
-                if title in articles:
-                    redirectFix = rDict[title]
-                else:
-                    if len(rDict[title]) >1:
-                        redirectFix = rDict[title][1:]
-                    page['redirect'] = title
-                    title = rDict[title][0]
             #missing
             if 'missing' in v.keys():
                 page['missing'] = True
@@ -449,12 +438,16 @@ class WikiApi(object):
                     page['disambiguation'] = True
                 if 'wikibase_item' in u.keys():
                     page['wikidata'] = u['wikibase_item'].upper()
-            dDict[title] = page.copy()
-            if redirectFix:
+            #check if redirected
+            if title in rDict.keys():
+                if title in articles: #need to make sure search didn't look for both redirecting and real title
+                    dDict[title] = page.copy()
                 page['redirect'] = title
-                for r in redirectFix:
+                for r in rDict[title]:
                     title = r
                     dDict[title] = page.copy()
+            else:
+                dDict[title] = page.copy()
         
         return dDict #in case one was not supplied
     
