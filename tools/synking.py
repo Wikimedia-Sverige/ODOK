@@ -32,7 +32,7 @@ def run(verbose=False):
     #TOBUILD lastSync = db.getSync() #timestamp of last (successful) run of this module
     lastSync = datetime.datetime.utcnow() + datetime.timedelta(days=-100) #TESTING
     thisSync = datetime.datetime.utcnow()
-    flog.write(u'------START of upadates-------------\n')
+    flog.write(u'------START of updates-------------\n')
     flog.write(u'last_sync: %s\nthis_sync: %s\n' %(lastSync,thisSync))
     
     
@@ -48,13 +48,14 @@ def run(verbose=False):
     checkPages = wpApi.getPage(checkList)
     
     #parse changed pages
+    print u'%r pages to parse...' %len(checkPages)
     wiki_objects = {} #dict containing all rows/objects with an id
     for pagename, contents  in checkPages.iteritems():
         log = listToObjects(wiki_objects, pagename, contents) #adds all rows/objects with an id to the dict. Also deals with any case of same obj existing in multiple lists
         if log:
             flog.write('%s' %log)
     
-
+    print u'Parsed all pages and found %r objects. Looking for corresponding objects in database...' %len(wiki_objects)
     #find the corresponding odok objects
     odok_list = dbApi.getIds(wiki_objects.keys()) 
     odok_objects = {}
@@ -70,18 +71,25 @@ def run(verbose=False):
         if not k in odok_objects.keys():
             print u'id not found in database: %s @ %s' %(k, wiki_objects[k]['page'])
 
-    
+    print u'Looked in database and found %r corresponding objects. Starting comparison.' %len(odok_objects)
     #Compare
+    counter = 0
     changes = {}
     for k, o in odok_objects.iteritems():
+        counter = counter+1
         (diff, log) = compareToDB(wiki_objects[k],o,wpApi,dbReadSQL,verbose=verbose) #returns changelist if any otherwise NONE
         if diff:
             changes[k] = diff
         if log:
             flog.write(u'issues with %s @ %s: %s\n' %(k, wiki_objects[k]['page'], log))
+        if counter%100==0:
+            print u'%r/%r' %(counter,len(odok_objects))
     
+    print u'Found %r changed objects. Sorting and comitting to SQL' %len(changes)
     #update if needed
     if changes:
+        ccounter = 0
+        ncounter=0
         #initially filter out any changes to district, cmt, artist, free, aka, address - as these are porblematic/need to be implemented differently
         not_changed = {}
         for k, v in changes.iteritems():
@@ -93,11 +101,14 @@ def run(verbose=False):
             if u'aka' in v.keys(): not_changed[k][u'aka'] = changes[k].pop(u'aka')                  #separate changed_list which either crates/removes or changes an aka
             if u'address' in v.keys(): not_changed[k][u'address'] = changes[k].pop(u'address')      #need to verify quality of changes first
             if not_changed[k] == {}: del not_changed[k]
+            
+            ncounter = ncounter+len(not_changed[k].keys())
+            ccounter = ccounter+len(changes[k].keys())
         for k, v in not_changed.iteritems():
             if changes[k] == {}: del changes[k]
         
-        flog.write('changes to be done: %s\n' %ujson.encode(changes))
-        flog.write('changes not to be done: %s\n' %ujson.encode(not_changed))
+        flog.write('changes to be done (%r): %s\n' %(ccounter,ujson.encode(changes)))
+        flog.write('changes not to be done (%r): %s\n' %(ncounter,ujson.encode(not_changed)))
         
         #implement changes
         print 'committing to db' #testing
@@ -111,7 +122,7 @@ def run(verbose=False):
     flog.write(u'Done! Changed %r entries\n' %len(changes))
     flog.write(u'------SQL-log (read)-------------\n%s\n' %dbReadSQL.closeConnections())
     flog.write(u'------SQL-log (write)-------------\n%s\n' %dbWriteSQL.closeConnections())
-    flog.write(u'------END of upadates-------------\n\n')
+    flog.write(u'------END of updates-------------\n\n')
     flog.close()
     exit(1)
 #----------------
