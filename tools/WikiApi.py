@@ -5,6 +5,9 @@
 # Based on PyCJWiki Version 1.31 (C) by Smallman12q (https://en.wikipedia.org/wiki/User_talk:Smallman12q) GPL, see <http://www.gnu.org/licenses/>.
 # Requires python2.7, ujson, and PyCurl
 
+#TO DO. Separate debug from verbose. There should be no non-error print statment which is not tied to either of these. Standardise verbose output.
+#       Do this also for odok.OdokApi
+
 #----------------------------------------------------------------------------------------
 
 import pycurl, ujson, cStringIO, urllib
@@ -415,17 +418,27 @@ class WikiApi(object):
         if 'redirects' in jsonr['query'].keys():
             redirects = jsonr['query']['redirects'] #a list
             for r in redirects:
-                rDict[r['to']] = r['from']
+                if r['to'] in rDict.keys():
+                    rDict[r['to']].append(r['from'])
+                else:
+                    rDict[r['to']] = [r['from'],]
         
         #then pages
+        redirectFix=None
         pages = jsonr['query']['pages'] #a dict
         for k, v in pages.iteritems():
             page = {}
             title = v['title']
             #check if redirected
             if title in rDict.keys():
-                page['redirect'] = title
-                title = rDict[title]
+                #need to make sure search didn't look for both redirecting and real title
+                if title in articles:
+                    redirectFix = rDict[title]
+                else:
+                    if len(rDict[title]) >1:
+                        redirectFix = rDict[title][1:]
+                    page['redirect'] = title
+                    title = rDict[title][0]
             #missing
             if 'missing' in v.keys():
                 page['missing'] = True
@@ -437,6 +450,11 @@ class WikiApi(object):
                 if 'wikibase_item' in u.keys():
                     page['wikidata'] = u['wikibase_item'].upper()
             dDict[title] = page.copy()
+            if redirectFix:
+                page['redirect'] = title
+                for r in redirectFix:
+                    title = r
+                    dDict[title] = page.copy()
         
         return dDict #in case one was not supplied
     
@@ -585,7 +603,7 @@ class WikiApi(object):
                 dDict[title] = categories
         
         while 'query-continue' in jsonr:
-            print  "Fetching pagecategories: " + '|'.join(articles) + "...fetching more"
+            #print  "Fetching pagecategories: " + '|'.join(articles) + "...fetching more"
             #print jsonr['query-continue']['categorymembers']['clcontinue']
             jsonr = self.httpPOST("query", [('prop', 'categories'),
                                         ('cllimit', '500'),
@@ -610,7 +628,7 @@ class WikiApi(object):
                 else:
                     dDict[title] = categories
         
-        print  "Fetching pagecategories: " + '|'.join(articles)+ "...complete"
+        #print  "Fetching pagecategories: " + '|'.join(articles)+ "...complete"
         return dDict #in case one was not supplied
     
     def apiaction(self, action):
@@ -631,15 +649,24 @@ class WikiApi(object):
         byteLimit = 512.0
         if reqlimit == None:
             reqlimit = len(valList)
+        oldresult = reqlimit
         while True:
             byteLength = len('|'.join(valList[:reqlimit]).encode('utf-8'))
             num = byteLength/byteLimit
-            if num <1:
+            if not num >1:
                 break
             reqlimit = int(reqlimit/num)
             if reqlimit <1:
                 print '%r byte limit broken by a single parameter! What to do?' %int(byteLimit)
                 return None #Should do proper error handling
+            #prevent infinite loop
+            if reqlimit == oldresult:
+                print 'limitByBytes() in a loop with b/n/r = %r/%f/%r' %(byteLength, num, reqlimit)
+                if reqlimit>1:
+                    reqlimit = reqlimit - 1
+                break
+            else:
+                oldresult = reqlimit
         return reqlimit
 
     @classmethod
