@@ -137,3 +137,4 @@ def run(testing=True):
     tagOldUnknown(dbWriteSQL, testing=testing)
     showMultipleArtists(dbWriteSQL, testing=testing)
     dbWriteSQL.closeConnections()
+    exit(1)
