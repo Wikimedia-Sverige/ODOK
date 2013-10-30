@@ -81,7 +81,7 @@
                 $text .=$row['address'];
             $text .="\n| inomhus      = ";
             if (!empty($row['inside'])){
-                if(ord($row['inside'])==1)
+                if($row['inside']==1)
                     $text .= "ja";
             }
             $text .="\n| län          = ";
