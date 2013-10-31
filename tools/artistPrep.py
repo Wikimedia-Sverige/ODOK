@@ -110,7 +110,14 @@ def openCSV(filename, prefix=''):
         cols = l.split('|')
         ids = cols[1].split(';')
         for i in range(0,len(ids)): ids[i] = u'%s%s' %(prefix, ids[i])
-        fName, lName = cols[2].split(';')
+        if len(cols[2].split(';'))==2:
+            fName, lName = cols[2].split(';')
+        elif len(cols[2].split(';'))==1:
+            lName = cols[2]
+            fName = ''
+        else:
+            print u'Aborting: name column had to many parts for: %s' %l
+            break
         wikidata = cols[3]
         comments = cols[4]
         inOdok = cols[5]
@@ -122,7 +129,7 @@ def openCSV(filename, prefix=''):
             f.write('\n')
             #add to artist_links
     f.close()
-    print 'created testing.txt'
+    print 'created %s'%outName
 
 def addArtist(fName, lName, wikidata, ids):
     #check if it exists already
