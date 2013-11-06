@@ -368,6 +368,43 @@ class WikiApi(object):
         print  "Fetching categorymembers: " + categoryname + "...complete"
         return members
     
+    def getImageUsage(self, filename, iunamespace=None, debug=False):
+        '''
+        Returns a list of all pages using a given image
+        :param filename: The file to look for (including "File:")
+        :param iunamespace: namespace to limit the search to (0=main, 6=file)
+        :return: list of pagenames
+        '''
+        #print "Fetching imageusages: " + filename
+        members = []
+        #action=query&list=imageusage&iutitle=File:Foo.jpg
+        requestparams = [('list', 'imageusage'),
+                         ('iutitle', filename.encode('utf-8')),
+                         ('iulimit', '500')]
+        if iunamespace:
+            requestparams.append(('iunamespace', str(iunamespace)))
+        jsonr = self.httpPOST("query", requestparams)
+        
+        if debug:
+            print u'getImageUsage() filename:%s \n' %filename
+            print jsonr
+        
+        #{"query":{"imageusage":[{"pageid":7839165,"ns":2,"title":"User:Duesentrieb/ImageRenderBug"},{"query-continue":{"imageusage":{"iucontinue":"6|Wikimedia_Sverige_logo.svg|12128338"}}
+        for page in jsonr['query']['imageusage']:
+            members.append((page['title']))
+        
+        while 'query-continue' in jsonr:
+            #print  "Fetching imageusages: " + filename + "...fetching more"
+            #print jsonr['query-continue']['imageusage']['iucontinue']
+            requestparams.append(('iucontinue', str(jsonr['query-continue']['imageusage']['iucontinue'])))
+            jsonr = self.httpPOST("edit", requestparams)
+            
+            for page in jsonr['query']['imageusage']:
+                members.append((page['title']))
+        
+        #print  "Fetching imageusages: " + filename + "...complete"
+        return members
+    
     def getPageInfo(self, articles, dDict=None, debug=False):
         '''
         Given a list of articles this tells us if the page is either
@@ -683,8 +720,9 @@ class WikiApi(object):
     def apiurl(self):
         return self._apiurl
 
+
 class WikiDataApi(WikiApi):
-    '''Extends the previous class with wikidataSpecific methods'''
+    '''Extends the WikiApi class with wikidataSpecific methods'''
     
     def getArticles(self, entities, dDict=None, site=u'svwiki', debug=False):
         '''
