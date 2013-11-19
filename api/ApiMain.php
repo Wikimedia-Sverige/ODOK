@@ -77,8 +77,8 @@
                     null);
                     $errors=1;
                 }
-                #if kml output format then make sure has_coords is set
-                if($_GET['format']=='kml' and !isset($_GET['has_coords'])){
+                #if kml/geojson output format then make sure has_coords is set
+                if(($_GET['format']=='kml' or $_GET['format']=='geojson') and !isset($_GET['has_coords'])){
                     $constraints['coords'] = ApiBase::requireCoords();
                 }
             }
@@ -136,6 +136,9 @@
                         break;
                     case 'wiki' :
                         Format::outputWiki($results);
+                        break;
+                    case 'geojson' :
+                        Format::outputGeojson($results);
                         break;
                     default:
                         $results['head']['warning'] .= 'You chose an output format ['.$_GET['format'].'] which does not exist ; defaulting to xml. ';
