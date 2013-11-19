@@ -13,15 +13,16 @@
  3.2 For further scrapes use
         run(testing=False, queries={'muni':'<muniNo>'}, listFile=u'scrapetmp1.txt')
  ?Does anythin have to be done manually at this point?
+ To convert simply output using outputAll(listFile,county, muni)
  == Comparison of scraped results to database objects ==
  4. Do the first quick update which adds only enhancing data
         runUpdates(u'scrapetmp.txt', queries={'muni':'<muniNo>'}, quick=True)
         Manually ok article suggestions
-        commitUpdatesFil('tmpUpdates.txt', testing=False)
+        commitUpdatesFile('tmpUpdates.txt', testing=False)
  ?must original artistLinks be dealt with here?
  5. Do the longer manual update (can be done repetedly)
         runUpdates(u'tmpPostponed.txt', queries={'muni':'<muniNo>'})   !Note that this loses and _link parameters in the postponed file
-        commitUpdatesFil('tmpUpdates.txt', testing=False)
+        commitUpdatesFile('tmpUpdates.txt', testing=False)
  6. Linked artists can be dealt with separately
         runArtistLinks(u'tmpArtistLinks.txt', verbose=False)
         Manual edits might be required for disambiguations etc. these appear in <tmpArtistLinks2.txt>
@@ -77,17 +78,18 @@ def parseArtwork(contents, pagename):
         #end tables
     return units
 
-def postProcessing(units):
+def postProcessing(units, mild=False):
     '''
     proceses output of parseArtwork() and matches it to parameter names in ödok
     delinking plats, keeping track of artist link, fixing coords
+    mild: leave plats as it was
     '''
     for u in units:
         if u[u'koordinater']:
             u[u'lat'], u[u'lon'] = common.latLonFromCoord(u[u'koordinater'])
         if u[u'skulptör']:
             u[u'skulptör'], u[u'skulptör_link'] = common.extractAllLinks(u[u'skulptör'])
-        if u[u'plats']:
+        if u[u'plats'] and not mild:
             u[u'plats'], u[u'plats_link'] = common.extractAllLinks(u[u'plats'])
         if u[u'namn']:
             u[u'namn'], u[u'namn_link'] = common.extractAllLinks(u[u'namn'])
@@ -170,7 +172,7 @@ def findMatches(odok, wiki):
             else:
                 for nId in wIdN:
                     if nId in wIdA:
-                        match = ([nId], 'Non unique title with artist match')
+                        match = ([nId], 'Non-unique title with artist match')
                         break
         elif wIdN: #match on title only
             match = (wIdN, 'titel match') 
@@ -236,7 +238,7 @@ def run(testing=True, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp.
             contents = wpApi.getPage(page)[page]
             wikiHits = wikiHits + parseArtwork(contents, page)
             print u'wikiHits: %r' %len(wikiHits)
-        postProcessing(wikiHits)
+        postProcessing(wikiHits, mild=True)
         #safety backup
         f=codecs.open(u'%s1%s' %(tmpFile[:-4],tmpFile[-4:]),'w','utf8')
         for u in wikiHits:
@@ -275,9 +277,9 @@ def outputMissing(listFile, county, muni, wikilist=u'scrapetmp-Sthlm.txt'):
             missing.append(w.copy())
     print 'Missing %r out of %r' %(len(missing), len(wiki))
     f=codecs.open('%s-missing.%s' %(listFile[:-4],listFile[-3:]),'w','utf8')
-    f.write(u'{{Offentligkonstlista-huvud|kommun=%s}}\n' %muni)
+    f.write(u'{{Offentligkonstlista-huvud|län=%s|kommun=%s}}\n' %(county,muni))
     for m in missing:
-        f.write(u'%s\n' %wikiListFormat(m,county, muni))
+        f.write(u'%s\n' %wikiListFormat(m))
     f.write(u'|}\n')
     f.close()
     print 'Done!'
@@ -287,14 +289,14 @@ def outputAll(listFile, county, muni):
     wiki=fileToHits(listFile)
     missing = []
     f=codecs.open('%s-asList.%s' %(listFile[:-4],listFile[-3:]),'w','utf8')
-    f.write(u'{{Offentligkonstlista-huvud|kommun=%s}}\n' %muni)
+    f.write(u'{{Offentligkonstlista-huvud|län=%s|kommun=%s}}\n' %(county,muni))
     for w in wiki:
-        f.write(u'%s\n' %wikiListFormat(w,county, muni))
+        f.write(u'%s\n' %wikiListFormat(w))
     f.write(u'|}\n')
     f.close()
     print 'Done!'
 
-def wikiListFormat(w, county, muni):
+def wikiListFormat(w):
     '''given a list entry this outputs a wikilist row'''
     if w[u'id']: idNo=w[u'id']
     else: idNo = ''
@@ -345,7 +347,7 @@ def wikiListFormat(w, county, muni):
 | artikel      = 
 | konstnär     = %s
 | årtal        = %s
-| beskrivning  = källa: [[%s]]
+| beskrivning  = 
 | typ          = 
 | material     = %s
 | fri          = 
@@ -356,7 +358,8 @@ def wikiListFormat(w, county, muni):
 | lon          = %s
 | bild         = %s
 | commonscat   = 
-}}''' %(idNo, title, artist, year, w['page'], material, plats, stadsdel, lat, lon, bild)
+| fotnot       = källa: [[%s]]
+}}''' %(idNo, title, artist, year, material, plats, stadsdel, lat, lon, bild, w['page'])
     return txt
 
 #==============================================================================
