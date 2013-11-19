@@ -1,9 +1,8 @@
 <?php   
     /*
      * Outputs the query as a wikilist
-     * BUG:
+     * KNOWN BUGS:
      *   If some but not all artists have artist_table entries then only these are included
-     *   Semicolon separated artists are put into same parameter unless they have artist_table entries
      * TO DO:
      *   bettwer way of outputting all objects of a given query (i.e. continue/offset param)
      *   stick variables in head (and hide from row) based on query
@@ -113,9 +112,9 @@
         
         function outputArtist($row){
             $artist_info = ApiBase::getArtistInfo($row['id']);
+            $desc ='';
+            $counter=2;
             if (!empty($artist_info)){
-                $desc ='';
-                $counter=2;
                 foreach ($artist_info as $ai){
                     if($ai['wiki']){
                         $article = ApiBase::getArticleFromWikidata($ai['wiki'], $getUrl=false);
@@ -136,8 +135,15 @@
                 return $desc; 
             }
             elseif (!empty($row['artist'])){
-                #TODO split by semicolon...
-                return $row['artist'];
+                $artistsList = explode(';',$row['artist']);
+                foreach ($artistsList as $a){
+                    $desc .= $a;
+                    if (count($artistsList) >= $counter){
+                        $desc .= "\n| konstnär".$counter."    = ";
+                        $counter++;
+                    }
+                }
+                return $desc; 
             }
         }
         
