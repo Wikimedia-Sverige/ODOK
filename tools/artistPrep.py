@@ -169,8 +169,9 @@ def file_to_dict(filename, idcol=0, namecol=1, verbose=False):
             namesL = common.extractName(col[namecol[1]])
             names=[]
             for i in range(0,len(namesF)):
-                names.append(u'%s %s' % (namesF[i],namesL[i]))
-                nameparts[u'%s %s' % (namesF[i],namesL[i])] = u'%s;%s' %(namesF[i],namesL[i])
+                name = u'%s %s' % (namesF[i],namesL[i])
+                names.append(name.strip())
+                nameparts[name.strip()] = u'%s;%s' %(namesF[i],namesL[i])
         else:
             names = common.extractName(col[namecol])
             #trying to identify the name parts
