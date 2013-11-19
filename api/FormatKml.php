@@ -166,7 +166,7 @@
                 $muni_names = ApiBase::getMuniNames();
                 foreach($results['body'] as $row)
                     self::writeRow($xml, $row, $muni_names);
-                    
+                
                 #finalise
                 self::finalise($xml);
                 #print
