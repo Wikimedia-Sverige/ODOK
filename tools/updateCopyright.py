@@ -130,7 +130,7 @@ def showMultipleArtists(dbWriteSQL, testing):
     for row in results:
         print ' | '.join(row)
 
-def run(testing=True):
+def run(testing=False):
     dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
     tagUnfree(dbWriteSQL, testing=testing)
     tagFree(dbWriteSQL, testing=testing)

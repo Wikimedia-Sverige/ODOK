@@ -120,7 +120,7 @@ def uppdateArtist(dbWriteSQL, artists, testing):
         vals.append(a[u'id'])
         dbWriteSQL.query(query[:-1], tuple(vals), expectReply=False, testing=testing)
 
-def run(testing=True):
+def run(testing=False):
     '''
     runs the whole process. if testing=True then outputs to file instead
     '''
