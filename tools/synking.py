@@ -81,7 +81,7 @@ def run(verbose=False):
         if diff:
             changes[k] = diff
         if log:
-            flog.write(u'issues with %s @ %s: %s\n' %(k, wiki_objects[k]['page'], log))
+            flog.write(u'issues with %s @ %s: %s' %(k, wiki_objects[k]['page'], log))
         if counter%100==0:
             print u'%r/%r' %(counter,len(odok_objects))
     
@@ -94,15 +94,15 @@ def run(verbose=False):
         not_changed = {}
         for k, v in changes.iteritems():
             not_changed[k] = {}
-            if u'district' in v.keys(): not_changed[k][u'district'] = changes[k].pop(u'district')   #need to establish wiki_policy
-            if u'cmt' in v.keys(): not_changed[k][u'cmt'] = changes[k].pop(u'cmt')                  #check changes
+            if u'cmt' in v.keys(): not_changed[k][u'cmt'] = changes[k].pop(u'cmt')                  #check changes, problem with multiple footnotes and some made with templates
             if u'artist' in v.keys(): not_changed[k][u'artist'] = changes[k].pop(u'artist')         #need deal with multi_artist issues first
-            if u'free' in v.keys(): not_changed[k][u'free'] = changes[k].pop(u'free')               #need to establish wiki_policy
+            if u'free' in v.keys(): not_changed[k][u'free'] = changes[k].pop(u'free')               #need to establish wiki_policy-need to enable synk db->wiki as this is set by updateCopyright
             if u'aka' in v.keys(): not_changed[k][u'aka'] = changes[k].pop(u'aka')                  #separate changed_list which either crates/removes or changes an aka
             if u'address' in v.keys(): not_changed[k][u'address'] = changes[k].pop(u'address')      #need to verify quality of changes first
-            if not_changed[k] == {}: del not_changed[k]
             
-            ncounter = ncounter+len(not_changed[k].keys())
+            if not_changed[k] == {}: del not_changed[k]
+            else: ncounter = ncounter+len(not_changed[k].keys())
+            
             ccounter = ccounter+len(changes[k].keys())
         for k, v in not_changed.iteritems():
             if changes[k] == {}: del changes[k]
@@ -176,7 +176,8 @@ def listToObjects(objects, pagename, contents):
             if not row: break
             params = {u'id':'', u'id-länk':'', u'titel':'', u'aka':'', u'artikel':'', u'konstnär':'', u'konstnär2':'', u'konstnär3':'', u'konstnär4':'', u'konstnär5':'', u'årtal':'', u'beskrivning':'',
                       u'typ':'', u'material':'', u'fri':'', u'plats':'', u'inomhus':'', u'län':'', u'kommun':'', u'stadsdel':'', u'lat':'',
-                      u'lon':'', u'bild':'', u'commonscat':'', u'fotnot':'', u'fotnot-namn':'', u'döljKommun':False, u'döljStadsdel':False,
+                      u'lon':'', u'bild':'', u'commonscat':'', u'fotnot':'', u'fotnot-namn':'', u'döljKommun':False, u'döljStadsdel':False, u'visaId':False, 
+                      u'fotnot2':'', u'fotnot2-namn':'', u'fotnot3':'', u'fotnot3-namn':'',
                       u'page':pagename, 'clash':None, 'header':headerDict}
             boolParams = [u'döljKommun', u'döljStadsdel'] # the following should be treated as booleans
             while(True):
@@ -267,15 +268,16 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
        wikiObj[u'stadsdel'] = wikiObj[u'header'][u'stadsdel']
     
     #the following are limited in their values but need mapping from wiki to odok before comparison
-    if wikiObj[u'fri'] == 'nej':
+    if wikiObj[u'fri'].lower() == 'nej':
         wikiObj[u'fri'] = 'unfree'
     if wikiObj[u'inomhus']:
-        if wikiObj[u'inomhus'] == 'ja':
+        if wikiObj[u'inomhus'].lower() == 'ja':
             wikiObj[u'inomhus'] = 1
-        elif wikiObj[u'inomhus'] == 'nej':
+        elif wikiObj[u'inomhus'].lower() == 'nej':
             wikiObj[u'inomhus'] = 0
         else:
-            log = log +  'unexpected value for inside-parameter: %s\n' %wikiObj[u'inomhus']
+            log = log +  'unexpected value for inside-parameter (defaulting to no): %s\n' %wikiObj[u'inomhus']
+            wikiObj[u'inomhus'] = 0
     else:
         wikiObj[u'inomhus'] = 0
     if wikiObj[u'kommun']: #need muni code
