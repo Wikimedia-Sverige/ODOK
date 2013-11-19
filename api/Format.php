@@ -93,7 +93,11 @@
         function outputGeojson($results){
             if (strtolower($_GET['action']) == 'get'){
                 include('FormatGeojson.php');
-                FormatGeojson::output($results);
+                if (strtolower($_GET['geojson']) == 'full'){
+                    FormatGeojson::output($results, $full=True);
+                }else {
+                    FormatGeojson::output($results);
+                }
             }else{
                 $results['head']['warning'] .= 'geojson is only a valid format for the "get" action; defaulting to xml. ';
                 self::outputXml($results);
