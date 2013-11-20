@@ -26,7 +26,14 @@ def is_number(s):
         return True
     except ValueError:
         return False
-    
+
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
 def extractName(entry):
     '''If field includes square brackets then this ignores any part of name field which lies outside
        If field contains semicolons then treats thes as separate objects'''

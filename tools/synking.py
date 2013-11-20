@@ -85,7 +85,7 @@ def run(verbose=False):
         if counter%100==0:
             print u'%r/%r' %(counter,len(odok_objects))
     
-    print u'Found %r changed objects. Sorting and comitting to SQL' %len(changes)
+    print u'Found %r changed objects. Sorting...' %len(changes)
     #update if needed
     if changes:
         ccounter = 0
@@ -111,7 +111,7 @@ def run(verbose=False):
         flog.write('changes not to be done (%r): %s\n' %(ncounter,ujson.encode(not_changed)))
         
         #implement changes
-        print 'committing to db' #testing
+        print 'Committing %r of these to SQL db'% ccounter #testing
         log = commitToDatabase(dbWriteSQL, changes, verbose=verbose)
         if log:
             flog.write(u'%s\n' %log)
@@ -328,7 +328,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     ##Main-process
     diff = {}
     #easy to compare {wiki:odok}
-    trivial_params = {u'typ':u'type', u'material':u'material', u'id-länk':u'official_url', u'fri':u'free', u'inomhus':u'inside', u'årtal':u'year', u'artists':u'artist',
+    trivial_params = {u'typ':u'type', u'material':u'material', u'id-länk':u'official_url', u'fri':u'free', u'inomhus':u'inside', u'artists':u'artist',
                       u'commonscat':u'commons_cat', u'beskrivning':u'descr', u'bild':u'image', u'titel':u'title', u'aka':u'aka', u'artikel':u'wiki_article',
                       u'plats':u'address', u'län':u'county', u'kommun':u'muni', u'stadsdel':u'district', u'lat':u'lat', u'lon':u'lon', u'fotnot':u'cmt'
                       }
@@ -344,13 +344,23 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     artist_links = list(set(wikiObj[u'artist_links'])-set(odokObj[u'artist_links']))
     if artist_links and len(''.join(artist_links))>0:
         log = log + u'difference in artist links, linkdiff: %s\n' %';'.join(artist_links)
-    
+
+    #Years which are not plain numbers cannot be sent to db
+    (w_text, w_links) = unwiki(wikiObj[u'årtal'])
+    if not (w_text == odokObj['year']):
+        if common.is_int(w_text):
+            diff['year'] = {'new':w_text, 'old':odokObj['year']}
+        else:
+            log = log + u'Non-integer year: %s\n' %w_text
+            
+
     ##Post-processing
     #fotnot-namn without fotnot - needs to look-up fotnot for o:cmt
     if wikiObj[u'fotnot-namn'] and not wikiObj[u'fotnot']:
         log = log + u'fotnot-namn so couldn\'t compare, fotnot-namn: %s\n' %wikiObj[u'fotnot-namn']
         if u'cmt' in diff.keys():
             del diff[u'cmt']
+
     
     return (diff, log)
     
