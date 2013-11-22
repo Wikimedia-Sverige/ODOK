@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--0–192 of 192-->
+<!--0–214 of 214-->
 <kml xmlns="http://www.opengis.net/kml/2.2">
     <Document>
         <Style id="monumentStyle">
@@ -29,8 +29,7 @@ Statyn av Birger jarl beställdes av Stockholms borgerskap 1852 för att högtid
         </Placemark>
         <Placemark id="k0180/002">
             <title>Järnpojken (Pojke som tittar på månen)</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:J%C3%A4rnpojke.jpeg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Järnpojke.jpeg&width=100" align="right" /></a><ul><li> <b>Järnpojken (Pojke som tittar på månen)</b></li><li> <a href="https://sv.wikipedia.org/wiki/Liss_Eriksson" target="_blank">Liss Eriksson</a> - 1967</li><li> Stockholm (Gamla stan) - Finska kyrkans gård, Bollhustäppan</li><br/><li>Järnpojke, även kallad "Pojke som tittar på månen", är en skulptur i Gamla stan i Stockholm som är endast 15 centimeter hög och känd som "Stockholms minsta offentliga monument".[källa behövs]
-Skulpturen restes 1967 och är utförd av konstnären Liss Eriksson...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/J%C3%A4rnpojke" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:J%C3%A4rnpojke.jpeg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Järnpojke.jpeg&width=100" align="right" /></a><ul><li> <b>Järnpojken (Pojke som tittar på månen)</b></li><li> <a href="https://sv.wikipedia.org/wiki/Liss_Eriksson" target="_blank">Liss Eriksson</a> - 1967</li><li> Stockholm (Gamla stan) - Finska kyrkans gård, Bollhustäppan</li><br/><li>Järnpojke, även kallad "Pojke som tittar på månen", är en skulptur av konstnären Liss Eriksson. Skulpturen återfinns på Bollhustäppan, på Finska kyrkans bakgård i Gamla stan i Stockholm. Skulpturen är 15 centimeter hög och känd som "Sveriges minsta offentliga...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/J%C3%A4rnpojke" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.0722222222222,59.3255555555556</coordinates>
@@ -155,7 +154,7 @@ Gustav III är avbildad stigande i land i triumf efter det...</li><br/><li>Läs 
         </Placemark>
         <Placemark id="k0180/026">
             <title>Elliptical Cone</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Jene%20Highstein%20Elliptical%20Cone%2002.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Jene_Highstein_Elliptical_Cone_02.JPG&width=100" align="right" /></a><ul><li> <b>Elliptical Cone</b></li><li> Jene Highstein - 2003</li><li> Stockholm (Norrmalm) - Birger Jarlsgatan - Smålandsgatan</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Jene%20Highstein%20Elliptical%20Cone%2002.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Jene_Highstein_Elliptical_Cone_02.JPG&width=100" align="right" /></a><ul><li> <b>Elliptical Cone</b></li><li> <a href="https://sv.wikipedia.org/wiki/Jene_Highstein" target="_blank">Jene Highstein</a> - 2003</li><li> Stockholm (Norrmalm) - Birger Jarlsgatan - Smålandsgatan</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.074867,59.333767</coordinates>
@@ -190,7 +189,7 @@ Nils Ericson var även...</li><br/><li>Läs mer om <a href="https://sv.wikipedia
         </Placemark>
         <Placemark id="k0180/030">
             <title>Strindbergcitat</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Ingrid%20Falk%20Gustav%20Aguerre%20Strindbergcitat%2002.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Ingrid_Falk_Gustav_Aguerre_Strindbergcitat_02.JPG&width=100" align="right" /></a><ul><li> <b>Strindbergcitat</b></li><li> FA-[Ingrid Falk;Gustav Aguerre] - 1998</li><li> Stockholm (Norrmalm) - Drottninggatan</li><br/><li>Citat av August Strindberg infällda i gatubeläggningen</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Ingrid%20Falk%20Gustav%20Aguerre%20Strindbergcitat%2002.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Ingrid_Falk_Gustav_Aguerre_Strindbergcitat_02.JPG&width=100" align="right" /></a><ul><li> <b>Strindbergcitat</b></li><li> <a href="https://sv.wikipedia.org/wiki/Gustavo_Aguerre" target="_blank">Gustavo Aguerre</a> - 1998</li><li> Stockholm (Norrmalm) - Drottninggatan</li><br/><li>Citat av August Strindberg infällda i gatubeläggningen</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.05935,59.335883</coordinates>
@@ -198,7 +197,7 @@ Nils Ericson var även...</li><br/><li>Läs mer om <a href="https://sv.wikipedia
         </Placemark>
         <Placemark id="k0180/031">
             <title>Triton på delfin</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Centralbadet%202009b.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Centralbadet_2009b.jpg&width=100" align="right" /></a><ul><li> <b>Triton på delfin</b></li><li> Greta Klemming - 1923</li><li> Stockholm (Norrmalm) - Drottninggatan 88 - Centralbadet</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Centralbadet%202009b.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Centralbadet_2009b.jpg&width=100" align="right" /></a><ul><li> <b>Triton på delfin</b></li><li> Greta Klemming - 1923</li><li> Stockholm (Norrmalm) - Drottninggatan 88 - Centralbadet</li><br/><li> Bronsskulpturen i Centralbadsparkens fontän...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Triton_p%C3%A5_delfin" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.05967,59.33635</coordinates>
@@ -492,7 +491,7 @@ Konstnären har inspirerats av en notis i en tidning...</li><br/><li>Läs mer om
         </Placemark>
         <Placemark id="k0180/070">
             <title>Insektsfåglar</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Ulf%20Sucksdorff%20Insektsf%C3%A5glar.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Ulf_Sucksdorff_Insektsfåglar.JPG&width=100" align="right" /></a><ul><li> <b>Insektsfåglar</b></li><li> <a href="https://sv.wikipedia.org/wiki/Ulf_Sucksdorff" target="_blank">Ulf Sucksdorff</a> - 1975</li><li> Stockholm (Kungsholmen) - Fredhällsparken</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Ulf%20Sucksdorff%20Insektsf%C3%A5glar.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Ulf_Sucksdorff_Insektsfåglar.JPG&width=100" align="right" /></a><ul><li> <b>Insektsfåglar</b></li><li> <a href="https://sv.wikipedia.org/wiki/Ulf_Sucksdorff" target="_blank">Ulf Sucksdorff</a> - 1975</li><li> Stockholm (Fredhäll) - Fredhällsparken</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.005833,59.331667</coordinates>
@@ -500,7 +499,7 @@ Konstnären har inspirerats av en notis i en tidning...</li><br/><li>Läs mer om
         </Placemark>
         <Placemark id="k0180/071">
             <title>Kjolen</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Anita%20Brusewitz-Hansson%20Kjolen.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Anita_Brusewitz-Hansson_Kjolen.JPG&width=100" align="right" /></a><ul><li> <b>Kjolen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Anita_Brusewitz-Hansson" target="_blank">Anita Brusewitz-Hansson</a> - 1971</li><li> Stockholm (Kungsholmen) - Fredhällsparken</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Anita%20Brusewitz-Hansson%20Kjolen.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Anita_Brusewitz-Hansson_Kjolen.JPG&width=100" align="right" /></a><ul><li> <b>Kjolen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Anita_Brusewitz-Hansson" target="_blank">Anita Brusewitz-Hansson</a> - 1971</li><li> Stockholm (Fredhäll) - Fredhällsparken</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.002833,59.332</coordinates>
@@ -508,7 +507,7 @@ Konstnären har inspirerats av en notis i en tidning...</li><br/><li>Läs mer om
         </Placemark>
         <Placemark id="k0180/073">
             <title>Skådespel</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Sivert%20Lindblom%2C%20Sk%C3%A5despel%20%281%29.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Sivert_Lindblom,_Skådespel_(1).jpg&width=100" align="right" /></a><ul><li> <b>Skådespel</b></li><li> <a href="https://sv.wikipedia.org/wiki/Sivert_Lindblom" target="_blank">Sivert Lindblom</a> - 2000</li><li> Stockholm (Kungsholmen/Lilla Essingen/Stora Essingen) - Grubbens trädgård</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Sivert%20Lindblom%2C%20Sk%C3%A5despel%20%281%29.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Sivert_Lindblom,_Skådespel_(1).jpg&width=100" align="right" /></a><ul><li> <b>Skådespel</b></li><li> <a href="https://sv.wikipedia.org/wiki/Sivert_Lindblom" target="_blank">Sivert Lindblom</a> - 2000</li><li> Stockholm (Kungsholmen) - Grubbens trädgård</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.042,59.335083</coordinates>
@@ -516,7 +515,7 @@ Konstnären har inspirerats av en notis i en tidning...</li><br/><li>Läs mer om
         </Placemark>
         <Placemark id="k0180/074">
             <title>Fågel Blå</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:F%C3%A5gel%20bl%C3%A5%2C%20Tyra%20Lundgren.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Fågel_blå,_Tyra_Lundgren.jpg&width=100" align="right" /></a><ul><li> <b>Fågel Blå</b></li><li> <a href="https://sv.wikipedia.org/wiki/Tyra_Lundgren" target="_blank">Tyra Lundgren</a> - 1975</li><li> Stockholm (Kungsholmen/Lilla Essingen/Stora Essingen) - Klara strandpark</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:F%C3%A5gel%20bl%C3%A5%2C%20Tyra%20Lundgren.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Fågel_blå,_Tyra_Lundgren.jpg&width=100" align="right" /></a><ul><li> <b>Fågel Blå</b></li><li> <a href="https://sv.wikipedia.org/wiki/Tyra_Lundgren" target="_blank">Tyra Lundgren</a> - 1975</li><li> Stockholm (Kungsholmen) - Klara strandpark</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.054847,59.328356</coordinates>
@@ -551,10 +550,10 @@ Under 1970-talet förenklade Falk sina uttrycksmedel mer och mer till...</li><br
         </Placemark>
         <Placemark id="k0180/084">
             <title>Mariebergsstenen</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Mariebergsstenen%202011b.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Mariebergsstenen_2011b.jpg&width=100" align="right" /></a><ul><li> <b>Mariebergsstenen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Ragnar_Hjorth" target="_blank">Ragnar Hjorth</a> - 1953</li><li> Stockholm (Kungsholmen/Lilla Essingen/Stora Essingen) - Mariebergsparken</li><br/><li> Mariebergsstenen är en skulptur och minnessten i Mariebergsparken på Kungsholmen i Stockholm. Stenen är formgiven av arkitekt Ragnar Hjort och Rest år 1953 åt minnet av gångna seklers verksamhet på Marieberg (inskription...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Mariebergsstenen" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Mariebergsstenen%202011b.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Mariebergsstenen_2011b.jpg&width=100" align="right" /></a><ul><li> <b>Mariebergsstenen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Ragnar_Hjorth" target="_blank">Ragnar Hjorth</a> - 1953</li><li> Stockholm (Marieberg) - Mariebergsparken</li><br/><li> Mariebergsstenen är en skulptur och minnessten i Mariebergsparken på Kungsholmen i Stockholm. Stenen är formgiven av arkitekt Ragnar Hjort och Rest år 1953 åt minnet av gångna seklers verksamhet på Marieberg (inskription...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Mariebergsstenen" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
-                <coordinates>18.0186111111111,59.3275</coordinates>
+                <coordinates>18.018611,59.3275</coordinates>
             </Point>
         </Placemark>
         <Placemark id="k0180/086">
@@ -608,7 +607,7 @@ Båda fabeldjur är anordnade...</li><br/><li>Läs mer om <a href="https://sv.wi
         </Placemark>
         <Placemark id="k0180/094">
             <title>Fiskfossil</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Fiskfossil%202011a.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Fiskfossil_2011a.jpg&width=100" align="right" /></a><ul><li> <b>Fiskfossil</b></li><li> <a href="https://sv.wikipedia.org/wiki/Ebba_Hedqvist" target="_blank">Ebba Hedqvist</a> - 1985</li><li> Stockholm (Kungsholmen) - Smedsudden</li><br/><li> Fiskfossil är en skulptur på Smedsudden på Kungsholmen i Stockholm. Skulpturen i rostfritt stål skapades 1985 av Ebba Hedqvist.
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Fiskfossil%202011a.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Fiskfossil_2011a.jpg&width=100" align="right" /></a><ul><li> <b>Fiskfossil</b></li><li> <a href="https://sv.wikipedia.org/wiki/Ebba_Hedqvist" target="_blank">Ebba Hedqvist</a> - 1985</li><li> Stockholm (Marieberg, Fredhäll och Stadshagen) - Smedsudden</li><br/><li> Fiskfossil är en skulptur på Smedsudden på Kungsholmen i Stockholm. Skulpturen i rostfritt stål skapades 1985 av Ebba Hedqvist.
 Ebba Hedqvists genombrutna metallfisk ligger på en stålpelare ute i vattnet vid Smedsuddsbadet...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Fiskfossil" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
@@ -617,7 +616,7 @@ Ebba Hedqvists genombrutna metallfisk ligger på en stålpelare ute i vattnet vi
         </Placemark>
         <Placemark id="k0180/095">
             <title>Smalspårig växel</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Inga%20Bagge%202008.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Inga_Bagge_2008.jpg&width=100" align="right" /></a><ul><li> <b>Smalspårig växel</b></li><li> <a href="https://sv.wikipedia.org/wiki/Inga_Bagge" target="_blank">Inga Bagge</a> - 1990</li><li> Stockholm (Kungsholmen) - Smedsudden</li><br/><li> Smalspårig växel är en skulptur på Smedsudden på Kungsholmen i Stockholm. Skulpturen skapades 1989 av Inga Bagge.
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Inga%20Bagge%202008.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Inga_Bagge_2008.jpg&width=100" align="right" /></a><ul><li> <b>Smalspårig växel</b></li><li> <a href="https://sv.wikipedia.org/wiki/Inga_Bagge" target="_blank">Inga Bagge</a> - 1990</li><li> Stockholm (Marieberg, Fredhäll och Stadshagen) - Smedsudden</li><br/><li> Smalspårig växel är en skulptur på Smedsudden på Kungsholmen i Stockholm. Skulpturen skapades 1989 av Inga Bagge.
 
 Inga Bagges stålskulptur står intill Smedsuddsbadet. Hennes cirka fyra meter höga verk visar en stående...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Smalsp%C3%A5rig_v%C3%A4xel" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
@@ -895,7 +894,7 @@ Grodan avbildar en ung kvinna i 15-årsåldern, sittande som en groda. Framför 
         </Placemark>
         <Placemark id="k0180/191">
             <title>Afrodites brunn, Tårflaskor</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:107%20Afrodites%20brunn%2C%20T%C3%A5rflaskorna.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=107_Afrodites_brunn,_Tårflaskorna.JPG&width=100" align="right" /></a><ul><li> <b>Afrodites brunn, Tårflaskor</b></li><li> <a href="https://sv.wikipedia.org/wiki/Roland_Haeberlein" target="_blank">Roland Haeberlein</a> - 1995</li><li> Stockholm (Södermalm/Reymersholme) - Fatbursparken</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:107%20Afrodites%20brunn%2C%20T%C3%A5rflaskorna.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=107_Afrodites_brunn,_Tårflaskorna.JPG&width=100" align="right" /></a><ul><li> <b>Afrodites brunn, Tårflaskor</b></li><li> <a href="https://sv.wikipedia.org/wiki/Roland_Haeberlein" target="_blank">Roland Haeberlein</a> - 1995</li><li> Stockholm (Södermalm) - Fatbursparken</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.0684056,59.3146028</coordinates>
@@ -943,7 +942,7 @@ Grodan avbildar en ung kvinna i 15-årsåldern, sittande som en groda. Framför 
         </Placemark>
         <Placemark id="k0180/199">
             <title>Tuffsen</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Tufsen%20S%C3%B6dermalm.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Tufsen_Södermalm.JPG&width=100" align="right" /></a><ul><li> <b>Tuffsen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Egon_M%C3%B6ller-Nielsen" target="_blank">Egon Möller-Nielsen</a> - 2001</li><li> Stockholm (Södermalm/Reymersholme) - Folkungagatan 85</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Tufsen%20S%C3%B6dermalm.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Tufsen_Södermalm.JPG&width=100" align="right" /></a><ul><li> <b>Tuffsen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Egon_M%C3%B6ller-Nielsen" target="_blank">Egon Möller-Nielsen</a> - 2001</li><li> Stockholm (Södermalm) - Folkungagatan 85</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.0791722,59.3153861</coordinates>
@@ -1076,7 +1075,7 @@ En liknande och tidigare skulptur av Gunnel...</li><br/><li>Läs mer om <a href=
         </Placemark>
         <Placemark id="k0180/222">
             <title>Tors fiske</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Tors%20fiske%202009.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Tors_fiske_2009.jpg&width=100" align="right" /></a><ul><li> <b>Tors fiske</b></li><li> <a href="https://sv.wikipedia.org/wiki/Anders_Wissler" target="_blank">Anders Wissler</a> - 1903</li><li> Stockholm (Södermalm/Reymersholme) - Mariatorget</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Tors%20fiske%202009.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Tors_fiske_2009.jpg&width=100" align="right" /></a><ul><li> <b>Tors fiske</b></li><li> <a href="https://sv.wikipedia.org/wiki/Anders_Wissler" target="_blank">Anders Wissler</a> - 1903</li><li> Stockholm (Södermalm) - Mariatorget</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.062864,59.318164</coordinates>
@@ -1246,6 +1245,86 @@ I slutet av 1960-talet övergav K.G. Bejemark sitt tidigare arbete med abstrakta
                 <coordinates>18.0703639,59.3112722</coordinates>
             </Point>
         </Placemark>
+        <Placemark id="k0180/265">
+            <title>Ugglornas plats</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Anna%20Strid%20Ugglornas%20plats%2002.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Anna_Strid_Ugglornas_plats_02.JPG&width=100" align="right" /></a><ul><li> <b>Ugglornas plats</b></li><li> Anna Strid - 2012</li><li> Stockholm (Annedal) - Annedal, Annedalsparken</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>17.9475888889,59.3638583333</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/266">
+            <title>Signaler</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Kent%20Karlsson%20Signaler%2001.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Kent_Karlsson_Signaler_01.JPG&width=100" align="right" /></a><ul><li> <b>Signaler</b></li><li> <a href="https://sv.wikipedia.org/wiki/Kent_Karlsson_(konstn%C3%A4r)" target="_blank">Kent Karlsson</a> - 2011</li><li> Stockholm (Annedal) - Annedal, Lönnebergaparken</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>17.9446305556,59.3643194444</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/267">
+            <title>Konkret transcendens</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Ebba%20Bohlin%20Konkret%20transcendens%2001.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Ebba_Bohlin_Konkret_transcendens_01.JPG&width=100" align="right" /></a><ul><li> <b>Konkret transcendens</b></li><li> <a href="https://sv.wikipedia.org/wiki/Ebba_Bohlin" target="_blank">Ebba Bohlin</a> - 2012</li><li> Stockholm (Annedal) - Annedal, Krakel spektakels gata</li><br/><li>bro i lackerat, svetsat stål</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>17.9484333333,59.3667222222</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/268">
+            <title>Bianca</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Sten%20Ericson%20Bianca.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Sten_Ericson_Bianca.JPG&width=100" align="right" /></a><ul><li> <b>Bianca</b></li><li> <a href="https://sv.wikipedia.org/wiki/Sten_Ericson" target="_blank">Sten Ericson</a> - 1963</li><li> Stockholm (Blackeberg) - Blackebergs centrum, Holbergsgatan 53</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>17.8839861111,59.3472055556</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/277">
+            <title>Björkhagsbrunnen</title>
+            <description><![CDATA[<ul><li> <b>Björkhagsbrunnen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Emil_N%C3%A4svall" target="_blank">Emil Näsvall</a> - 1963</li><li> Stockholm (Hammarbyhöjden, Björkhagen, Enskededalen och Kärrtorp) - Björkhagens centrum, Björkhagsplan 5</li></ul>]]></description>
+            <styleUrl>#monumentStyle</styleUrl>
+            <Point>
+                <coordinates>18.1170527778,59.2910555556</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/278">
+            <title>Pelare III</title>
+            <description><![CDATA[<ul><li> <b>Pelare III</b></li><li> <a href="https://sv.wikipedia.org/wiki/Veikko_Ker%C3%A4nen" target="_blank">Veikko Keränen</a> - 1982</li><li> Stockholm (Hammarbyhöjden, Björkhagen, Enskededalen och Kärrtorp) - Björkhagens centrum Björkhagsplan 6</li></ul>]]></description>
+            <styleUrl>#monumentStyle</styleUrl>
+            <Point>
+                <coordinates>18.11715,59.2905583333</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/280">
+            <title>Avskedet på polarisen</title>
+            <description><![CDATA[<ul><li> <b>Avskedet på polarisen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Elsie_Dahlberg-Sundborg" target="_blank">Elsie Dahlberg</a> - 1980</li><li> Stockholm (Hammarbyhöjden, Björkhagen, Enskededalen och Kärrtorp) - Hammarbyhöjden, Finn Malmgrens plan</li></ul>]]></description>
+            <styleUrl>#monumentStyle</styleUrl>
+            <Point>
+                <coordinates>18.1022138889,59.2955361111</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/281">
+            <title>Smygande katt</title>
+            <description><![CDATA[<ul><li> <b>Smygande katt</b></li><li> <a href="https://sv.wikipedia.org/wiki/Erik_%C3%85kerlund_(skulpt%C3%B6r)" target="_blank">Erik Åkerlund</a> - 1982</li><li> Stockholm (Hammarbyhöjden, Björkhagen, Enskededalen och Kärrtorp) - Kärrtorpsplan</li></ul>]]></description>
+            <styleUrl>#monumentStyle</styleUrl>
+            <Point>
+                <coordinates>18.1153527778,59.2836305556</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/282">
+            <title>Meander</title>
+            <description><![CDATA[<ul><li> <b>Meander</b></li><li> Ivan Jacobsson - 1974</li><li> Stockholm (Hammarbyhöjden, Björkhagen, Enskededalen och Kärrtorp) - Kärrtorp, Nytorpsbadets entré</li></ul>]]></description>
+            <styleUrl>#monumentStyle</styleUrl>
+            <Point>
+                <coordinates>18.1076111111,59.2897444444</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/284">
+            <title>Willy Brandt</title>
+            <description><![CDATA[<ul><li> <b>Willy Brandt</b></li><li> Rainer Fettig - 2007</li><li> Stockholm (Hammarbyhöjden, Björkhagen, Enskededalen och Kärrtorp) - Willy Brandts park, Ulricehamnsgatan 1</li><br/><li>Staty över Willy Brandt</li></ul>]]></description>
+            <styleUrl>#monumentStyle</styleUrl>
+            <Point>
+                <coordinates>18.1073222222,59.295075</coordinates>
+            </Point>
+        </Placemark>
         <Placemark id="k0180/285">
             <title>Fruarna</title>
             <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Willy%20Gordon%20Wives%20bobe.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Willy_Gordon_Wives_bobe.JPG&width=100" align="right" /></a><ul><li> <b>Fruarna</b></li><li> <a href="https://sv.wikipedia.org/wiki/Willy_Gordon" target="_blank">Willy Gordon</a> - 1968</li><li> Stockholm (Hägersten) - Fruängen, Fruängsgången</li></ul>]]></description>
@@ -1264,9 +1343,7 @@ I slutet av 1960-talet övergav K.G. Bejemark sitt tidigare arbete med abstrakta
         </Placemark>
         <Placemark id="k0180/288">
             <title>Bellmanskällan</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Bellmansk%C3%A4llan%202012b.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Bellmanskällan_2012b.jpg&width=100" align="right" /></a><ul><li> <b>Bellmanskällan</b></li><li> <a href="https://sv.wikipedia.org/wiki/Johan_Tobias_Sergel" target="_blank">Johan Tobias Sergel</a> - 1928</li><li> Stockholm (Hägersten) - Mälarhöjden, Bellmanskällevägen</li><br/><li> Bellmanskällan (även Bellmans Källa) är en brunnsfontän vid Bellmanskällevägen 1 i stadsdelen Mälarhöjden, södra Stockholm.
-
-Vid källan hade vägfarande under många år sitt rastställe. I början på 1900-talet fanns här...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Bellmansk%C3%A4llan" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Bellmansk%C3%A4llan%202012b.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Bellmanskällan_2012b.jpg&width=100" align="right" /></a><ul><li> <b>Bellmanskällan</b></li><li> <a href="https://sv.wikipedia.org/wiki/Johan_Tobias_Sergel" target="_blank">Johan Tobias Sergel</a> - 1928</li><li> Stockholm (Hägersten) - Mälarhöjden, Bellmanskällevägen</li><br/><li> Bellmanskällan (även Bellmans Källa) är en brunnsfontän vid Bellmanskällevägen 1 i stadsdelen Mälarhöjden, södra Stockholm. Källan är skriftligen omnämnd sedan år 1803. Den lokala traditionen menar dock att dess existens...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Bellmansk%C3%A4llan" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9557888888889,59.3034222222222</coordinates>
@@ -1290,7 +1367,7 @@ Vid källan hade vägfarande under många år sitt rastställe. I början på 19
         </Placemark>
         <Placemark id="k0180/291">
             <title>Efter badet</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Pye%20Engstrom%202008.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Pye_Engstrom_2008.JPG&width=100" align="right" /></a><ul><li> <b>Efter badet</b></li><li> <a href="https://sv.wikipedia.org/wiki/Pye_Engstr%C3%B6m" target="_blank">Pye Engström</a> - 1976</li><li> Stockholm (Hägersten) - Västertorp, Västertorpshallen Personnevägen 90</li><br/><li> Efter badet är en skulptur av Pye Engström i Västertorp i Stockholm.
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Pye%20Engstrom%202008.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Pye_Engstrom_2008.JPG&width=100" align="right" /></a><ul><li> <b>Efter badet</b></li><li> <a href="https://sv.wikipedia.org/wiki/Pye_Engstr%C3%B6m" target="_blank">Pye Engström</a> - 1976</li><li> Stockholm (Västertorp) - Västertorp, Västertorpshallen Personnevägen 90</li><br/><li> Efter badet är en skulptur av Pye Engström i Västertorp i Stockholm.
 Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången till det kommunalägda badhuset Västertorpshallen sedan 1976. Den är gjord...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Efter_badet" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
@@ -1299,7 +1376,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/292">
             <title>Sigyn</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Nils%20M%C3%B6llerberg%20Sigyn.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Nils_Möllerberg_Sigyn.JPG&width=100" align="right" /></a><ul><li> <b>Sigyn</b></li><li> <a href="https://sv.wikipedia.org/wiki/Nils_M%C3%B6llerberg" target="_blank">Nils Möllerberg</a> - 1955</li><li> Stockholm (Hägersten) - Västertorp, Skidvägen 15</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Nils%20M%C3%B6llerberg%20Sigyn.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Nils_Möllerberg_Sigyn.JPG&width=100" align="right" /></a><ul><li> <b>Sigyn</b></li><li> <a href="https://sv.wikipedia.org/wiki/Nils_M%C3%B6llerberg" target="_blank">Nils Möllerberg</a> - 1955</li><li> Stockholm (Västertorp) - Västertorp, Skidvägen 15</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9765,59.2940222</coordinates>
@@ -1307,7 +1384,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/293">
             <title>Gubben med geten</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Gubben%20med%20geten.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Gubben_med_geten.JPG&width=100" align="right" /></a><ul><li> <b>Gubben med geten</b></li><li> <a href="https://sv.wikipedia.org/wiki/Allan_Runefelt" target="_blank">Allan Runefelt</a> - 1955</li><li> Stockholm (Hägersten) - Västertorp, Torget, vid Störtloppsvägen 13</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Gubben%20med%20geten.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Gubben_med_geten.JPG&width=100" align="right" /></a><ul><li> <b>Gubben med geten</b></li><li> <a href="https://sv.wikipedia.org/wiki/Allan_Runefelt" target="_blank">Allan Runefelt</a> - 1955</li><li> Stockholm (Västertorp) - Västertorp, Torget, vid Störtloppsvägen 13</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9682888888889,59.2923305555556</coordinates>
@@ -1315,7 +1392,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/294">
             <title>Liggande kvinna</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Grate%20Liggande%20kvinna.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Grate_Liggande_kvinna.JPG&width=100" align="right" /></a><ul><li> <b>Liggande kvinna</b></li><li> <a href="https://sv.wikipedia.org/wiki/Eric_Grate" target="_blank">Eric Grate</a> - 1955</li><li> Stockholm (Hägersten) - På torget i Västertorps centrum</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Grate%20Liggande%20kvinna.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Grate_Liggande_kvinna.JPG&width=100" align="right" /></a><ul><li> <b>Liggande kvinna</b></li><li> <a href="https://sv.wikipedia.org/wiki/Eric_Grate" target="_blank">Eric Grate</a> - 1955</li><li> Stockholm (Västertorp) - På torget i Västertorps centrum</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9686083333333,59.2924916666667</coordinates>
@@ -1323,7 +1400,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/295">
             <title>Sittande pojke</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Marklund%20Sittande%20pojke.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Marklund_Sittande_pojke.JPG&width=100" align="right" /></a><ul><li> <b>Sittande pojke</b></li><li> <a href="https://sv.wikipedia.org/wiki/Bror_Marklund" target="_blank">Bror Marklund</a> - 1955</li><li> Stockholm (Hägersten) - Västertorp, Torget</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Marklund%20Sittande%20pojke.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Marklund_Sittande_pojke.JPG&width=100" align="right" /></a><ul><li> <b>Sittande pojke</b></li><li> <a href="https://sv.wikipedia.org/wiki/Bror_Marklund" target="_blank">Bror Marklund</a> - 1955</li><li> Stockholm (Västertorp) - Västertorp, Torget</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.968475,59.2923777777778</coordinates>
@@ -1331,7 +1408,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/296">
             <title>Trädet</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:GrateGR01%20bobe.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=GrateGR01_bobe.jpg&width=100" align="right" /></a><ul><li> <b>Trädet</b></li><li> <a href="https://sv.wikipedia.org/wiki/Eric_Grate" target="_blank">Eric Grate</a> - 1955</li><li> Stockholm (Hägersten) - Störtloppsvägen, vid torget i Västertorps centrum</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:GrateGR01%20bobe.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=GrateGR01_bobe.jpg&width=100" align="right" /></a><ul><li> <b>Trädet</b></li><li> <a href="https://sv.wikipedia.org/wiki/Eric_Grate" target="_blank">Eric Grate</a> - 1955</li><li> Stockholm (Västertorp) - Störtloppsvägen, vid torget i Västertorps centrum</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9681833333333,59.292675</coordinates>
@@ -1339,7 +1416,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/297">
             <title>Inre och yttre form</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:MooreM01%20bobe.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=MooreM01_bobe.jpg&width=100" align="right" /></a><ul><li> <b>Inre och yttre form</b></li><li> <a href="https://sv.wikipedia.org/wiki/Henry_Moore" target="_blank">Henry Moore</a> - 1955</li><li> Stockholm (Hägersten) - Västertorp, Torget</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:MooreM01%20bobe.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=MooreM01_bobe.jpg&width=100" align="right" /></a><ul><li> <b>Inre och yttre form</b></li><li> <a href="https://sv.wikipedia.org/wiki/Henry_Moore" target="_blank">Henry Moore</a> - 1955</li><li> Stockholm (Västertorp) - Västertorp, Torget</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9685777777778,59.2928138888889</coordinates>
@@ -1347,7 +1424,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/298">
             <title>Liggande kalv</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:ArleF02.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=ArleF02.JPG&width=100" align="right" /></a><ul><li> <b>Liggande kalv</b></li><li> <a href="https://sv.wikipedia.org/wiki/Asmund_Arle" target="_blank">Asmund Arle</a> - 1955</li><li> Stockholm (Hägersten) - Västertorp, Torget</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:ArleF02.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=ArleF02.JPG&width=100" align="right" /></a><ul><li> <b>Liggande kalv</b></li><li> <a href="https://sv.wikipedia.org/wiki/Asmund_Arle" target="_blank">Asmund Arle</a> - 1955</li><li> Stockholm (Västertorp) - Västertorp, Torget</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.968475,59.2929888888889</coordinates>
@@ -1355,7 +1432,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/299">
             <title>Huvud</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Knut%20ErikLindberg.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Knut_ErikLindberg.JPG&width=100" align="right" /></a><ul><li> <b>Huvud</b></li><li> <a href="https://sv.wikipedia.org/wiki/Knut_Erik_Lindberg" target="_blank">Knut Erik Lindberg</a> - 1955</li><li> Stockholm (Hägersten) - Västertorp, Torget</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Knut%20ErikLindberg.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Knut_ErikLindberg.JPG&width=100" align="right" /></a><ul><li> <b>Huvud</b></li><li> <a href="https://sv.wikipedia.org/wiki/Knut_Erik_Lindberg" target="_blank">Knut Erik Lindberg</a> - 1955</li><li> Stockholm (Västertorp) - Västertorp, Torget</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.968475,59.2929888888889</coordinates>
@@ -1363,7 +1440,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/300">
             <title>Petite femme</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Pernevi%20Petite%20femme.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Pernevi_Petite_femme.JPG&width=100" align="right" /></a><ul><li> <b>Petite femme</b></li><li> <a href="https://sv.wikipedia.org/wiki/Palle_Pernevi" target="_blank">Palle Pernevi</a> - 1955</li><li> Stockholm (Hägersten) - Västertorp, Torget</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Pernevi%20Petite%20femme.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Pernevi_Petite_femme.JPG&width=100" align="right" /></a><ul><li> <b>Petite femme</b></li><li> <a href="https://sv.wikipedia.org/wiki/Palle_Pernevi" target="_blank">Palle Pernevi</a> - 1955</li><li> Stockholm (Västertorp) - Västertorp, Torget</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9685305555556,59.2930305555556</coordinates>
@@ -1371,7 +1448,7 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/301">
             <title>Katedralen</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Arne%20Jones%20Katedral.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Arne_Jones_Katedral.JPG&width=100" align="right" /></a><ul><li> <b>Katedralen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Arne_Jones" target="_blank">Arne Jones</a> - 1955</li><li> Stockholm (Hägersten) - Västertorp, Parken</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Arne%20Jones%20Katedral.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Arne_Jones_Katedral.JPG&width=100" align="right" /></a><ul><li> <b>Katedralen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Arne_Jones" target="_blank">Arne Jones</a> - 1955</li><li> Stockholm (Västertorp) - Västertorp, Parken</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9692861111111,59.2933277777778</coordinates>
@@ -1379,15 +1456,31 @@ Efter badet är huggen i kalksten 1971-76 och är placerad utanför ingången ti
         </Placemark>
         <Placemark id="k0180/302">
             <title>Faster</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Liss%20Eriksson%20Faster.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Liss_Eriksson_Faster.JPG&width=100" align="right" /></a><ul><li> <b>Faster</b></li><li> <a href="https://sv.wikipedia.org/wiki/Liss_Eriksson" target="_blank">Liss Eriksson</a> - 1955</li><li> Stockholm (Hägersten) - Västertorpsparken</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Liss%20Eriksson%20Faster.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Liss_Eriksson_Faster.JPG&width=100" align="right" /></a><ul><li> <b>Faster</b></li><li> <a href="https://sv.wikipedia.org/wiki/Liss_Eriksson" target="_blank">Liss Eriksson</a> - 1955</li><li> Stockholm (Västertorp) - Västertorpsparken</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.968625,59.2937361111111</coordinates>
             </Point>
         </Placemark>
+        <Placemark id="k0180/311">
+            <title>Spegling</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:%C3%85ke_Thornblad_Spegling_1.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Åke_Thornblad_Spegling_1.JPG&width=100" align="right" /></a><ul><li> <b>Spegling</b></li><li> <a href="https://sv.wikipedia.org/wiki/%C3%85ke_Thornblad" target="_blank">Åke Thornblad</a> - 1974</li><li> Stockholm (Hässelby strand) - Hässelby Strand, vid Strandliden 35</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>17.832075,59.3578527778</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/315">
+            <title>Stenkvinna</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Olle%20Nyman%20Stenkvinna.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Olle_Nyman_Stenkvinna.JPG&width=100" align="right" /></a><ul><li> <b>Stenkvinna</b></li><li> <a href="https://sv.wikipedia.org/wiki/Olle_Nyman" target="_blank">Olle Nyman</a> - 1977</li><li> Stockholm (Kista) - Kista Centrum</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>17.9428972222,59.4021305556</coordinates>
+            </Point>
+        </Placemark>
         <Placemark id="k0180/317">
             <title>Fontän</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Font%C3%A4ndamm%20Aspudden%202012.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Fontändamm_Aspudden_2012.jpg&width=100" align="right" /></a><ul><li> <b>Fontän</b></li><li> <a href="https://sv.wikipedia.org/wiki/Albin_Brag" target="_blank">Albin Brag</a> - 1912</li><li> Stockholm (Liljeholmen) - Aspudden - Manhemsgatan 7-9</li><br/><li> Fontändamm är en fontänskulptur vid Manhemsgatan i Aspudden, södra Stockholm. Skulpturen skapades 1912 av arkitekt Albin Brag och bekostades av byggnadsfirman Manhem. Brag ritade även flera bostadshus i området.
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Font%C3%A4ndamm%20Aspudden%202012.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Fontändamm_Aspudden_2012.jpg&width=100" align="right" /></a><ul><li> <b>Fontän</b></li><li> <a href="https://sv.wikipedia.org/wiki/Albin_Brag" target="_blank">Albin Brag</a> - 1912</li><li> Stockholm (Aspudden) - Aspudden - Manhemsgatan 7-9</li><br/><li> Fontändamm är en fontänskulptur vid Manhemsgatan i Aspudden, södra Stockholm. Skulpturen skapades 1912 av arkitekt Albin Brag och bekostades av byggnadsfirman Manhem. Brag ritade även flera bostadshus i området.
 
 Många...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Font%C3%A4ndamm" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
@@ -1397,7 +1490,7 @@ Många...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Font%C
         </Placemark>
         <Placemark id="k0180/318">
             <title>Bergskatedral</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Stina%20Eklman%20Bergskatedral%2001.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Stina_Eklman_Bergskatedral_01.JPG&width=100" align="right" /></a><ul><li> <b>Bergskatedral</b></li><li> <a href="https://sv.wikipedia.org/wiki/Stina_Ekman" target="_blank">Stina Ekman</a> - 1998</li><li> Stockholm (Liljeholmen) - Gröndal, Vinterviken</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Stina%20Eklman%20Bergskatedral%2001.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Stina_Eklman_Bergskatedral_01.JPG&width=100" align="right" /></a><ul><li> <b>Bergskatedral</b></li><li> <a href="https://sv.wikipedia.org/wiki/Stina_Ekman" target="_blank">Stina Ekman</a> - 1998</li><li> Stockholm (Gröndal) - Gröndal, Vinterviken</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9863306,59.3118722</coordinates>
@@ -1493,15 +1586,15 @@ Många...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Font%C
         </Placemark>
         <Placemark id="k0180/330">
             <title>En tidsmaskin på torget</title>
-            <description><![CDATA[<ul><li> <b>En tidsmaskin på torget</b></li><li> <a href="https://sv.wikipedia.org/wiki/Jan_Svenungsson" target="_blank">Jan Svenungsson</a> - 2009</li><li> Stockholm (Liljeholmen) - Årstadal, Sjövikstorget</li></ul>]]></description>
-            <styleUrl>#monumentStyle</styleUrl>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Jan%20Svenungsson%20En%20tidsmaskin%20p%C3%A5%20torget.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Jan_Svenungsson_En_tidsmaskin_på_torget.JPG&width=100" align="right" /></a><ul><li> <b>En tidsmaskin på torget</b></li><li> <a href="https://sv.wikipedia.org/wiki/Jan_Svenungsson" target="_blank">Jan Svenungsson</a> - 2009</li><li> Stockholm (Liljeholmen) - Årstadal, Sjövikstorget</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.029694,59.3079028</coordinates>
             </Point>
         </Placemark>
         <Placemark id="k0180/333">
             <title>Domarring</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Egon%20M%C3%B6ller-Nielsen%20Domarring%2001.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Egon_Möller-Nielsen_Domarring_01.JPG&width=100" align="right" /></a><ul><li> <b>Domarring</b></li><li> <a href="https://sv.wikipedia.org/wiki/Egon_M%C3%B6ller-Nielsen" target="_blank">Egon Möller-Nielsen</a> - 1972</li><li> Stockholm (Skärholmen) - Plaskdammen, Stora sällskapets väg 10-18</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Egon%20M%C3%B6ller-Nielsen%20Domarring%2001.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Egon_Möller-Nielsen_Domarring_01.JPG&width=100" align="right" /></a><ul><li> <b>Domarring</b></li><li> <a href="https://sv.wikipedia.org/wiki/Egon_M%C3%B6ller-Nielsen" target="_blank">Egon Möller-Nielsen</a> - 1972</li><li> Stockholm (Bredäng) - Plaskdammen, Stora sällskapets väg 10-18</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9321861111111,59.2961805555556</coordinates>
@@ -1517,7 +1610,7 @@ Många...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Font%C
         </Placemark>
         <Placemark id="k0180/335">
             <title>Dockvagnen</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Gunnel%20Frieberg%20Barnvagnen.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Gunnel_Frieberg_Barnvagnen.JPG&width=100" align="right" /></a><ul><li> <b>Dockvagnen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Gunnel_Frieberg" target="_blank">Gunnel Frieberg</a> - 1974</li><li> Stockholm (Skärholmen) - Sätra torg</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Gunnel%20Frieberg%20Barnvagnen.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Gunnel_Frieberg_Barnvagnen.JPG&width=100" align="right" /></a><ul><li> <b>Dockvagnen</b></li><li> <a href="https://sv.wikipedia.org/wiki/Gunnel_Frieberg" target="_blank">Gunnel Frieberg</a> - 1974</li><li> Stockholm (Sätra) - Sätra torg</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9218944444444,59.284925</coordinates>
@@ -1525,7 +1618,7 @@ Många...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Font%C
         </Placemark>
         <Placemark id="k0180/336">
             <title>Vatt</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Ann%20Rosen%20Vatt.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Ann_Rosen_Vatt.JPG&width=100" align="right" /></a><ul><li> <b>Vatt</b></li><li> Ann Rosén - 2010</li><li> Stockholm (Skärholmen) - Sätra torg, väster om T-bana</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Ann%20Rosen%20Vatt.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Ann_Rosen_Vatt.JPG&width=100" align="right" /></a><ul><li> <b>Vatt</b></li><li> Ann Rosén - 2010</li><li> Stockholm (Sätra) - Sätra torg, väster om T-bana</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.9200417,59.2850444</coordinates>
@@ -1537,6 +1630,86 @@ Många...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Font%C
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>17.8893778,59.2746583</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/346">
+            <title>Lokatt</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Georg%20Ganmar%20Lodjuret.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Georg_Ganmar_Lodjuret.JPG&width=100" align="right" /></a><ul><li> <b>Lokatt</b></li><li> <a href="https://sv.wikipedia.org/wiki/Georg_Ganmar" target="_blank">Georg Ganmar</a> - 1978</li><li> Stockholm (Farsta, Gubbängen, Hökarängen, Fagersjö, Farstanäset, Farsta strand och Larsboda) - Gubbängstorget</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>18.0839305556,59.262475</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/349">
+            <title>Mor och barn</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Nils%20M%C3%B6llerberg%20Mor%20och%20barn%20Sk%C3%B6ndal.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Nils_Möllerberg_Mor_och_barn_Sköndal.JPG&width=100" align="right" /></a><ul><li> <b>Mor och barn</b></li><li> <a href="https://sv.wikipedia.org/wiki/Nils_M%C3%B6llerberg" target="_blank">Nils Möllerberg</a> - 1971</li><li> Stockholm (Sköndal) - Sköndal, Sköndalsvägen 124-126</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>18.1183833333,59.2521722222</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/350">
+            <title>Runa</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Astrid%20Noack%20Runa%20Sk%C3%B6ndal.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Astrid_Noack_Runa_Sköndal.JPG&width=100" align="right" /></a><ul><li> <b>Runa</b></li><li> <a href="https://sv.wikipedia.org/wiki/Astrid_Noack" target="_blank">Astrid Noack</a> - 1971</li><li> Stockholm (Sköndal) - Sköndal, Sköndalsvägen 124-126</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>18.1185805556,59.2521916667</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/351">
+            <title>Thorkild</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Astrid%20Noack%20Thorkild.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Astrid_Noack_Thorkild.JPG&width=100" align="right" /></a><ul><li> <b>Thorkild</b></li><li> <a href="https://sv.wikipedia.org/wiki/Astrid_Noack" target="_blank">Astrid Noack</a> - 1971</li><li> Stockholm (Sköndal) - Sköndal, Sköndalsvägen 124-126</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>18.1185666667,59.2521361111</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/352">
+            <title>Triangelflicka</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Stefan%20Thoren%20Triangelflicka%2001.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Stefan_Thoren_Triangelflicka_01.JPG&width=100" align="right" /></a><ul><li> <b>Triangelflicka</b></li><li> <a href="https://sv.wikipedia.org/wiki/Stefan_Thor%C3%A9n" target="_blank">Stefan Thorén</a> - 1971</li><li> Stockholm (Sköndal) - Sköndal, Sköndalsvägen 124-126</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>18.1184777778,59.2520833333</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/353">
+            <title>7 år</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Sten%20Ericson7%20ar%2001.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Sten_Ericson7_ar_01.JPG&width=100" align="right" /></a><ul><li> <b>7 år</b></li><li> <a href="https://sv.wikipedia.org/wiki/Sten_Ericson" target="_blank">Sten Ericson</a> - 1971</li><li> Stockholm (Sköndal) - Sköndal, Sköndalsvägen 124-126</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>18.1184638889,59.2520083333</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/359">
+            <title>Fridag</title>
+            <description><![CDATA[<ul><li> <b>Fridag</b></li><li> <a href="https://sv.wikipedia.org/wiki/Fred_%C3%85berg" target="_blank">Fred Åberg</a> - 1992</li><li> Stockholm (Kälvesta) - Kälvesta, Sörgårdsvägen vid Trädgårdsmästarvägen</li></ul>]]></description>
+            <styleUrl>#monumentStyle</styleUrl>
+            <Point>
+                <coordinates>17.8621777778,59.3831888889</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/362">
+            <title>Ekvilibrium</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Ragnhild%20Alexandersson%20Ekvilibrium%2002.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Ragnhild_Alexandersson_Ekvilibrium_02.JPG&width=100" align="right" /></a><ul><li> <b>Ekvilibrium</b></li><li> <a href="https://sv.wikipedia.org/wiki/Ragnhild_Alexandersson" target="_blank">Ragnhild Alexandersson</a> - 2001</li><li> Stockholm (Alvik) - Alviksparken</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>17.9815527778,59.33285</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/371">
+            <title>Gycklarna</title>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Arsta%20centrum%202007%201.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Arsta_centrum_2007_1.jpg&width=100" align="right" /></a><ul><li> <b>Gycklarna</b></li><li> <a href="https://sv.wikipedia.org/wiki/Bror_Marklund" target="_blank">Bror Marklund</a> - 1966</li><li> Stockholm (Årsta) - Årsta torg</li></ul>]]></description>
+            <styleUrl>#monPicStyle</styleUrl>
+            <Point>
+                <coordinates>18.0522777778,59.2973777778</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="k0180/373">
+            <title>Fragment ur naturens arkitektur I-V</title>
+            <description><![CDATA[<ul><li> <b>Fragment ur naturens arkitektur I-V</b></li><li> Irene Vestman - 1992</li><li> Stockholm (Årsta) - Östberga torg</li></ul>]]></description>
+            <styleUrl>#monumentStyle</styleUrl>
+            <Point>
+                <coordinates>18.0333611111,59.2891805556</coordinates>
             </Point>
         </Placemark>
         <Placemark id="k0180/374">
@@ -1565,7 +1738,7 @@ Många...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Font%C
         </Placemark>
         <Placemark id="SKB/SKB-255">
             <title>2x2Y</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:2xXY%2C%20Nybodaringen.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=2xXY,_Nybodaringen.JPG&width=100" align="right" /></a><ul><li> <b>2x2Y</b></li><li> Johanna Karlin - 1999</li><li> Stockholm (Stockholm)</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:2xXY%2C%20Nybodaringen.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=2xXY,_Nybodaringen.JPG&width=100" align="right" /></a><ul><li> <b>2x2Y</b></li><li> Johanna Karlin - 1999</li><li> Stockholm (Liljeholmen)</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.021861,59.30278</coordinates>
@@ -1581,7 +1754,7 @@ Många...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Font%C
         </Placemark>
         <Placemark id="SKB/SKB-339">
             <title>Instabil</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Instabil.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Instabil.jpg&width=100" align="right" /></a><ul><li> <b>Instabil</b></li><li> <a href="https://sv.wikipedia.org/wiki/Lars_Englund" target="_blank">Lars Englund</a> - 2001</li><li> Stockholm (Södra Hammarbyhamnnen) - Lugnet</li><br/><li> Instabil är ett offentligt konstverk i form av en mobil skapad av konstnären Lars Englund och placerad i Lugnet, Hammarby sjöstad i centrala Stockholm.
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Instabil.jpg" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Instabil.jpg&width=100" align="right" /></a><ul><li> <b>Instabil</b></li><li> <a href="https://sv.wikipedia.org/wiki/Lars_Englund" target="_blank">Lars Englund</a> - 2001</li><li> Stockholm (Hammarby sjöstad) - Lugnet</li><br/><li> Instabil är ett offentligt konstverk i form av en mobil skapad av konstnären Lars Englund och placerad i Lugnet, Hammarby sjöstad i centrala Stockholm.
 
 Mobilen består av en grön helt obalanserad vinge som är placerad...</li><br/><li>Läs mer om <a href="https://sv.wikipedia.org/wiki/Instabil" target="_blank">konstverket på Wikipedia</a>.</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
@@ -1591,7 +1764,7 @@ Mobilen består av en grön helt obalanserad vinge som är placerad...</li><br/>
         </Placemark>
         <Placemark id="SKB/SKB-431">
             <title>Moby Dick</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Johan%20Paalzow%20Moby%20Dick.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Johan_Paalzow_Moby_Dick.JPG&width=100" align="right" /></a><ul><li> <b>Moby Dick</b></li><li> <a href="https://sv.wikipedia.org/wiki/Johan_Paalzow" target="_blank">Johan Paalzow</a> - 2004</li><li> Stockholm (Marieberg, Fredhäll och Stadshagen) - Konradsberg</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Johan%20Paalzow%20Moby%20Dick.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Johan_Paalzow_Moby_Dick.JPG&width=100" align="right" /></a><ul><li> <b>Moby Dick</b></li><li> <a href="https://sv.wikipedia.org/wiki/Johan_Paalzow" target="_blank">Johan Paalzow</a> - 2004</li><li> Stockholm (Marieberg) - Konradsberg</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.013283,59.329583</coordinates>
@@ -1599,7 +1772,7 @@ Mobilen består av en grön helt obalanserad vinge som är placerad...</li><br/>
         </Placemark>
         <Placemark id="SKB/SKB2012-008">
             <title>Binär</title>
-            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Eva%20Hild%20Bin%C3%A4r.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Eva_Hild_Binär.JPG&width=100" align="right" /></a><ul><li> <b>Binär</b></li><li> <a href="https://sv.wikipedia.org/wiki/Eva_Hild" target="_blank">Eva Hild</a> - 2012</li><li> Stockholm (Stockholm)</li></ul>]]></description>
+            <description><![CDATA[<a href="http://commons.wikimedia.org/wiki/File:Eva%20Hild%20Bin%C3%A4r.JPG" target="_blank"><img src="https://commons.wikimedia.org/w/thumb.php?f=Eva_Hild_Binär.JPG&width=100" align="right" /></a><ul><li> <b>Binär</b></li><li> <a href="https://sv.wikipedia.org/wiki/Eva_Hild" target="_blank">Eva Hild</a> - 2012</li><li> Stockholm (Norrmalm)</li></ul>]]></description>
             <styleUrl>#monPicStyle</styleUrl>
             <Point>
                 <coordinates>18.064494,59.329244</coordinates>

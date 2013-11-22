@@ -44,11 +44,11 @@
         map.addLayer(mapQuest);
         map.setCenter(position, zoom );
         
-        //var kmlUrl = "http://wlpa.wikimedia.se/odok-bot/site/dump.kml?fulhack=true";
+        //var kmlUrl = "http://offentligkonst.se/dump.kml?fulhack=true";
         var kmlLayer = new OpenLayers.Layer.Vector("KML", {
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
-                url: "dump.kml",
+                url: "dump-all.kml",
                 format: new OpenLayers.Format.KML({
                     extractStyles: true, 
                     extractAttributes: true,
@@ -92,7 +92,7 @@
         till med genom att bes&ouml;ka v&aring;r <a href="https://se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst">projektsida</a>.<br/>
         Vi har &auml;ven en <a href="https://se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/To_do">&ouml;nskelista</a> speciellt f&ouml;r utvecklare.<br/><br/>
         
-        Nedan kan ni se de objekt i Stockholms kommun f&ouml;r vilka vi har koordinater. Kartan kommer att kompletteras allt eftersom vi identifierar koordinater f&ouml;r fler av konstverken.<br/>
+        Nedan kan ni se de objekt i Stockholms f&ouml;r vilka vi har koordinater. Zooma ut f&ouml;r att se konstverk i &ouml;vriga Sverige. Kartan kommer att kompletteras allt eftersom vi får in mer data och identifierar koordinater f&ouml;r fler av konstverken.<br/>
     </div>
     <div id="map"></div>
     <footer style="font-size:small">
