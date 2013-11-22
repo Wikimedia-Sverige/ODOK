@@ -132,6 +132,10 @@
                         $counter++;
                     }
                 }
+                #check if any un-tabled artists were missed
+                if (count($artist_info) != count(explode(';',$row['artist']))){
+                    $desc .= " <!--Some unlinked artists have been missed! please add these manually from: '" .$row['artist']. "'";
+                }
                 return $desc; 
             }
             elseif (!empty($row['artist'])){
