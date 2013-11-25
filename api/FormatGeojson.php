@@ -139,7 +139,7 @@
             }
         }
         
-        function output($results, $full=False){
+        function output($results, $full=False, $compact=False){
             if($results['head']['status'] == '0') #Fall back to xml if errors
                 Format::outputXml($results);
             else{
@@ -159,7 +159,11 @@
                 #finalise
                 $geojson = self::finalise($features, $results['head']);
                 #print as json
-                echo json_encode($geojson);
+                if ($compact){
+                    echo json_encode($geojson);
+                }else{
+                    echo json_encode($geojson, JSON_PRETTY_PRINT);
+                }
             }
         }
     }

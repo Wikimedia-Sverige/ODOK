@@ -14,8 +14,16 @@
             /* Setting up JSON headers */
             @header ("content-type: text/json charset=utf-8");
             
+            $compact=False;
+            if (strtolower($_GET['json']) == 'compact'){
+                $compact=True;
+            }
             /* Printing the JSON Object */
-            echo json_encode($results);
+            if ($compact){
+                echo json_encode($results);
+            }else{
+                echo json_encode($results, JSON_PRETTY_PRINT);
+            }
         }
         
         function outputPhp($results){   
@@ -93,11 +101,15 @@
         function outputGeojson($results){
             if (strtolower($_GET['action']) == 'get'){
                 include('FormatGeojson.php');
+                $full = False;
+                $compact = False;
                 if (strtolower($_GET['geojson']) == 'full'){
-                    FormatGeojson::output($results, $full=True);
-                }else {
-                    FormatGeojson::output($results);
+                    $full=True;
                 }
+                if (strtolower($_GET['json']) == 'compact'){
+                    $compact=True;
+                }
+                FormatGeojson::output($results, $full, $compact);
             }else{
                 $results['head']['warning'] .= 'geojson is only a valid format for the "get" action; defaulting to xml. ';
                 self::outputXml($results);
