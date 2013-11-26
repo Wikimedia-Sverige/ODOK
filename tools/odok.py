@@ -39,6 +39,9 @@ class OdokApi(wikiApi.WikiApi):
         
         return odok
     
+    def apiaction(self, action):
+        return self._apiurl + "?action=" + action + "&format=json&json=compact"
+    
     def failiure(self, jsonr, debug=False):
         '''
         Standardised function to present errors
