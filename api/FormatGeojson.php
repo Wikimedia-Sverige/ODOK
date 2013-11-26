@@ -162,7 +162,7 @@
                 if ($compact){
                     echo json_encode($geojson);
                 }else{
-                    echo json_encode($geojson, JSON_PRETTY_PRINT);
+                    echo Format::prettyPrintJson($geojson);
                 }
             }
         }
