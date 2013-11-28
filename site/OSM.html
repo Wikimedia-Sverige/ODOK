@@ -39,7 +39,7 @@
         var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
         var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
         var position       = new OpenLayers.LonLat(18.0162, 59.3145).transform( fromProjection, toProjection);
-        var zoom           = 13; 
+        var zoom           = 12; 
         //map.addLayer(mapnik);
         map.addLayer(mapQuest);
         map.setCenter(position, zoom );
@@ -87,12 +87,15 @@
   </head>
   <body onload="init();">
     <div style="font-family:Varela; text-align:justify; background:white; padding:5px; border:2px solid red; width:50%; margin-left: auto; margin-right: auto ;">
-        V&auml;lkommen! P&aring; denna sida kommer Wikimedia Sveriges databas &ouml;ver offentlig konst att presenteras. 
-        Till dess att sidan &auml;r f&auml;rdig kan ni f&aring; information om projektet och vad du som volont&auml;r kan hj&auml;lpa 
-        till med genom att bes&ouml;ka v&aring;r <a href="https://se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst">projektsida</a>.<br/>
-        Vi har &auml;ven en <a href="https://se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/To_do">&ouml;nskelista</a> speciellt f&ouml;r utvecklare.<br/><br/>
+        V&auml;lkommen! H&auml;r kommer Wikimedia Sveriges databas &ouml;ver offentlig konst att presenteras. 
+        Information om projektet och vad du som volont&auml;r kan hj&auml;lpa till med finns p&aring; v&aring;r 
+        <a href="https://se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst">projektsida</a>. 
+        Vi har &auml;ven en <a href="https://se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/To_do">&ouml;nskelista</a> 
+        speciellt f&ouml;r utvecklare.<br/><br/>
         
-        Nedan kan ni se de objekt i Stockholms f&ouml;r vilka vi har koordinater. Zooma ut f&ouml;r att se konstverk i &ouml;vriga Sverige. Kartan kommer att kompletteras allt eftersom vi får in mer data och identifierar koordinater f&ouml;r fler av konstverken.<br/>
+        Nedan visas tills vidare de konstverk i Stockholm f&ouml;r vilka vi har koordinater. Zooma ut f&ouml;r att se konstverk i 
+        &ouml;vriga Sverige. Kartan kompletteras löpande.<br/>
+        Det går även att <a href="./HACK4DK/web/#odok/">söka bland konstverken</a>.<br/>
     </div>
     <div id="map"></div>
     <footer style="font-size:small">
