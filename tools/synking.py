@@ -72,6 +72,7 @@ def run(verbose=False):
             print u'id not found in database: %s @ %s' %(k, wiki_objects[k]['page'])
 
     print u'Looked in database and found %r corresponding objects. Starting comparison.' %len(odok_objects)
+    flog.write(u'issues:\n')
     #Compare
     counter = 0
     changes = {}
@@ -81,24 +82,24 @@ def run(verbose=False):
         if diff:
             changes[k] = diff
         if log:
-            flog.write(u'issues with %s @ %s: %s' %(k, wiki_objects[k]['page'], log))
+            flog.write(u'%s @ %s: %s' %(k, wiki_objects[k]['page'], log))
         if counter%100==0:
             print u'%r/%r' %(counter,len(odok_objects))
+    flog.write(u'\n') #end of issues
     
     print u'Found %r changed objects. Sorting...' %len(changes)
     #update if needed
     if changes:
         ccounter = 0
         ncounter=0
-        #initially filter out any changes to district, cmt, artist, free, aka, address - as these are porblematic/need to be implemented differently
+        #initially filter out any changes to cmt, artist, free, aka, address - as these are problematic/need to be implemented differently
         not_changed = {}
         for k, v in changes.iteritems():
             not_changed[k] = {}
             if u'cmt' in v.keys(): not_changed[k][u'cmt'] = changes[k].pop(u'cmt')                  #check changes, problem with multiple footnotes and some made with templates
-            if u'artist' in v.keys(): not_changed[k][u'artist'] = changes[k].pop(u'artist')         #need deal with multi_artist issues first
-            if u'free' in v.keys(): not_changed[k][u'free'] = changes[k].pop(u'free')               #need to establish wiki_policy-need to enable synk db->wiki as this is set by updateCopyright
-            if u'aka' in v.keys(): not_changed[k][u'aka'] = changes[k].pop(u'aka')                  #separate changed_list which either crates/removes or changes an aka
-            if u'address' in v.keys(): not_changed[k][u'address'] = changes[k].pop(u'address')      #need to verify quality of changes first
+            if u'free' in v.keys(): not_changed[k][u'free'] = changes[k].pop(u'free')               #need to establish wiki_policy+need to enable synk db->wiki as this is set by updateCopyright
+            if u'aka' in v.keys(): not_changed[k][u'aka'] = changes[k].pop(u'aka')                  #separate changed_list which either creates/removes or changes an aka
+            if u'address' in v.keys(): not_changed[k][u'address'] = changes[k].pop(u'address')      #Can let through old='' directly. Need to verify quality of changes first largly corresponds to changes in district
             
             if not_changed[k] == {}: del not_changed[k]
             else: ncounter = ncounter+len(not_changed[k].keys())
@@ -124,6 +125,8 @@ def run(verbose=False):
     flog.write(u'------SQL-log (write)-------------\n%s\n' %dbWriteSQL.closeConnections())
     flog.write(u'------END of updates-------------\n\n')
     flog.close()
+    
+    #TOBUILD db.makeDump() #change create a dump (ideally one which is incremental)
     exit(1)
 #----------------
 def commitToDatabase(odokWriter, changes, verbose=False):
@@ -185,6 +188,7 @@ def listToObjects(objects, pagename, contents):
                 if not part: break
                 if u'=' in part:
                     p=part.split(u'=')
+                    p = [p[0], part[len(p[0])+1:]] #to avoid problems with = signs in urls etc.
                     for i in range(0,len(p)): p[i] = p[i].strip(' \n\t')
                     if p[0] in params.keys():
                         if p[0] in boolParams:
@@ -328,7 +332,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     ##Main-process
     diff = {}
     #easy to compare {wiki:odok}
-    trivial_params = {u'typ':u'type', u'material':u'material', u'id-länk':u'official_url', u'fri':u'free', u'inomhus':u'inside', u'artists':u'artist',
+    trivial_params = {u'typ':u'type', u'material':u'material', u'id-länk':u'official_url', u'fri':u'free', u'inomhus':u'inside', u'artists':u'artist', u'årtal':u'year',
                       u'commonscat':u'commons_cat', u'beskrivning':u'descr', u'bild':u'image', u'titel':u'title', u'aka':u'aka', u'artikel':u'wiki_article',
                       u'plats':u'address', u'län':u'county', u'kommun':u'muni', u'stadsdel':u'district', u'lat':u'lat', u'lon':u'lon', u'fotnot':u'cmt'
                       }
@@ -339,28 +343,41 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             diff[v] = {'new':w_text, 'old':odokObj[v]}
             if verbose: print u'%s:"%s"    <--->   %s:"%s"' %(k, w_text, v, odokObj[v])
     
-    
-    #need to compare artist_links:
+    ##Needing separate treatment
+    #comparing artist_links: u'artist_links':u'artist_links'
     artist_links = list(set(wikiObj[u'artist_links'])-set(odokObj[u'artist_links']))
     if artist_links and len(''.join(artist_links))>0:
         log = log + u'difference in artist links, linkdiff: %s\n' %';'.join(artist_links)
-
-    #Years which are not plain numbers cannot be sent to db
-    (w_text, w_links) = unwiki(wikiObj[u'årtal'])
-    if not (w_text == odokObj['year']):
-        if common.is_int(w_text):
-            diff['year'] = {'new':w_text, 'old':odokObj['year']}
-        else:
-            log = log + u'Non-integer year: %s\n' %w_text
-            
-
+    
     ##Post-processing
     #fotnot-namn without fotnot - needs to look-up fotnot for o:cmt
     if wikiObj[u'fotnot-namn'] and not wikiObj[u'fotnot']:
         log = log + u'fotnot-namn so couldn\'t compare, fotnot-namn: %s\n' %wikiObj[u'fotnot-namn']
         if u'cmt' in diff.keys():
             del diff[u'cmt']
-
+            
+    #Years which are not plain numbers cannot be sent to db
+    if 'year' in diff.keys():
+        if not common.is_int(diff['year']['new']):
+            year = diff.pop('year')
+            log = log + u'Non-integer year: %s\n' %year['new']
+    
+    #Basic validation of artist field:
+    if 'artist' in diff.keys():
+        #check that number of artists is the same
+        if '[' in diff['artist']['old']:
+            artist = diff.pop('artist')
+            log = log + u'cannot deal with artists which include group affilitations: %s --> %s\n' %(artist['old'],artist['new'])
+        elif len(diff['artist']['old'].split(';')) != len(diff['artist']['new'].split(';')):
+            artist = diff.pop('artist')
+            log = log + u'difference in number of artists: %s --> %s\n' %(artist['old'],artist['new'])
+    
+    #Unstripped refrences
+    for k in diff.keys():
+        if k == u'official_url': continue
+        if 'http:' in diff[k]['new']:
+            val = diff.pop(k)
+            log = log + u'new value for %s seems to include a url: %s --> %s\n' %(k, val['old'],val['new'])
     
     return (diff, log)
     
