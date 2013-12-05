@@ -125,9 +125,8 @@
                         if (!empty($row['wiki_article'])){
                             #get descrition from wikipage
                             $desc .= '</li><br/><li>'.ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false));
-                            $desc .= '</li><br/><li>'.htmlspecialchars('Läs mer om ');
-                            $desc .= '<a href="'.ApiBase::getArticleFromWikidata($row['wiki_article']).'" target="_blank">';
-                            $desc .= htmlspecialchars('konstverket på Wikipedia');
+                            $desc .= '  <a href="'.ApiBase::getArticleFromWikidata($row['wiki_article']).'" target="_blank">';
+                            $desc .= htmlspecialchars('Läs mer om konstverket på Wikipedia');
                             $desc .= '</a>.';
                         }
                         else if (!empty($row['descr']))
