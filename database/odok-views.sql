@@ -42,6 +42,7 @@ SELECT m.id,
     IF(m.ugc=1,a.cmt,m.cmt) as cmt
 FROM main_table m LEFT OUTER JOIN audit_table a
 ON m.id = a.id
+WHERE m.source != 'UGC'
 ORDER BY m.id;
 
 #official view but any blank fields are replaced by ugc material
@@ -77,4 +78,5 @@ SELECT m.id,
     IF(m.ugc=1 AND NOT a.cmt = "",a.cmt,m.cmt) as cmt
 FROM main_table m LEFT OUTER JOIN audit_table a
 ON m.id = a.id
+WHERE m.source != 'UGC'
 ORDER BY m.id;
