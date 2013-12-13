@@ -8,10 +8,10 @@
  1. Identify pages with relevant lists. store pagenames as list <pages>
  2. Identify municipalitynumber as <muniNo>
  3. Do initial scrape:
-        run(testing=False, pages=<pages>, queries={'muni':'<muniNo>'}, tmpFile=u'scrapetmp.txt')
+        run(pages=<pages>, queries={'muni':'<muniNo>'}, tmpFile=u'scrapetmp.txt')
  3.1 Results are outputted into <scrapetmp.txt>
  3.2 For further scrapes use
-        run(testing=False, queries={'muni':'<muniNo>'}, listFile=u'scrapetmp1.txt')
+        run(queries={'muni':'<muniNo>'}, listFile=u'scrapetmp1.txt')
  ?Does anythin have to be done manually at this point?
  To convert simply output using outputAll(listFile,county, muni)
  == Comparison of scraped results to database objects ==
@@ -221,7 +221,7 @@ def fileToHits(filename):
         wikiHits.append(unit.copy())
     return wikiHits
 
-def run(testing=True, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp.txt'):
+def run(testing=False, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp.txt'):
     '''
     runs the scrape-and-match process. if testing=true then outputs to file instead
     '''
