@@ -374,7 +374,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     
     #Unstripped refrences
     for k in diff.keys():
-        if k == u'official_url': continue
+        if k == u'official_url' or k == u'inside': continue
         if 'http:' in diff[k]['new']:
             val = diff.pop(k)
             log = log + u'new value for %s seems to include a url: %s --> %s\n' %(k, val['old'],val['new'])
