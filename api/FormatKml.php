@@ -79,9 +79,15 @@
                     $xml->startElement('description');
                         $desc = '';
                         if (!empty($row['image'])){
+                            #if inside & unfree show link otherwise show image
+                            if ($row['inside']==1 and $row['free']=='unfree'){
+                                $showImage = 'Commons-icon.svg';
+                            }else{
+                                $showImage = $row['image'];
+                            }
                             $imgsize = 100;
                             $desc .= '<a href="http://commons.wikimedia.org/wiki/File:' . rawurlencode($row['image']) . '" target="_blank">';
-                            $desc .= '<img src="' . ApiBase::getImageFromCommons($row['image'],$imgsize) . '" align="right" />';
+                            $desc .= '<img src="' . ApiBase::getImageFromCommons($showImage,$imgsize) . '" align="right" />';
                             $desc .= '</a>';
                             $styleUrl = '#monPicStyle';
                         }else
