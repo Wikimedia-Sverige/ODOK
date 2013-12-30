@@ -11,6 +11,7 @@ import WikiApi as wikiApi
 import odok as odokConnect
 import dconfig as config
 import dataDicts as dataDict
+import UGC_synk as UGCsynk
 
 def run(verbose=False):
     '''
@@ -19,10 +20,10 @@ def run(verbose=False):
     '''
     flog = codecs.open(u'¤syncLog.log','a','utf8')
     
-    #wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_test)
+    #wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.wp_local_password, site=config.wp_local, separator='wiki')
     #dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_test)
-    #dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_test, db=config.db, user=config.db_read, passwd=config.db_read_password)
-    #dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_test, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
+    #dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_test, db=config.db, user=config.db_read, passwd=config.db_test_read_password)
+    #dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_test, db=config.db, user=config.db_edit, passwd=config.db_test_edit_password)
     
     wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site)
     dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_site)
@@ -39,12 +40,18 @@ def run(verbose=False):
     #find changed pages
     checkList=[]
     pageList = wpApi.getEmbeddedinTimestamps(u'Mall:Offentligkonstlista', 0)
-    #pageList = [{'title':u'Lista över offentlig konst i Örebro kommun', 'timestamp':str(thisSync)},] #TESTING
     for p in pageList:
         if convertTimestamp(p['timestamp'])>lastSync:
             checkList.append(p['title'])
     flog.write(u'changed pages: %r\n------------------\n' %len(checkList))
     
+    #deal with new UGC items
+    (log, newUGC) = UGCsynk.run(checkList, wpApi, dbWriteSQL)
+    flog.write(u'\n---------- New UGC items (%r): --------\n' % newUGC)
+    if log:
+            flog.write('%s\n' %log)
+    
+    #read pages (after UGC updates)
     checkPages = wpApi.getPage(checkList)
     
     #parse changed pages
@@ -99,7 +106,6 @@ def run(verbose=False):
             if u'cmt' in v.keys(): not_changed[k][u'cmt'] = changes[k].pop(u'cmt')                  #check changes, problem with multiple footnotes and some made with templates
             if u'free' in v.keys(): not_changed[k][u'free'] = changes[k].pop(u'free')               #need to establish wiki_policy+need to enable synk db->wiki as this is set by updateCopyright
             if u'aka' in v.keys(): not_changed[k][u'aka'] = changes[k].pop(u'aka')                  #separate changed_list which either creates/removes or changes an aka
-            if u'address' in v.keys(): not_changed[k][u'address'] = changes[k].pop(u'address')      #Can let through old='' directly. Need to verify quality of changes first largly corresponds to changes in district
             
             if not_changed[k] == {}: del not_changed[k]
             else: ncounter = ncounter+len(not_changed[k].keys())
