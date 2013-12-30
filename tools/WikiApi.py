@@ -700,12 +700,12 @@ class WikiApi(object):
         return reqlimit
 
     @classmethod
-    def setUpApi(cls, user, password, site, reqlimit=50, verbose=False):
+    def setUpApi(cls, user, password, site, reqlimit=50, verbose=False, separator='w'):
         '''
         Creates a WikiApi object, log in and aquire an edit token
         '''
         #Provide url and identify (either talk-page url)
-        wiki = cls('%s/w/api.php' %site,"%s/wiki/User_talk:%s" %(site, user))
+        wiki = cls('%s/%s/api.php' %(site, separator),"%s/wiki/User_talk:%s" %(site, user))
         
         #Set reqlimit for wp.apis
         wiki.reqlimit = reqlimit
