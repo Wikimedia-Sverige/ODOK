@@ -21,7 +21,7 @@ def run(checkList, wpApi, dbWriteSQL):
         if changes:
             changed = changed + changes[0]
             wpApi.editText(pagename, changes[1], u'Lägger till UGC-id', minor=True, bot=True, userassert='bot')
-            log = u'%s\nUGC objects added to %s' %(log,pagename)
+            log = u'%sUGC objects added to %s\n' %(log,pagename)
     return (log, changed)
 
 def UGConPage(pagename, contents, dbWriteSQL):
