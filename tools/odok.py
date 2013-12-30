@@ -3,6 +3,9 @@
 
 # Module for various means of communicating with the ODOK database
 
+#To do for sql:
+#Switch over to SSCursor
+
 #----------------------------------------------------------------------------------------
 
 import WikiApi as wikiApi
@@ -96,7 +99,7 @@ class OdokApi(wikiApi.WikiApi):
     def getQuery(self, queries, members=None, debug=False):
         '''
         Returns list of all objects matching the provided query (blunt function which should be avoided if possible)
-        :param queries: A dictionary of parameter value pairs to limit the search by. THese must be formated and limited correctly
+        :param queries: A dictionary of parameter value pairs to limit the search by. These must be formated and limited correctly
         :param members: (optional) A list to which to add the results (internal use)
         :return: list odok objects (dicts)
         '''
@@ -198,6 +201,23 @@ class OdokSQL():
         self.conn = None
         self.cursor = None
         (self.conn, self.cursor) = self.connectDatabase(host=host, db=db, user=user, passwd=passwd)
+    
+    def multiQuery(self, queries, testing=False):
+        '''
+        Multiple queries where executemany is not suitable and multiple executes are needed
+        (e.g. when using LAST_INSERT_ID()) to avoid "Commands out of sync"
+        To do: Add support for params
+        :param queries: List of SQL safe queries
+        '''
+        results = []
+        if not isinstance(queries, list):
+            print u'multiQuery requires a list of queries without parameters'
+            return None
+        
+        for q in queries:
+            results.append(self.query(query=q, params=None, testing=testing))
+        self.conn.commit()
+        return results
     
     def query(self, query, params, testing=False, expectReply=False):
         '''
