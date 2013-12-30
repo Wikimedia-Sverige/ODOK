@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS `muni_table`;
 DROP TABLE IF EXISTS `county_table`;
 DROP TABLE IF EXISTS `source_table`;
 DROP TABLE IF EXISTS `artist_table`;
+DROP TABLE IF EXISTS `UGC_table`;
 
 CREATE TABLE  `muni_table` (
   `id`          smallint(4)     NOT NULL,                   #Municipal code
@@ -167,4 +168,15 @@ CREATE TABLE  `artist_links` (
   #Because mysql does not support inline referenes
   FOREIGN KEY (object)  REFERENCES main_table(id),
   FOREIGN KEY (artist)  REFERENCES artist_table(id)
+)ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `UGC_table` (
+  `num`         int             NOT NULL AUTO_INCREMENT,    # Unique id for the UGC object (without UGC/)
+  `listpage`    varchar(255)    NOT NULL,                   # The list where the object was first identified
+  `same_as`     varchar(25)     DEFAULT NULL,               # Id for superceding id. NULL for active, empty for deleted without replacement
+  `changed`     timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, # Last changed
+  PRIMARY KEY   `num` (`num`),
+  INDEX         `listpage` (`listpage`),
+  INDEX         `same_as` (`same_as`),
+  INDEX         `changed` (`changed`)
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
