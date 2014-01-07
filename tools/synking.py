@@ -3,6 +3,9 @@
 '''
 Bot för att synka listor till databas:
 search-and-destroy: TESTING, INCOMPLETE
+To do:
+    Highlight wrongful formatting, missing/illegal parameter values
+    Expand UGC to rewrite object correctly formatted (including any ignored parameters)
 '''
 
 import dateutil.parser, codecs, datetime, ujson
@@ -316,7 +319,10 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     ##dealing with links:
     links = artists_links.values()
     if wikiObj[u'artikel']:
-        links.append(wikiObj[u'artikel'])
+        if u'#' in wikiObj[u'artikel']:
+            log = log + u'link to section: %s\n' %wikiObj[u'artikel']
+        else:
+            links.append(wikiObj[u'artikel'])
     if links:
         links = wpApi.getPageInfo(links)
         for k,v in links.iteritems():
@@ -331,7 +337,8 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         links = {}
     #Stick wikidata back into parameters
     if wikiObj[u'artikel']:
-        wikiObj[u'artikel'] = links.pop(wikiObj[u'artikel'])
+        if not u'#' in wikiObj[u'artikel']:
+            wikiObj[u'artikel'] = links.pop(wikiObj[u'artikel'])
     wikiObj[u'artist_links'] = links.values()
     
 
