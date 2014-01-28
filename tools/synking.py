@@ -6,6 +6,7 @@ search-and-destroy: TESTING, INCOMPLETE
 To do:
     Highlight wrongful formatting, missing/illegal parameter values
     Expand UGC to rewrite object correctly formatted (including any ignored parameters)
+    Deal with section links (these do not have real wikidata entries)
 '''
 
 import dateutil.parser, codecs, datetime, ujson
@@ -339,6 +340,8 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     if wikiObj[u'artikel']:
         if not u'#' in wikiObj[u'artikel']:
             wikiObj[u'artikel'] = links.pop(wikiObj[u'artikel'])
+        else:
+            wikiObj[u'artikel'] = ''
     wikiObj[u'artist_links'] = links.values()
     
 
