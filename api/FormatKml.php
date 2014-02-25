@@ -23,9 +23,9 @@
             #Setting document properties
             $xml->startElement('Document');
                 $xml->startElement('Style');
-                $xml->writeAttribute('id','monumentStyle');
+                $xml->writeAttribute('id','noPicStyle');
                     $xml->startElement('IconStyle');
-                    $xml->writeAttribute('id','monumentIcon');
+                    $xml->writeAttribute('id','noPicIcon');
                         $xml->startElement('Icon');
                             $xml->startElement('href');
                                 $xml->text('http://maps.google.com/mapfiles/kml/paddle/ylw-blank.png');
@@ -40,9 +40,9 @@
                     $xml->endElement();
                 $xml->endElement();
                 $xml->startElement('Style');
-                $xml->writeAttribute('id','monPicStyle');
+                $xml->writeAttribute('id','picStyle');
                     $xml->startElement('IconStyle');
-                    $xml->writeAttribute('id','monPicIcon');
+                    $xml->writeAttribute('id','picIcon');
                         $xml->startElement('Icon');
                             $xml->startElement('href');
                                 $xml->text('http://maps.google.com/mapfiles/kml/paddle/blu-circle.png');
@@ -89,9 +89,9 @@
                             $desc .= '<a href="http://commons.wikimedia.org/wiki/File:' . rawurlencode($row['image']) . '" target="_blank">';
                             $desc .= '<img src="' . ApiBase::getImageFromCommons($showImage,$imgsize) . '" align="right" />';
                             $desc .= '</a>';
-                            $styleUrl = '#monPicStyle';
+                            $styleUrl = '#picStyle';
                         }else
-                            $styleUrl = '#monumentStyle';
+                            $styleUrl = '#noPicStyle';
                         $desc .= '<ul>';
                         if (!empty($row['title'])){
                             $desc .= '<li> '; #title
