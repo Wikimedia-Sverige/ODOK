@@ -104,7 +104,7 @@ class WikiApi(object):
 
         return json
     
-    def httpGET(self, action, params, timeoutretry=0, debug=False):
+    def httpGET(self, action, params, timeoutretry=0, form=None, debug=False):
         """
         :param action: The action, pass as str
         :param params: The params to be gotten (in addition to action)
@@ -113,11 +113,11 @@ class WikiApi(object):
         """
         #Set curl http request
         self.sitecurl.setopt(pycurl.HTTPGET, 1)
-        self.sitecurl.setopt(pycurl.URL, self.apiaction(action)+'&'+urllib.urlencode(params))
+        self.sitecurl.setopt(pycurl.URL, self.apiaction(action,form=form)+'&'+urllib.urlencode(params))
         
         return self._httpREQ(action, params, self.httpGET, timeoutretry=timeoutretry, debug=debug)
     
-    def httpPOST(self, action, params, timeoutretry=0, debug=False):
+    def httpPOST(self, action, params, timeoutretry=0, form=None, debug=False):
         """
         :param action: The action, pass as str
         :param params: The params to be posted
@@ -126,12 +126,12 @@ class WikiApi(object):
         """
         
         #Set curl http request
-        self.sitecurl.setopt(pycurl.URL, self.apiaction(action))
+        self.sitecurl.setopt(pycurl.URL, self.apiaction(action,form=form))
         self.sitecurl.setopt(pycurl.HTTPPOST, params)
         
         return self._httpREQ(action, params, self.httpPOST, timeoutretry=timeoutretry, debug=debug)
     
-    def httpPOSTold(self, action, params, timeoutretry=0, debug=False):
+    def httpPOSTold(self, action, params, timeoutretry=0, form=None, debug=False):
         """
         :param action: The action, pass as str
         :param params: The params to be posted
@@ -142,7 +142,7 @@ class WikiApi(object):
         self.responsebuffer.truncate(0)
 
         #Set curl http request
-        self.sitecurl.setopt(pycurl.URL, self.apiaction(action))
+        self.sitecurl.setopt(pycurl.URL, self.apiaction(action,form=form))
         self.sitecurl.setopt(pycurl.HTTPPOST, params)
         
         if debug:
@@ -661,8 +661,11 @@ class WikiApi(object):
         #print  "Fetching pagecategories: " + '|'.join(articles)+ "...complete"
         return dDict #in case one was not supplied
     
-    def apiaction(self, action):
-        return self._apiurl + "?action=" + action + "&format=json"
+    def apiaction(self, action, form=None):
+        if not form:
+            return self._apiurl + "?action=" + action + "&format=json"
+        else:
+            return self._apiurl + "?action=" + action + "&format=" + form
     
     def logout(self):
         jsonr = self.httpPOST('logout',[('','')])
