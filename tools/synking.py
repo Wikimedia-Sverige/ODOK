@@ -279,8 +279,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     if not wikiObj[u'län']:
         wikiObj[u'län'] = wikiObj[u'header'][u'län']
     if wikiObj[u'döljStadsdel'] and not wikiObj[u'stadsdel']: #only overwrite non existant
-       wikiObj[u'stadsdel'] = wikiObj[u'header'][u'stadsdel']
-    
+        wikiObj[u'stadsdel'] = wikiObj[u'header'][u'stadsdel']
     #the following are limited in their values but need mapping from wiki to odok before comparison
     if wikiObj[u'fri'].lower() == 'nej':
         wikiObj[u'fri'] = 'unfree'
@@ -378,6 +377,16 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             year = diff.pop('year')
             log = log + u'Non-integer year: %s\n' %year['new']
     
+    #lat/lon which are not numbers cannot be sent to db
+    if 'lat' in diff.keys():
+        if not common.is_number(diff['lat']['new']):
+            lat = diff.pop('lat')
+            log = log + u'Non-decimal lat: %s\n' %lat['new']
+    if 'lon' in diff.keys():
+        if not common.is_number(diff['lon']['new']):
+            lat = diff.pop('lon')
+            log = log + u'Non-decimal lon: %s\n' %lon['new']
+    
     #Basic validation of artist field:
     if 'artist' in diff.keys():
         #check that number of artists is the same
@@ -391,7 +400,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     #Unstripped refrences
     for k in diff.keys():
         if k == u'official_url' or k == u'inside': continue
-        if 'http:' in diff[k]['new']:
+        if diff[k]['new'] and 'http:' in diff[k]['new']:
             val = diff.pop(k)
             log = log + u'new value for %s seems to include a url: %s --> %s\n' %(k, val['old'],val['new'])
     
