@@ -42,8 +42,11 @@ class OdokApi(wikiApi.WikiApi):
         
         return odok
     
-    def apiaction(self, action):
-        return self._apiurl + "?action=" + action + "&format=json&json=compact"
+    def apiaction(self, action, form=None):
+        if not form:
+            return self._apiurl + "?action=" + action + "&format=json&json=compact"
+        else:
+            return self._apiurl + "?action=" + action + "&format=" + form
     
     def failiure(self, jsonr, debug=False):
         '''
@@ -140,6 +143,45 @@ class OdokApi(wikiApi.WikiApi):
             offset = jsonr['head']['continue']
             queries['offset'] = str(offset)
             self.getQuery(queries, members=members, debug=debug)
+        
+        return members
+    
+    def getGeoJson(self, members=None, full=False, source=None, offset=0, debug=False):
+        '''
+        Returns list of all objects matching one of the provided ids
+        :param members: (optional) A list to which to add the results (internal use)
+        :return: list odok objects (dicts)
+        '''
+        #if no initial list supplied
+        if members is None:
+            members =[]
+        
+        query = [('limit', str(100)),
+                 ('offset', str(offset))]
+        if full:
+            query = query +[('geojson', 'full')]
+        if source:
+            query = query +[('source', str(source))]
+        
+        #Single run
+        #action=get&limit=100&format=geojson&geojson=full&offset=0
+        jsonr = self.httpGET("get", query, form="geojson", debug=debug)
+        
+        if debug:
+            print u'getGeoJson()\n'
+            print jsonr
+        
+        #find errors
+        if not jsonr['head']['status'] == '1':
+            print self.failiure(jsonr)
+            return None
+        
+        for feature in jsonr['features']:
+            members.append(feature)
+        
+        if 'continue' in jsonr['head'].keys():
+            offset = jsonr['head']['continue']
+            members = self.getGeoJson(members=members, full=full, offset=offset, debug=debug)
         
         return members
     
