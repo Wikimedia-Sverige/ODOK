@@ -393,7 +393,8 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         if '[' in diff['artist']['old']:
             artist = diff.pop('artist')
             log = log + u'cannot deal with artists which include group affilitations: %s --> %s\n' %(artist['old'],artist['new'])
-        elif len(diff['artist']['old'].split(';')) != len(diff['artist']['new'].split(';')):
+        elif (len(diff['artist']['old'].split(';')) != len(diff['artist']['new'].split(';'))) and (len(diff['artist']['old']) > 0):
+            #if not the same number when there were originally some artists
             artist = diff.pop('artist')
             log = log + u'difference in number of artists: %s --> %s\n' %(artist['old'],artist['new'])
     
