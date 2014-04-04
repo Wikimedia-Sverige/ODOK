@@ -63,6 +63,36 @@ def fileWithWikidata(filename=u'Artists.csv', idcol=0, namecol=[4,3], verbose=Fa
     makeCSV(aDict, '%s-tmp.txt' % outfile)
     makeWiki(aDict, '%s-tmp2.txt' % outfile)
 #
+def artistFromLog(filename='artist-dump.csv', idcol=0, namecol=3, verbose=False):
+    wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site, verbose=verbose)
+    wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site, verbose=verbose)
+    wdDict = wdApi.getArticles(aDict.keys())
+    dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_server, db=config.db, user=config.db_read, passwd=config.db_read_password)
+    outfile = filename[:-4]
+    
+    aDict=file_to_dict(filename=filename, idcol=idcol, namecol=namecol, verbose=verbose)
+    #aDict is now wd:([ids],wd)
+    
+    for k, v in wdDict.iteritems():
+        a = aDict.pop(k)
+        aDict[v['title']] = a
+    #aDict is now wp:([ids],wd)
+    
+    wpDict = wpApi.getPageInfo(aDict.keys(), debug=verbose)
+    
+    for k,v in aDict.iteritems():
+        info = wpDict[k[:1].upper()+k[1:]] #wp article must start with capital letter
+        del info['wikidata']
+        if len(info)==0:
+            info=''
+        name = ';'.join(k.split(' '))
+        aDict[k] = [v[0], name, v[1], info, '']
+    wikidataFromOdok(wdDict.keys(), aDict, dbReadSQL)
+    
+    makeCSV(aDict, '%s-tmp.txt' % outfile)
+    makeWiki(aDict, '%s-tmp2.txt' % outfile)
+    #Check file as normal + for name formating then openCSV(u'%s-tmp.txt'%outfile, prefix=u'')
+#
 def wikidataFromOdok(wdList, aDict, dbReadSQL):
     '''
     Checks a list of wikidata entities against hits in the ODOK database
