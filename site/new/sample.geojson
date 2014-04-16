@@ -1,0 +1,1767 @@
+var features = {
+	"type": "FeatureCollection",
+	"features": [
+		{
+			"type": "Feature",
+			"id": "k0184\/1945",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.012,
+					59.2138
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Plat\u00e5 i bostadsomr\u00e5de",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Bj%C3%B6rn_Erling_Evensen",
+						"wikidata": "Q5721170",
+						"name": "Bj\u00f6rn Erling Evensen"
+					}
+				],
+				"title": "Vimpeln",
+				"year": "1972",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "rivningsskrot fr\u00e5n H",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/2835",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5929,
+					59.213
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Skytteholmsparken",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Sivert_Rapp",
+						"wikidata": "Q6063568",
+						"name": "Sivert Rapp"
+					}
+				],
+				"title": "Kvartett",
+				"year": "1976",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/2935",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5956,
+					59.2118
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Sundbybergsv\u00e4gen, n\u00e4ra Huvudstagrillen",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Anna_Mizak",
+						"wikidata": "Q4967603",
+						"name": "Anna Mizak"
+					}
+				],
+				"title": "Gravid",
+				"year": "1977",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "m\u00e5lad betong",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/3467",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.115,
+					59.2128
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Eric Grates park, Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Eric_Grate",
+						"wikidata": "Q513724",
+						"name": "Eric Grate"
+					}
+				],
+				"title": "Oberon",
+				"year": "1953",
+				"year_cmt": "Tillverknings\u00e5r, 1953-54",
+				"type": "skulptur",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/3470",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5956,
+					59.2147
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Charlottenburgsg\u00e5rdens tr\u00e4dg\u00e5rd",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Bj\u00f6rn Fjellstr\u00f6m"
+					}
+				],
+				"title": "Hj\u00e4lm",
+				"year": "1974",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Musselkalk",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/3491",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.06,
+					59.213
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Eric Grates park, Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Eric_Grate",
+						"wikidata": "Q513724",
+						"name": "Eric Grate"
+					}
+				],
+				"title": "Nike de Sant'Andria",
+				"year": "1968",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:03",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/3577",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.058,
+					59.2139
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Olle Olsson-museets tr\u00e4dg\u00e5rd, Kvarteret Odin",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Gerhard_Henning",
+						"wikidata": "Q5800889",
+						"name": "Gerhard Henning"
+					}
+				],
+				"title": "Torso",
+				"year": "1928",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/3692",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.056,
+					59.2139
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Olle Olsson-museets tr\u00e4dg\u00e5rd, Kvarteret Odin",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Eric_Grate",
+						"wikidata": "Q513724",
+						"name": "Eric Grate"
+					}
+				],
+				"title": "Rituell dans",
+				"year": "1959",
+				"year_cmt": "Tillverknings\u00e5r, 1959-60",
+				"type": "",
+				"material": "Granit",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4093",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5943,
+					59.213
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Skytteholmsparken",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Ester Ap\u00e9ria-Lemon"
+					}
+				],
+				"title": "Fotbollsspelare",
+				"year": "1987",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4186",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5959,
+					59.2133
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Skytteholmsberget, vid ing\u00e5ng till Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Kerstin Bergendal"
+					}
+				],
+				"title": "Chance operations 1991 version 5",
+				"year": "1991",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Patinerad brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4226",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5941,
+					59.214
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Ekensbergsparken, Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Bianca_Maria_Barmen",
+						"wikidata": "Q4937555",
+						"name": "Bianca Maria Barmen"
+					}
+				],
+				"title": "F\u00f6rberedelse",
+				"year": "1991",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4228",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.25,
+					59.2241
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Park n\u00e4ra Atelier Stockholm p\u00e5 Pipers v\u00e4g, S\u00f6dra Bergshamra",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Anders_Kappel",
+						"wikidata": "Q6141514",
+						"name": "Anders Kappel"
+					}
+				],
+				"title": "Container 1991",
+				"year": "1991",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4233",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5851,
+					59.2156
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Artur Lundkvists park",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Britt-Marie_Jern",
+						"wikidata": "Q4956641",
+						"name": "Britt-Marie Jern"
+					}
+				],
+				"title": "Artur Lundkvistportr\u00e4tt",
+				"year": "1993",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4239",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5911,
+					59.212
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Huvudsta C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Lasse Nilsson"
+					}
+				],
+				"title": "R\u00f6tt landskap",
+				"year": "1992",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "granit",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4252",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.01,
+					59.2131
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Centralv\u00e4gen Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Rolf Rosenberg"
+					}
+				],
+				"title": "Ur p\u00e5 stapel",
+				"year": "1979",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Rostfritt st\u00e5l 3 urtavlor",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4258",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.013,
+					59.2132
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Vid g\u00e5ng- och cykeltunneln Solnav\u00e4gen\/Centralv\u00e4gen, Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Ernst_Billgren",
+						"wikidata": "Q4411920",
+						"name": "Ernst Billgren"
+					}
+				],
+				"title": "Beskyddare",
+				"year": "1995",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "brons, tegel, mosaik, betong",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4437",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.594,
+					59.2053
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Tallbackaskolans skolg\u00e5rd",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Carina Wallert"
+					}
+				],
+				"title": "Lejonhuvud",
+				"year": "1998",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4449",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.01083,
+					59.3625
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Hagalunds torg",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Marco Cueva"
+					}
+				],
+				"title": "Utan titel (Boxhandskar)",
+				"year": "1998",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "r\u00f6d granit",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4501",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.05,
+					59.2129
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Eric Grates park, Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Eric_Grate",
+						"wikidata": "Q513724",
+						"name": "Eric Grate"
+					}
+				],
+				"title": "Sparvguden",
+				"year": "1972",
+				"year_cmt": "Tillverknings\u00e5r, 1972-73",
+				"type": "skulptur",
+				"material": "brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4503",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5957,
+					59.213
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Torget, Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Thomas_Qvarsebo",
+						"wikidata": "Q6059965",
+						"name": "Thomas Qvarsebo"
+					}
+				],
+				"title": "Korv-Ingvar",
+				"year": "2001",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "rostfritt st\u00e5l",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4504",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					19.0011,
+					59.2051
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Johan Enbergs torg, vid t-banan V\u00e4stra skogen",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Roland_Persson",
+						"wikidata": "Q6160889",
+						"name": "Roland Persson"
+					}
+				],
+				"title": "Schlaraffenland",
+				"year": "2001",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons, bem\u00e5lad",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4505",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.0102,
+					59.221
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Fr\u00f6sunda torg",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Olov_T%C3%A4llstr%C3%B6m",
+						"wikidata": "Q13365513",
+						"name": "Olov T\u00e4llstr\u00f6m"
+					}
+				],
+				"title": "Sf\u00e4r i balans \/ Civilisation II",
+				"year": "2001",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "granit",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4515",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.0058,
+					59.2139
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Olle Olsson-museets tr\u00e4dg\u00e5rd, Kvarteret Odin",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Eva_Lange",
+						"wikidata": "Q4960797",
+						"name": "Eva Lange"
+					}
+				],
+				"title": "Hj\u00e4rtat",
+				"year": "2003",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "granit",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4516",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5911,
+					59.221
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Maria Wines park p\u00e5 R\u00e5sundav\u00e4gen\/Hasselv\u00e4gen",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Britt-Marie_Jern",
+						"wikidata": "Q4956641",
+						"name": "Britt-Marie Jern"
+					}
+				],
+				"title": "Maria Wineportr\u00e4tt",
+				"year": "2004",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "byst",
+				"material": "brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4522",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.019,
+					59.21
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Huvudstarondellen",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Johan_Wiking",
+						"wikidata": "Q6241232",
+						"name": "Johan Wiking"
+					}
+				],
+				"title": "Pivo",
+				"year": "2006",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "skulptur",
+				"material": "brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4528",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5941,
+					59.2129
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Skytteholmsparken",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Nikolina"
+					},
+					{
+						"name": "Maya St\u00e4llbom"
+					},
+					{
+						"name": "M\u00e5rtensson"
+					}
+				],
+				"title": "Drak\u00e4gg",
+				"year": "2007",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "Lekskulptur",
+				"material": "betong, marmorkross, fiber",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4541",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.599,
+					59.213
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Bygatan\/Huvudsta all\u00e9, Huvudsta C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Thomas_Nordstr%C3%B6m",
+						"wikidata": "Q5576623",
+						"name": "Thomas Nordstr\u00f6m"
+					},
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Annika_Oskarsson",
+						"wikidata": "Q15096701",
+						"name": "Annika Oskarsson"
+					}
+				],
+				"title": "Hepplor",
+				"year": "2009",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "rostfritt st\u00e5l, markgummi, l\u00e4r",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4570",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.05,
+					59.2134
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Framf\u00f6r Biblioteket, Solna C",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Annelie Wallin"
+					}
+				],
+				"title": "Nystan 1",
+				"year": "2011",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/4573",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5947,
+					59.2048
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "G\u00e5ngtunnel under Wiboms v\u00e4g",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Bo"
+					},
+					{
+						"name": "Inese Vikbladh"
+					},
+					{
+						"name": "Vilkancis-Dill\u00e9n"
+					}
+				],
+				"title": "V\u00e5r tids ungdom \/ Tallbackaskolan",
+				"year": "1982",
+				"year_cmt": "F\u00f6rv\u00e4rvs-\/uppf\u00f6rnings\u00e5r",
+				"type": "Kollektivt skolprojekt (1982-2012)",
+				"material": "",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/908",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5957,
+					59.2242
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Bass\u00e4ngen, Bagartorp",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Bengt_Amundin",
+						"wikidata": "Q5549160",
+						"name": "Bengt Amundin"
+					}
+				],
+				"title": "F\u00f6rvandlad f\u00e5gel",
+				"year": "1966",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/912",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.048,
+					59.228
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Fr\u00f6sundaparken",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Kenneth Armitage"
+					}
+				],
+				"title": "M\u00e5nfigur",
+				"year": "1961",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/917",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5937,
+					59.2053
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Tallbackaskolans skolg\u00e5rd",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Gunnel_Frieberg",
+						"wikidata": "Q4948957",
+						"name": "Gunnel Frieberg"
+					}
+				],
+				"title": "Karusellen (Lekande barn kring fast block)",
+				"year": "1966",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/926",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.27,
+					59.2252
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Bergshamra torg, S\u00f6dra Berghamra",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Sven_Lundqvist_(skulpt%C3%B6r)",
+						"wikidata": "Q5967618",
+						"name": "Sven Lundqvist"
+					}
+				],
+				"title": "Noaks ark",
+				"year": "1960",
+				"year_cmt": "Tillverknings\u00e5r, 1960-61",
+				"type": "skulpturgrupp",
+				"material": "granit",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/932",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5943,
+					59.2128
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Skytteholmsparken",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Lars Wellton"
+					}
+				],
+				"title": "Det var dans bort i v\u00e4gen",
+				"year": "1961",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 20:46:17",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/934",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.5941,
+					59.2152
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Str\u00e5ket",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Carl_Milles",
+						"wikidata": "Q48548",
+						"name": "Carl Milles"
+					}
+				],
+				"title": "Solglitter",
+				"year": "1918",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "k0184\/977",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					17.591,
+					59.22
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Maria Wines park, R\u00e5sundav\u00e4gen\/Hasselv\u00e4gen",
+					"county": "SE-AB",
+					"muni": "184",
+					"district": ""
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Carl_Milles",
+						"wikidata": "Q48548",
+						"name": "Carl Milles"
+					}
+				],
+				"title": "Vildsvinsjakt",
+				"year": "1938",
+				"year_cmt": "Tillverknings\u00e5r",
+				"type": "",
+				"material": "Brons",
+				"source": "k0184",
+				"ugc": 0,
+				"changed": "2013-11-21 21:17:03",
+				"created": "2013-11-21 20:46:17",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		}
+	],
+	"head": {
+		"status": "1",
+		"hits": "0\u201336 of 36",
+		"limit": 100
+	}
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Offentlig konst i Sverige</title>
+    <link rel="profile" href="//www.w3.org/2005/10/profile" />
+    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <link rel="icon" 
+          type="image/ico" 
+          href="favicon.ico" />
+    <link rel="stylesheet" href="css/my.css" />
+    <script src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+  </head>
+  <body>
+    <div id="wrap">
+        <div id="header">
+            V&auml;lkommen! H&auml;r kommer Wikimedia Sveriges databas &ouml;ver offentlig konst att presenteras. 
+            Information om projektet och vad du som volont&auml;r kan hj&auml;lpa till med finns p&aring; v&aring;r 
+            <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst">projektsida</a>. 
+            Vi har &auml;ven en <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/To_do">&ouml;nskelista</a> 
+            speciellt f&ouml;r utvecklare.<br/><br/>
+            
+            Nedan visas tills vidare de konstverk i Stockholm f&ouml;r vilka vi har koordinater. Zooma ut f&ouml;r att se konstverk i 
+            &ouml;vriga Sverige. Kartan kompletteras löpande.<br/>
+            Det går även att <a href="./HACK4DK/web/#odok/">söka bland konstverken</a>.<br/>
+        </div>
+        <div id="map"></div>
+        <footer>
+            Ett projekt fr&aring;n <a href="//wikimedia.se/">Wikimedia Sverige</a> med st&ouml;d av <a href="http://www.vinnova.se">Vinnova</a>. <a href="../cookieinfo.html">Om kakor</a>.
+        </footer>
+    </div>
+    <!-- Map script-->
+    <script src="SKB.geojson" type="text/javascript"></script>
+    <script type="text/javascript">
+        //load basic Leaflet map
+        var map = L.map('map').setView([59.3145,18.0162], 12);
+        
+        //settings for MapQuest
+        L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
+            attribution: "&copy; <a href='//www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='//www.openstreetmap.org/copyright' title='ODbL'>open license</a>. Tiles Courtesy of <a href='//www.mapquest.com/'>MapQuest</a> <img src='//developer.mapquest.com/content/osm/mq_logo.png'>",
+            maxZoom: 18,
+            subdomains: ['otile1','otile2','otile3','otile4']
+        }).addTo(map);
+        
+        //set-up markers
+        var noPicIcon = L.icon({
+			iconUrl: '//maps.google.com/mapfiles/kml/paddle/ylw-blank.png',
+			iconSize: [32, 32],
+			iconAnchor: [16, 32],
+			popupAnchor: [0, -33]
+		});
+        var picIcon = L.icon({
+			iconUrl: '//maps.google.com/mapfiles/kml/paddle/blu-circle.png',
+			iconSize: [32, 32],
+			iconAnchor: [16, 32],
+			popupAnchor: [0, -33]
+		});
+        
+        //trigger for each feature
+        function onEachFeature(feature, layer) {
+			var popupContent = "<p>There needs to be something clever here which hooks in to the properties! "+
+                                feature.id +"</p>";
+
+			if (feature.properties && feature.properties.popupContent) {
+				popupContent += feature.properties.popupContent;
+			}
+
+			layer.bindPopup(popupContent);
+		}
+        
+        //geoJson
+        L.geoJson(features, {
+            
+			onEachFeature: onEachFeature,
+            
+            pointToLayer: function (feature, latlng) {
+                if (feature.properties.image){
+                    return L.marker(latlng, {icon: picIcon});
+                }else{
+                    return L.marker(latlng, {icon: noPicIcon});
+                }
+			},
+		}).addTo(map);
+    </script>
+    <!-- Piwik -->
+    <!-- End Piwik Tracking Code -->
+  </body>
+</html>

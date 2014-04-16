@@ -1,0 +1,80 @@
+html { height: 100%; margin: 0px }
+body { height: 100%; margin: 0px; padding: 0px;}
+#wrap { height: 100%; position: relative; }
+#map { height: 100%; z-index: 1;}
+#header {
+    position: fixed;
+    top: 0;
+    left: 25%;
+    z-index: 2;
+    font-family:Varela; 
+    text-align:justify; 
+    background:white; 
+    padding:5px; 
+    border:2px solid red; 
+    width:50%; 
+    margin-left: auto; 
+    margin-right: auto ;
+}
+ul{
+    list-style: disc outside none;
+}
+.thumb{
+    max-height: 100px;
+    max-width: 100px;
+    float:right;
+    clear:right;
+    padding:5px;
+}
+footer{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    font-size:small;
+    background:rgba(255,255,255,0.5);
+    text-align:left;
+}
+@font-face{
+    font-family: 'Varela';
+    src: url("varela.woff") format("woff");
+}
+#nav {
+    position: fixed;
+    top: 0;
+    left: 33%;
+    z-index: 2;
+    width:50%; 
+    margin-left: auto; 
+    margin-right: auto ;
+}
+#nav .navimage {
+    padding:5px;
+    background-color: #333333;
+    border-bottom:1px;
+    border-bottom-color:#000000;
+    border-bottom-style:solid;
+    width:66px;
+    float:left;
+    display:inline;
+}
+#nav a
+{
+    font-family:Varela;
+    font-size:13px;
+    text-decoration: none;
+    padding:13px;
+    background-color: #333333;
+    color:#ffffff;
+    border-bottom:1px;
+    border-bottom-color:#000000;
+    border-bottom-style:solid;
+    float:left;
+    display:inline;
+}
+#nav a:hover
+{
+    background-color:#9B1C26;
+    border-bottom-color:#000000;
+    border-bottom-style:solid;
+}
