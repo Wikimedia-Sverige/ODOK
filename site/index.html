@@ -4,114 +4,85 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Offentlig konst i Sverige</title>
     <link rel="profile" href="//www.w3.org/2005/10/profile" />
+    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
     <link rel="icon" 
           type="image/ico" 
           href="favicon.ico" />
-    <style type="text/css">
-      html { height: 100% }
-      body { height: 100%; margin: 0px; padding: 0px; background: url(Stockholm._Gustav_II_Adolfs_crop.JPG); background-repeat: repeat-x}
-      ul   { list-style-type: none; padding:0; margin:0; //consider adding "width:50%;" if bubble size can be controlled}
-      #map {
-        height: 85%;//whilst infobox
-      }
-      @font-face{
-        font-family: 'Varela';
-        src: url("varela.woff") format("woff");
-      }
-      #OpenLayers_Control_Attribution_7 {
-        bottom: 1.0em;
-        position: fixed;
-      }
-    </style>
-    <script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
-    <script>
-      function init() {
-        //load basic OSM map
-        map = new OpenLayers.Map("map");
-        //var mapnik         = new OpenLayers.Layer.OSM();
-        var mapQuest       = new OpenLayers.Layer.OSM("MapQuest Open",                                                   
-        ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-        "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-        "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-        "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"],
-        {attribution: "&copy; <a href='//www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='//www.openstreetmap.org/copyright' title='ODbL'>open license</a>. Tiles Courtesy of <a href='//www.mapquest.com/'>MapQuest</a> <img src='//developer.mapquest.com/content/osm/mq_logo.png'>" });
-        var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
-        var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
-        var position       = new OpenLayers.LonLat(18.0162, 59.3145).transform( fromProjection, toProjection);
-        var zoom           = 12; 
-        //map.addLayer(mapnik);
-        map.addLayer(mapQuest);
-        map.setCenter(position, zoom );
-        
-        //var kmlUrl = "http://offentligkonst.se/dump.kml?fulhack=true";
-        var kmlLayer = new OpenLayers.Layer.Vector("KML", {
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            protocol: new OpenLayers.Protocol.HTTP({
-                url: "dump.kml",
-                format: new OpenLayers.Format.KML({
-                    extractStyles: true, 
-                    extractAttributes: true,
-                    maxDepth: 2
-                })
-            })
-        })
-        map.addLayer(kmlLayer);
-        //map.zoomToExtent(kmlLayer.getDataExtent());
-        
-        //Add a selector control to the kmllayer with popup functions
-        var controls = {
-            selector: new OpenLayers.Control.SelectFeature(kmlLayer, { onSelect: createPopup, onUnselect: destroyPopup })
-        };
-        map.addControl(controls['selector']);
-        controls['selector'].activate();
-      }
-      function createPopup(feature) {
-        feature.popup = new OpenLayers.Popup.FramedCloud("pop",
-            feature.geometry.getBounds().getCenterLonLat(),
-            null,
-            '<div class="markerContent">'+feature.attributes.description+'</div>',
-            null,
-            true,
-            function() { destroyPopup(feature); }
-        );
-        //feature.popup.closeOnMove = true;
-        map.addPopup(feature.popup);
-      }
-      
-      function destroyPopup(feature) {
-        feature.popup.destroy();
-        feature.popup = null;
-      }
-    </script>
+    <link rel="stylesheet" href="css/my.css" />
+    <script src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
   </head>
-  <body onload="init();">
-    <div style="font-family:Varela; text-align:justify; background:white; padding:5px; border:2px solid red; width:50%; margin-left: auto; margin-right: auto ;">
-        V&auml;lkommen! H&auml;r kommer Wikimedia Sveriges databas &ouml;ver offentlig konst att presenteras. 
-        Information om projektet och vad du som volont&auml;r kan hj&auml;lpa till med finns p&aring; v&aring;r 
-        <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst">projektsida</a>. 
-        Vi har &auml;ven en <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/To_do">&ouml;nskelista</a> 
-        speciellt f&ouml;r utvecklare.<br/><br/>
-        
-        Nedan visas tills vidare de konstverk i Stockholm f&ouml;r vilka vi har koordinater. Zooma ut f&ouml;r att se konstverk i 
-        &ouml;vriga Sverige. Kartan kompletteras löpande.<br/>
-        Det går även att <a href="./HACK4DK/web/#odok/">söka bland konstverken</a>.<br/>
+  <body>
+    <div id="wrap">
+        <div id="header">
+            V&auml;lkommen! H&auml;r kommer Wikimedia Sveriges databas &ouml;ver offentlig konst att presenteras. 
+            Information om projektet och vad du som volont&auml;r kan hj&auml;lpa till med finns p&aring; v&aring;r 
+            <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst">projektsida</a>. 
+            Vi har &auml;ven en <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/To_do">&ouml;nskelista</a> 
+            speciellt f&ouml;r utvecklare.<br/><br/>
+            
+            Nedan visas tills vidare de konstverk i Stockholm f&ouml;r vilka vi har koordinater. Zooma ut f&ouml;r att se konstverk i 
+            &ouml;vriga Sverige. Kartan kompletteras löpande.<br/>
+            Det går även att <a href="./HACK4DK/web/#odok/">söka bland konstverken</a>.<br/>
+        </div>
+        <div id="map"></div>
+        <footer>
+            Ett projekt fr&aring;n <a href="//wikimedia.se/">Wikimedia Sverige</a> med st&ouml;d av <a href="http://www.vinnova.se">Vinnova</a>. <a href="../cookieinfo.html">Om kakor</a>.
+        </footer>
     </div>
-    <div id="map"></div>
-    <footer style="font-size:small">
-    	<div style="float:left; text-align:left;">Ett projekt fr&aring;n <a href="//wikimedia.se/">Wikimedia Sverige</a> med st&ouml;d av <a href="http://www.vinnova.se">Vinnova</a>. <a href="cookieinfo.html">Om kakor</a>.</div>
-        <div style="float:right; text-align:right;">Bakgrundsbild: <a href="//commons.wikimedia.org/wiki/File:Stockholm._Gustav_II_Adolfs_ryttarstaty_p%C3%A5_Gustav_Adolfs_torg.JPG">Stockholm. Gustav II Adolfs ryttarstaty p&aring; Gustav Adolfs torg</a> av <a href="//commons.wikimedia.org/wiki/User:Lars_%28Lon%29_Olsson">Lars (Lon) Olsson</a>, <a href="//creativecommons.org/licenses/by-sa/3.0/deed.sv">CC BY-SA 3.0</a></div>
-    </footer>
-    <!-- Piwik -->
+    <!-- Map script-->
+    <script src="SKB.geojson" type="text/javascript"></script>
     <script type="text/javascript">
-        var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.wikimedia.se/" : "http://piwik.wikimedia.se/");
-        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-    </script><script type="text/javascript">
-        try {
-            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
-            piwikTracker.trackPageView();
-            piwikTracker.enableLinkTracking();
-        } catch( err ) {}
-    </script><noscript><p><img src="http://piwik.wikimedia.se/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+        //load basic Leaflet map
+        var map = L.map('map').setView([59.3145,18.0162], 12);
+        
+        //settings for MapQuest
+        L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
+            attribution: "&copy; <a href='//www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='//www.openstreetmap.org/copyright' title='ODbL'>open license</a>. Tiles Courtesy of <a href='//www.mapquest.com/'>MapQuest</a> <img src='//developer.mapquest.com/content/osm/mq_logo.png'>",
+            maxZoom: 18,
+            subdomains: ['otile1','otile2','otile3','otile4']
+        }).addTo(map);
+        
+        //set-up markers
+        var noPicIcon = L.icon({
+			iconUrl: '//maps.google.com/mapfiles/kml/paddle/ylw-blank.png',
+			iconSize: [32, 32],
+			iconAnchor: [16, 32],
+			popupAnchor: [0, -33]
+		});
+        var picIcon = L.icon({
+			iconUrl: '//maps.google.com/mapfiles/kml/paddle/blu-circle.png',
+			iconSize: [32, 32],
+			iconAnchor: [16, 32],
+			popupAnchor: [0, -33]
+		});
+        
+        //trigger for each feature
+        function onEachFeature(feature, layer) {
+			var popupContent = "<p>There needs to be something clever here which hooks in to the properties! "+
+                                feature.id +"</p>";
+
+			if (feature.properties && feature.properties.popupContent) {
+				popupContent += feature.properties.popupContent;
+			}
+
+			layer.bindPopup(popupContent);
+		}
+        
+        //geoJson
+        L.geoJson(features, {
+            
+			onEachFeature: onEachFeature,
+            
+            pointToLayer: function (feature, latlng) {
+                if (feature.properties.image){
+                    return L.marker(latlng, {icon: picIcon});
+                }else{
+                    return L.marker(latlng, {icon: noPicIcon});
+                }
+			},
+		}).addTo(map);
+    </script>
+    <!-- Piwik -->
     <!-- End Piwik Tracking Code -->
   </body>
 </html>
