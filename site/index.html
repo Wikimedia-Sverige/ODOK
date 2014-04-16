@@ -47,7 +47,7 @@
         var kmlLayer = new OpenLayers.Layer.Vector("KML", {
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
-                url: "dump-all.kml",
+                url: "dump.kml",
                 format: new OpenLayers.Format.KML({
                     extractStyles: true, 
                     extractAttributes: true,
@@ -98,7 +98,7 @@
     </div>
     <div id="map"></div>
     <footer style="font-size:small">
-    	<div style="float:left; text-align:left;">Ett projekt fr&aring;n <a href="//wikimedia.se/">Wikimedia Sverige</a> med st&ouml;d av <a href="http://www.vinnova.se">Vinnova</a>.</div>
+    	<div style="float:left; text-align:left;">Ett projekt fr&aring;n <a href="//wikimedia.se/">Wikimedia Sverige</a> med st&ouml;d av <a href="http://www.vinnova.se">Vinnova</a>. <a href="cookieinfo.html">Om kakor</a>.</div>
         <div style="float:right; text-align:right;">Bakgrundsbild: <a href="//commons.wikimedia.org/wiki/File:Stockholm._Gustav_II_Adolfs_ryttarstaty_p%C3%A5_Gustav_Adolfs_torg.JPG">Stockholm. Gustav II Adolfs ryttarstaty p&aring; Gustav Adolfs torg</a> av <a href="//commons.wikimedia.org/wiki/User:Lars_%28Lon%29_Olsson">Lars (Lon) Olsson</a>, <a href="//creativecommons.org/licenses/by-sa/3.0/deed.sv">CC BY-SA 3.0</a></div>
     </footer>
     <!-- Piwik -->
