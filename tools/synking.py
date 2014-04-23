@@ -377,6 +377,12 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         log = log + u'fotnot-namn so couldn\'t compare, fotnot-namn: %s\n' %wikiObj[u'fotnot-namn']
         if u'cmt' in diff.keys():
             del diff[u'cmt']
+    
+    #free defaults to unfree in wiki but not necessarily in db
+    if 'free' in diff.keys() and diff['free']['new'] == '':
+        if diff['free']['old'] == 'unfree':
+            diff.pop('free')
+        
             
     #Years which are not plain numbers cannot be sent to db
     if 'year' in diff.keys():
