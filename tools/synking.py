@@ -17,7 +17,7 @@ import dconfig as config
 import dataDicts as dataDict
 import UGC_synk as UGCsynk
 
-def run(verbose=False):
+def run(verbose=False, days=100):
     '''
     update database based on all list changes
     INCOMPLETE
@@ -35,7 +35,8 @@ def run(verbose=False):
     dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
     
     #TOBUILD lastSync = db.getSync() #timestamp of last (successful) run of this module
-    lastSync = datetime.datetime.utcnow() + datetime.timedelta(days=-100) #TESTING
+    lastSync = datetime.datetime.utcnow() + datetime.timedelta(days=-days) #TESTING
+    print u'Checking changes since %s' %lastSync
     thisSync = datetime.datetime.utcnow()
     flog.write(u'------START of updates-------------\n')
     flog.write(u'last_sync: %s\nthis_sync: %s\n' %(lastSync,thisSync))
@@ -298,9 +299,15 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     if wikiObj[u'län'].startswith(u'SE-'):
         wikiObj[u'län'] = wikiObj[u'län'][len(u'SE-'):]
     if wikiObj[u'lat'] == '': wikiObj[u'lat']=None
-    else: wikiObj[u'lat'] =wikiObj[u'lat'].strip('0') #due to how numbers are stored
+    else:
+        if len(wikiObj[u'lat'])>16:
+            wikiObj[u'lat'] = '%.13f' %float(wikiObj[u'lat'])
+        wikiObj[u'lat'] =wikiObj[u'lat'].strip('0') #due to how numbers are stored
     if wikiObj[u'lon'] == '': wikiObj[u'lon']=None
-    else: wikiObj[u'lon'] =wikiObj[u'lon'].strip('0') #due to how numbers are stored
+    else:
+        if len(wikiObj[u'lon'])>16:
+            wikiObj[u'lon'] = '%.13f' %float(wikiObj[u'lon'])
+        wikiObj[u'lon'] =wikiObj[u'lon'].strip('0') #due to how numbers are stored
     if wikiObj[u'årtal'] == '': wikiObj[u'årtal']=None
     
         
@@ -377,13 +384,18 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             year = diff.pop('year')
             log = log + u'Non-integer year: %s\n' %year['new']
     
-    #lat/lon which are not numbers cannot be sent to db
+    #lat/lon reqires an extra touch as only decimal numbers and nones may be sent to db
     if 'lat' in diff.keys():
-        if not common.is_number(diff['lat']['new']):
+        if not diff['lat']['new']:
+            #if new = None
+            pass
+        elif not common.is_number(diff['lat']['new']):
             lat = diff.pop('lat')
             log = log + u'Non-decimal lat: %s\n' %lat['new']
     if 'lon' in diff.keys():
-        if not common.is_number(diff['lon']['new']):
+        if not diff['lon']['new']:
+            pass
+        elif not common.is_number(diff['lon']['new']):
             lat = diff.pop('lon')
             log = log + u'Non-decimal lon: %s\n' %lon['new']
     
