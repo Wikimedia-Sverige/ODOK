@@ -48,7 +48,7 @@
         </footer>
     </div>
     <!-- Map script-->
-    <script src="AllFeatures.json" type="text/javascript"></script>
+    <script src="AllFeatures.geo.json" type="text/javascript"></script>
     <script type="text/javascript">
         //load basic Leaflet map
         var map = L.map('map').setView([59.3145,18.0162], 12); //setView is overrriden by cluseter function
@@ -59,7 +59,14 @@
             maxZoom: 19,
             subdomains: ['otile1','otile2','otile3','otile4']
         });
-        map.addLayer(mapQuest);
+        
+        //settings for OSM Sweden
+        var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            subdomains: 'abc',
+            attribution: 'Map data &copy; <a href="//www.openstreetmap.org">OpenStreetMap</a> contributors, Imagery by <a href="http://openstreetmap.se">OpenStreetMap Sweden</a>'
+        }).addTo(map);
+        map.addLayer(osmSE);
         
         //settings for OSM
         var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -116,7 +123,8 @@
         //for layers control
         var baseMaps = {
             "MapQuest": mapQuest,
-            "OSM": osm
+            "OSM": osm,
+            "OSM Sweden": osmSE
         };
         var overlayMaps = {
             "clustered": markers,
