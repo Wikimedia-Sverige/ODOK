@@ -1,0 +1,264 @@
+var features = {
+	"type": "FeatureCollection",
+	"features": [
+		{
+			"type": "Feature",
+			"id": "SKB\/SKB-13",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.10521,
+					59.30543
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "",
+					"county": "SE-AB",
+					"muni": "180",
+					"district": "Hammarby sj\u00f6stad"
+				},
+				"image": null,
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": "http:\/\/www.statenskonstrad.se\/se\/Menu\/Upplev\/Byggnadsanknuten+konst\/Gestaltningar\/2009+-+2000\/2002\/Bitte-Jonasson-Akerlund",
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Bitte Jonason \u00c5kerlund"
+					}
+				],
+				"title": "Skepp och hoj",
+				"year": "2002",
+				"year_cmt": "f\u00e4rdigst\u00e4llnings\u00e5r",
+				"type": "Skulptur",
+				"material": "Brons, lack, glasmosaik & betong",
+				"source": "SKB",
+				"ugc": 1,
+				"changed": "2014-02-10 12:12:15",
+				"created": "2013-05-31 20:34:35",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "SKB\/SKB-208",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.093722,
+					59.327597
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Gal\u00e4rparken",
+					"county": "SE-AB",
+					"muni": "180",
+					"district": "Djurg\u00e5rden (S\u00f6dra Djurg\u00e5rden)"
+				},
+				"image": {
+					"filename": "MS Estonia Memorial Galarkyrkogarden Stockholm.jpg",
+					"thumb": "https:\/\/commons.wikimedia.org\/w\/thumb.php?f=MS_Estonia_Memorial_Galarkyrkogarden_Stockholm.jpg&width=100"
+				},
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Miros%C5%82aw_Ba%C5%82ka",
+						"wikidata": "Q2293085",
+						"name": "Miroslaw Balka"
+					}
+				],
+				"title": "Estoniamonumentet",
+				"year": "1997",
+				"year_cmt": "f\u00e4rdigst\u00e4llnings\u00e5r",
+				"type": "Skulptur",
+				"material": "granit",
+				"source": "SKB",
+				"ugc": 1,
+				"changed": "2013-10-16 19:56:47",
+				"created": "2013-05-31 20:34:35",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "SKB\/SKB-229",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					13.0014,
+					55.5974
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "S\u00f6dra F\u00f6rstadsgatan 36-38",
+					"county": "SE-M",
+					"muni": "1280",
+					"district": "Malm\u00f6"
+				},
+				"image": {
+					"filename": "Hartrappan av Bianca Maria Barmen, Malm\u00f6.jpg",
+					"thumb": "https:\/\/commons.wikimedia.org\/w\/thumb.php?f=Hartrappan_av_Bianca_Maria_Barmen,_Malm\u00f6.jpg&width=100"
+				},
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Bianca_Maria_Barmen",
+						"wikidata": "Q4937555",
+						"name": "Bianca Maria Barmen"
+					}
+				],
+				"title": "Hartrappan",
+				"year": "1998",
+				"year_cmt": "f\u00e4rdigst\u00e4llnings\u00e5r",
+				"type": "Skulptur",
+				"material": "brons och sten",
+				"source": "SKB",
+				"ugc": 1,
+				"changed": "2014-02-20 23:55:09",
+				"created": "2013-05-31 20:34:35",
+				"commons_cat": "",
+				"same_as": "k1280\/060",
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "SKB\/SKB-255",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.021861,
+					59.30278
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Infarten till Nybodaringen, Nybodah\u00f6jden",
+					"county": "SE-AB",
+					"muni": "180",
+					"district": "Liljeholmen"
+				},
+				"image": {
+					"filename": "2xXY, Nybodaringen.JPG",
+					"thumb": "https:\/\/commons.wikimedia.org\/w\/thumb.php?f=2xXY,_Nybodaringen.JPG&width=100"
+				},
+				"descriptions": {
+					"descr": "",
+					"wiki": null,
+					"wikidata": null,
+					"official": null,
+					"ingress": null
+				},
+				"artist": [
+					{
+						"name": "Johanna Karlin"
+					}
+				],
+				"title": "2x2Y",
+				"year": "1999",
+				"year_cmt": "f\u00e4rdigst\u00e4llnings\u00e5r",
+				"type": "Skulptur",
+				"material": "pl\u00e5t",
+				"source": "SKB",
+				"ugc": 1,
+				"changed": "2013-12-10 15:12:28",
+				"created": "2013-05-31 20:34:35",
+				"commons_cat": "",
+				"same_as": null,
+				"free": "",
+				"cmt": "",
+				"owner": ""
+			}
+		},
+		{
+			"type": "Feature",
+			"id": "SKB\/SKB-331",
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					18.075556,
+					59.331944
+				]
+			},
+			"properties": {
+				"spatial": {
+					"inside": 0,
+					"address": "Raoul Wallenbergs torg",
+					"county": "SE-AB",
+					"muni": "180",
+					"district": "Stockholm"
+				},
+				"image": {
+					"filename": "Till Raoul Wallenberg.JPG",
+					"thumb": "https:\/\/commons.wikimedia.org\/w\/thumb.php?f=Till_Raoul_Wallenberg.JPG&width=100"
+				},
+				"descriptions": {
+					"descr": "Minnesm\u00e4rke best\u00e5ende av tolv l\u00e5ga bronsskulpturer utan entydig form, i en grupp och orienterade ned\u00e5t det mycket svagt lutande stensatta torget mot Nybroviken, samt en ingjutning av Raoul Wallenbergs signatur i brons i marken.",
+					"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Till_Raoul_Wallenberg",
+					"wikidata": "Q10697887",
+					"official": null,
+					"ingress": "Till Raoul Wallenberg \u00e4r ett minnesm\u00e4rke p\u00e5 Raoul Wallenbergs torg i Stockholm, som gjorts av Kirsten Ortwed."
+				},
+				"artist": [
+					{
+						"wiki": "https:\/\/sv.wikipedia.org\/wiki\/Kirsten_Ortwed",
+						"wikidata": "Q4989422",
+						"name": "Kirsten Ortwed"
+					}
+				],
+				"title": "Till Raoul Wallenberg",
+				"year": "2001",
+				"year_cmt": "f\u00e4rdigst\u00e4llnings\u00e5r",
+				"type": "Skulptur",
+				"material": "brons",
+				"source": "SKB",
+				"ugc": 1,
+				"changed": "2013-10-24 12:19:40",
+				"created": "2013-05-31 20:34:35",
+				"commons_cat": "",
+				"same_as": "k0180\/050",
+				"free": "unfree",
+				"cmt": "",
+				"owner": ""
+			}
+		}
+	],
+	"head": {
+		"status": "1",
+		"hits": "0\u20135 of 10",
+		"limit": 5,
+		"continue": 5
+	}
+}
