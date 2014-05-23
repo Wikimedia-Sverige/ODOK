@@ -15,7 +15,7 @@ import MySQLdb
 class OdokApi(wikiApi.WikiApi):
     '''
     When possible connect through the api
-    Need to override setUpApi (but not apiaction by a lucky coincident)
+    Need to override setUpApi
     Should replace login/token/logout by dummyfunction to prevent these from being executed
     '''
     
@@ -30,12 +30,12 @@ class OdokApi(wikiApi.WikiApi):
         exit(2)
         
     @classmethod
-    def setUpApi(cls, user, site, verbose=False):
+    def setUpApi(cls, user, site, scriptidentify=u'OdokBot/0.5', verbose=False):
         '''
         Creates a OdokApi object
         '''
         #Provide url and identify (using e-mail)
-        odok = cls('%s/api.php' %site,user)
+        odok = cls('%s/api.php' %site, user, scriptidentify)
         
         #Set reqlimit for odok
         odok.reqlimit = 50

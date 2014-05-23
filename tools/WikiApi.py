@@ -26,7 +26,7 @@ class WikiApi(object):
     
     #useragenturl and contact in unicode
     #
-    def __init__(self, apiurl, useragentidentify):
+    def __init__(self, apiurl, useragentidentify, scriptidentify):
         """
         :param apiurl: The url of the api.php such as https://commons.wikimedia.org/w/api.php
             Pass as str
@@ -51,7 +51,7 @@ class WikiApi(object):
         self.sitecurl=pycurl.Curl()
         self.sitecurl.setopt(pycurl.WRITEFUNCTION, self.responsebuffer.write) #Writes to response buffer
         self.sitecurl.setopt(pycurl.COOKIEFILE, "") #Use in-memory cookie
-        self.sitecurl.setopt(pycurl.USERAGENT, 'OdokBot/0.5 (' + useragentidentify.encode('utf-8') + ')')
+        self.sitecurl.setopt(pycurl.USERAGENT, scriptidentify.encode('utf-8') + ' (' + useragentidentify.encode('utf-8') + ')')
         self.sitecurl.setopt(pycurl.POST, 1)
         self.sitecurl.setopt(pycurl.CONNECTTIMEOUT, 60)
         self.sitecurl.setopt(pycurl.TIMEOUT, 120)
@@ -703,12 +703,12 @@ class WikiApi(object):
         return reqlimit
 
     @classmethod
-    def setUpApi(cls, user, password, site, reqlimit=50, verbose=False, separator='w'):
+    def setUpApi(cls, user, password, site, reqlimit=50, verbose=False, separator='w', scriptidentify=u'OdokBot/0.5'):
         '''
         Creates a WikiApi object, log in and aquire an edit token
         '''
         #Provide url and identify (either talk-page url)
-        wiki = cls('%s/%s/api.php' %(site, separator),"%s/wiki/User_talk:%s" %(site, user))
+        wiki = cls('%s/%s/api.php' %(site, separator),"%s/wiki/User_talk:%s" %(site, user), scriptidentify)
         
         #Set reqlimit for wp.apis
         wiki.reqlimit = reqlimit
