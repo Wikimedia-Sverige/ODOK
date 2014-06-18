@@ -1,13 +1,19 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
-
+#
 # PyCJWiki Basic
 # Based on PyCJWiki Version 1.31 (C) by Smallman12q (https://en.wikipedia.org/wiki/User_talk:Smallman12q) GPL, see <http://www.gnu.org/licenses/>.
 # Requires python2.7, ujson, and PyCurl
-
-#TO DO. Separate debug from verbose. There should be no non-error print statment which is not tied to either of these. Standardise verbose output.
-#       Do this also for odok.OdokApi
-
+#
+#TODO
+## Separate debug from verbose. There should be no non-error print statment which is not tied to either of these. Standardise verbose output.
+### (Do this also for odok.OdokApi)
+## _http errors should be thrown again so that they can be caught upstream (instead of printed to commandline)
+## _http timeout errors should output on verbose even if retried
+## Allow setup to set Delay parameters and for these to be changed during the run
+## Reintegrate uploadelements from PyCJWiki as class WikiCommonsApi(WikiApi) so as to fully move over to WikiApi
+### Deal with encoding of filenames, proper use of ignorewarnings etc., purging (think Broken filelinks)
+#
 #----------------------------------------------------------------------------------------
 
 import pycurl, ujson, cStringIO, urllib
@@ -86,14 +92,17 @@ class WikiApi(object):
             self.sitecurl.perform()
         except pycurl.error, error:
             errno, errstr = error
-            print( 'An error occurred: ' + str(errno) + ':', errstr)
-            traceback.print_exc()
-
+            
             #Response Timed Out, Retry up to 3 times
             if(errno == 28):
                 if(timeoutretry < 3):
                     time.sleep(2)
                     func(action,params,timeoutretry=(timeoutretry+1))
+                else:
+                    print 'timed out 3 times! Not retrying'
+            else:
+                print( 'An error occurred: ' + str(errno) + ':', errstr)
+                traceback.print_exc()
         
         if debug:
             print self.responsebuffer.getvalue()
