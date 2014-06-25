@@ -1,8 +1,9 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# PyCJWiki Basic
-# Based on PyCJWiki Version 1.31 (C) by Smallman12q (https://en.wikipedia.org/wiki/User_talk:Smallman12q) GPL, see <http://www.gnu.org/licenses/>.
+# WikiApi
+# Forked from PyCJWiki Version 1.31 (C) by Smallman12q <https://en.wikipedia.org/wiki/User_talk:Smallman12q/> GPL, see <http://www.gnu.org/licenses/>.
+# Original source: <https://commons.wikimedia.org/w/index.php?title=User:Smallman12q/PyCJWiki&oldid=93284775/>
 # Requires python2.7, ujson, and PyCurl
 #
 #TODO
@@ -12,6 +13,7 @@
 ## _http timeout errors should output on verbose even if retried
 ## Allow setup to set Delay parameters and for these to be changed during the run
 ## Reintegrate uploadelements from PyCJWiki as class WikiCommonsApi(WikiApi) so as to fully move over to WikiApi
+## consider integrating some elements of Europeana.py (e.g. getImageInfos() into WikiCommonsApi.
 ### Deal with encoding of filenames, proper use of ignorewarnings etc., purging (think Broken filelinks)
 #
 #----------------------------------------------------------------------------------------
