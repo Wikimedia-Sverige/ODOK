@@ -224,18 +224,19 @@ class WikiApi(object):
         if verbose: print "You are now logged in as " + self.userName
     
     def setToken(self, token, verbose=True):
-        if verbose: print "Retrieving token: " + token
+        if verbose: print 'Retrieving token: %s' % token
+        tokenkey = '%stoken' %token
         jsonr = self.httpPOST("tokens", [('type', str(token))])
-        if(jsonr['tokens']['edittoken'] == "+\\"):
-            print "Edit token not set."
+        if (not tokenkey in jsonr['tokens'].keys()) or (jsonr['tokens'][tokenkey] == "+\\"):
+            print '%s token not set.' %token
             self.printResponseBuffer()
             exit()
         else:
-            self.edittoken = str(jsonr['tokens']['edittoken'])
-            if verbose: print "Edit token retrieved: " + self.edittoken
+            if verbose: print "%s token retrieved: " %s + self.edittoken
+            return str(jsonr['tokens'][tokenkey])
     
     def setEditToken(self, verbose=True):
-        self.setToken('edit', verbose=verbose)
+        self.edittoken = self.setToken('edit', verbose=verbose)
     
     def clearEditToken(self):
         self.edittoken = None
