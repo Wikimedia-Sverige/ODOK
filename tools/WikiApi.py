@@ -13,6 +13,7 @@
 ## _http timeout errors should output on verbose even if retried
 ## Allow setup to set Delay parameters and for these to be changed during the run
 ## Reintegrate uploadelements from PyCJWiki as class WikiCommonsApi(WikiApi) so as to fully move over to WikiApi
+### Break out WikiDataApi, WikiCommonsApi as separate files
 ## consider integrating some elements of Europeana.py (e.g. getImageInfos() into WikiCommonsApi.
 ### Deal with encoding of filenames, proper use of ignorewarnings etc., purging (think Broken filelinks)
 #
@@ -101,9 +102,9 @@ class WikiApi(object):
                     time.sleep(2)
                     func(action,params,timeoutretry=(timeoutretry+1))
                 else:
-                    print 'timed out 3 times! Not retrying'
+                    print "timed out 3 times! Not retrying"
             else:
-                print( 'An error occurred: ' + str(errno) + ':', errstr)
+                print( "An error occurred: %d:" %errno, errstr)
                 traceback.print_exc()
         
         if debug:
@@ -165,7 +166,7 @@ class WikiApi(object):
             self.sitecurl.perform()
         except pycurl.error, error:
             errno, errstr = error
-            print( 'An error occurred: ' + str(errno) + ':', errstr)
+            print( "An error occurred: %d:" %errno, errstr)
             traceback.print_exc()
 
             #Response Timed Out, Retry up to 3 times
@@ -194,7 +195,7 @@ class WikiApi(object):
         :eturns type:
         """
         if verbose:
-            print "Logging into " + self._apiurl + " as " + userName
+            print "Logging into %s as %s" %(self._apiurl, userName)
             print "Logging in...(1/2)"
         
         #Login
@@ -221,18 +222,18 @@ class WikiApi(object):
             exit()
         
         self.userName = userName #Now logged in
-        if verbose: print "You are now logged in as " + self.userName
+        if verbose: print "You are now logged in as %s" % self.userName
     
     def setToken(self, token, verbose=True):
-        if verbose: print 'Retrieving token: %s' % token
+        if verbose: print "Retrieving token: %s" % token
         tokenkey = '%stoken' %token
         jsonr = self.httpPOST("tokens", [('type', str(token))])
         if (not tokenkey in jsonr['tokens'].keys()) or (jsonr['tokens'][tokenkey] == "+\\"):
-            print '%s token not set.' %token
+            print "%s token not set." %token
             self.printResponseBuffer()
             exit()
         else:
-            if verbose: print "%s token retrieved: " %s + self.edittoken
+            if verbose: print "%s token retrieved: %s" %(token, str(jsonr['tokens'][tokenkey]))
             return str(jsonr['tokens'][tokenkey])
     
     def setEditToken(self, verbose=True):
@@ -243,35 +244,35 @@ class WikiApi(object):
         #TODO Clear in tokens dict when implemented
     
     def getTimestamp(self, article, debug=False):
-        '''
+        """
         Returns the timestamp of (the latest revision of) the provided article
         :parameter article: pagetitle to look at
         :return: timestamp as string in ISO 8601 format
-        '''
+        """
         jsonr = self.httpPOST("query", [('prop', 'revisions'),
                                         ('titles', article.encode('utf-8')),
                                         ('rvprop', 'timestamp'),
                                         ('rvlimit', '1')])
         if debug:
-            print u'getTimestamp(): article=%s\n' %article
+            print u"getTimestamp(): article=%s\n" %article
             print jsonr
         
         pageid = jsonr['query']['pages'].keys()[0]
         if pageid == u'-1':
-            print 'no entry for "%s"' %article
+            print "no entry for \"%s\"" %article
             return None
         else:
             return jsonr['query']['pages'][pageid]['revisions'][0]['timestamp']
     
     def getEmbeddedin(self, templatename, einamespace, debug=False):
-        '''
+        """
         Returns list of all pages embeding a given template
-        :param templatename: The template to look for (including "Template:")
+        :param templatename: The template to look for (including \"Template:\")
         :param einamespace: namespace to limit the search to (0=main)
         :return: list containing pagenames
-        '''
+        """
         
-        print "Fetching pages embeding: " + templatename
+        print "Fetching pages embeding: %s" % templatename
         members = []
         #action=query&list=embeddedin&cmtitle=Template:!
         jsonr = self.httpPOST("query", [('list', 'embeddedin'),
@@ -279,7 +280,7 @@ class WikiApi(object):
                                         ('einamespace', str(einamespace)),
                                         ('eilimit', '500')])
         if debug:
-            print u'getEmbeddedin(): templatename=%s\n' %templatename
+            print u"getEmbeddedin(): templatename=%s\n" %templatename
             print jsonr
         
         #{"query":{"embeddedin":[{"pageid":5,"ns":0,"title":"Abbek\u00e5s"}]},"query-continue":{"embeddedin":{"eicontinue":"10|!|65"}}}
@@ -287,7 +288,7 @@ class WikiApi(object):
             members.append((page['title']))
         
         while 'query-continue' in jsonr:
-            print  "Fetching pages embeding: " + templatename + "...fetching more"
+            print  "Fetching pages embeding: %s...fetching more" %templatename
             #print jsonr['query-continue']['embeddedin']['eicontinue']
             jsonr = self.httpPOST("query", [('list', 'embeddedin'),
                                             ('eititle', templatename.encode('utf-8')),
@@ -297,19 +298,19 @@ class WikiApi(object):
             for page in jsonr['query']['embeddedin']:
                 members.append((page['title']))
         
-        print  "Fetching pages embeding: " + templatename + "...complete"
+        print  "Fetching pages embeding: %s...complete" %templatename
         return members
     
     def getEmbeddedinTimestamps(self, templatename, einamespace, debug=False):
-        '''
+        """
         Returns a list of all pages embeding a given template along with the timestamp for when it was last edited
         combines getEmbeddedin() and getTimestamps()
-        :param templatename: The template to look for (including "Template:")
+        :param templatename: The template to look for (including \"Template:\")
         :param einamespace: namespace to limit the search to (0=main)
         :return: list containing dicts {pagename, timestamp} where timestamp is a string in ISO 8601 format
-        '''
+        """
         
-        print "Fetching pages embeding: " + templatename
+        print "Fetching pages embeding: %s" % templatename
         members = []
         #action=query&prop=revisions&format=json&rvprop=timestamp&generator=embeddedin&geititle=Mall%3A!&geinamespace=0&geilimit=500
         jsonr = self.httpPOST("query", [('prop', 'revisions'),
@@ -319,7 +320,7 @@ class WikiApi(object):
                                         ('geinamespace', str(einamespace)),
                                         ('geilimit', '500')])
         if debug:
-            print u'getEmbeddedinTimestamps() templatename:%s \n' %templatename
+            print u"getEmbeddedinTimestamps() templatename:%s \n" %templatename
             print jsonr
         
         #{"query-continue":{"embeddedin":{"geicontinue":"10|Offentligkonstlista|1723456"}},"query":{"pages":{"1718037":{"pageid":1718037,"ns":0,"title":"Lista...","revisions":[{"timestamp":"2013-08-24T13:01:49Z"}]}}}}
@@ -328,7 +329,7 @@ class WikiApi(object):
             members.append({'title':page['title'], 'timestamp':page['revisions'][0]['timestamp']})
         
         while 'query-continue' in jsonr:
-            print  "Fetching pages embeding: " + templatename + "...fetching more"
+            print  "Fetching pages embeding: %s...fetching more" %templatename
             #print jsonr['query-continue']['embeddedin']['geicontinue']
             jsonr = self.httpPOST("query", [('prop', 'revisions'),
                                         ('rvprop', 'timestamp'),
@@ -341,17 +342,17 @@ class WikiApi(object):
                 page = jsonr['query']['pages'][page]
                 members.append({'title':page['title'], 'timestamp':page['revisions'][0]['timestamp']})
         
-        print  "Fetching pages embeding: " + templatename + "...complete"
+        print  "Fetching pages embeding: %s...complete" %templatename
         return members
     
     def getCategoryMembers(self, categoryname, cmnamespace, debug=False):
-        '''
+        """
         Returns a list of all pages in a given category (and namespace)
-        :param categoryname: The category to look in (including "Category:")
+        :param categoryname: The category to look in (including \"Category:\")
         :param cmnamespace: namespace to limit the search to (0=main)
         :return: list of pagenames
-        '''
-        print "Fetching categorymembers: " + categoryname
+        """
+        print "Fetching categorymembers: %s" % categoryname
         members = []
         #action=query&list=categorymembers&cmtitle=Category:Physics
         jsonr = self.httpPOST("query", [('list', 'categorymembers'),
@@ -359,7 +360,7 @@ class WikiApi(object):
                                         ('cmnamespace', str(cmnamespace)),
                                         ('cmlimit', '500')])
         if debug:
-            print u'getCategoryMembers() categoryname:%s \n' %categoryname
+            print u"getCategoryMembers() categoryname:%s \n" %categoryname
             print jsonr
         
         #{"query":{"categorymembers":[{"pageid":22688097,"ns":0,"title":"Branches of physics"}]},"query-continue":{"categorymembers":{"cmcontinue":"page|200a474c4f5353415259204f4620434c4153534943414c2050485953494353|3445246"}}}
@@ -367,7 +368,7 @@ class WikiApi(object):
             members.append((page['title']))
         
         while 'query-continue' in jsonr:
-            print  "Fetching categorymembers: " + categoryname + "...fetching more"
+            print  "Fetching categorymembers: %s...fetching more" %categoryname
             #print jsonr['query-continue']['categorymembers']['cmcontinue']
             jsonr = self.httpPOST("query", [('list', 'categorymembers'),
                                         ('cmtitle', categoryname.encode('utf-8')),
@@ -377,16 +378,16 @@ class WikiApi(object):
             for page in jsonr['query']['categorymembers']:
                 members.append((page['title']))
         
-        print  "Fetching categorymembers: " + categoryname + "...complete"
+        print  "Fetching categorymembers: %s...complete" %categoryname
         return members
     
     def getImageUsage(self, filename, iunamespace=None, debug=False):
-        '''
+        """
         Returns a list of all pages using a given image
-        :param filename: The file to look for (including "File:")
+        :param filename: The file to look for (including \"File:\")
         :param iunamespace: namespace to limit the search to (0=main, 6=file)
         :return: list of pagenames
-        '''
+        """
         #print "Fetching imageusages: " + filename
         members = []
         #action=query&list=imageusage&iutitle=File:Foo.jpg
@@ -398,7 +399,7 @@ class WikiApi(object):
         jsonr = self.httpPOST("query", requestparams)
         
         if debug:
-            print u'getImageUsage() filename:%s \n' %filename
+            print u"getImageUsage() filename:%s \n" %filename
             print jsonr
         
         #{"query":{"imageusage":[{"pageid":7839165,"ns":2,"title":"User:Duesentrieb/ImageRenderBug"},{"query-continue":{"imageusage":{"iucontinue":"6|Wikimedia_Sverige_logo.svg|12128338"}}
@@ -406,19 +407,19 @@ class WikiApi(object):
             members.append((page['title']))
         
         while 'query-continue' in jsonr:
-            #print  "Fetching imageusages: " + filename + "...fetching more"
+            #print  "Fetching imageusages: %s...fetching more" %filename
             #print jsonr['query-continue']['imageusage']['iucontinue']
             requestparams.append(('iucontinue', str(jsonr['query-continue']['imageusage']['iucontinue'])))
-            jsonr = self.httpPOST("edit", requestparams)
+            jsonr = self.httpPOST("query", requestparams)
             
             for page in jsonr['query']['imageusage']:
                 members.append((page['title']))
         
-        #print  "Fetching imageusages: " + filename + "...complete"
+        #print  "Fetching imageusages: %s...complete" %filename
         return members
     
     def getPageInfo(self, articles, dDict=None, debug=False):
-        '''
+        """
         Given a list of articles this tells us if the page is either
         * Non-existent (red link)
         * A redirect (and returns real page)
@@ -427,14 +428,16 @@ class WikiApi(object):
         and whether the page corresponds to a wikidata entry (and returns the wikidata id)
         :param articles: a list of pagenames (or a single pagename) to look at
         :param dDict: (optional) a dict object into which output is placed
-        :return: a dict with the supplied pagenames as keys and a each value being a dict of corresponding properties with possible parameters being: redirected, missing, disambiguation, wikidata
-        '''
+        :return: a dict with the supplied pagenames as keys and a each value 
+        being a dict of corresponding properties with possible parameters being: 
+        redirected, missing, disambiguation, wikidata
+        """
         #if only one article given
         if not isinstance(articles,list):
             if (isinstance(articles,str) or isinstance(articles,unicode)):
                 articles = [articles,]
             else:
-                print '"getPageInfo" requires a list of pagenames or a single pagename.'
+                print "getPageInfo() requires a list of pagenames or a single pagename."
                 return None
         
         #if no initial dict suplied
@@ -459,7 +462,7 @@ class WikiApi(object):
                                     ('redirects', ''),
                                     ('titles', '|'.join(articles).encode('utf-8'))])
         if debug:
-            print u'getPageInfo(): articles=%s\n' %'|'.join(articles)
+            print u"getPageInfo(): articles=%s\n" %'|'.join(articles)
             print jsonr
         
         #start with redirects
@@ -501,18 +504,18 @@ class WikiApi(object):
         return dDict #in case one was not supplied
     
     def getPage(self, articles, dDict=None, debug=False):
-        '''
+        """
         Given an article this returns the contents of (the latest revision of) the page
         :param articles: a list of pagenames (or a single pagename) to look at
         :param dDict: (optional) a dict object into which output is placed
         :return: dict of contents with pagenames as key
-        '''
+        """
         #if only one article given
         if not isinstance(articles,list):
             if (isinstance(articles,str) or isinstance(articles,unicode)):
                 articles = [articles,]
             else:
-                print '"getPage()" requires a list of pagenames or a single pagename.'
+                print "getPage() requires a list of pagenames or a single pagename."
                 return None
         
         #if no initial dict suplied
@@ -537,7 +540,7 @@ class WikiApi(object):
                                     ('rvprop', 'content'),
                                     ('titles', '|'.join(articles).encode('utf-8'))])
         if debug:
-            print u'getPage() : articles= %s\n' %'|'.join(articles)
+            print u"getPage() : articles= %s\n" %'|'.join(articles)
             print jsonr
         
         for page in jsonr['query']['pages']:
@@ -549,7 +552,7 @@ class WikiApi(object):
         return dDict #in case one was not supplied
     
     def editText(self, title, newtext, comment, minor=False, bot=True, userassert='bot', nocreate=False, debug=False, append=False):
-        print("Editing " + title.encode('utf-8','ignore'))
+        print "Editing %s" % title.encode('utf-8','ignore')
         requestparams = [('title',  title.encode('utf-8')),
                          ('text', newtext.encode('utf-8')),
                          ('summary', comment.encode('utf-8')),
@@ -567,31 +570,30 @@ class WikiApi(object):
 
         jsonr = self.httpPOST("edit", requestparams)
         if debug:
-            print u'editText(): title=%s\n' %title
+            print u"editText(): title=%s\n" %title
             print jsonr
         
-        if 'edit' in jsonr:
-            if(jsonr['edit']['result'] == "Success"):
-                print "Editing " + title.encode('utf-8','ignore') + "...Success"
+        if ('edit' in jsonr) and (jsonr['edit']['result'] == "Success"):
+            print "Editing %s...Success" %title.encode('utf-8','ignore')
         else:
-            print "Editing " + title + "...Failure"
+            print "Editing %s...Failure" %title
             print self.responsebuffer.getvalue()
             exit()
             #time.sleep(.2)
     
     def getPageCategories(self, articles, nohidden=False, dDict=None, debug=False):
-        '''
+        """
         Returns the articles of a pageGiven an article this returns the contents of (the latest revision of) the page
         :param articles: a list of pagenames (or a single pagename) to look at
         :param dDict: (optional) a dict object into which output is placed
         :return: dict of contents with pagenames as key pagename:listofCategories
-        '''
+        """
         #if only one article given
         if not isinstance(articles,list):
             if (isinstance(articles,str) or isinstance(articles,unicode)):
                 articles = [articles,]
             else:
-                print '"getPageCategories()" requires a list of pagenames or a single pagename.'
+                print "getPageCategories() requires a list of pagenames or a single pagename."
                 return None
         
         #if no initial dict suplied
@@ -623,7 +625,7 @@ class WikiApi(object):
                                         ('titles', '|'.join(articles).encode('utf-8'))])
         
         if debug:
-            print u'getPageCategories() : articles= %s\n' %'|'.join(articles)
+            print u"getPageCategories() : articles= %s\n" %'|'.join(articles)
             print jsonr
         
         #{"query":{"pages":{"497":{"pageid":497,"ns":0,"title":"Edvin \u00d6hrstr\u00f6m","categories":[{"ns":14,"title":"Kategori:Avlidna 1994"},{"ns":14,"title":"Kategori:F\u00f6dda 1906"}]}}}}
@@ -645,7 +647,7 @@ class WikiApi(object):
                 dDict[title] = categories
         
         while 'query-continue' in jsonr:
-            #print  "Fetching pagecategories: " + '|'.join(articles) + "...fetching more"
+            #print  "Fetching pagecategories: %s...fetching more" %'|'.join(articles)
             #print jsonr['query-continue']['categorymembers']['clcontinue']
             jsonr = self.httpPOST("query", [('prop', 'categories'),
                                         ('cllimit', '500'),
@@ -670,7 +672,7 @@ class WikiApi(object):
                 else:
                     dDict[title] = categories
         
-        #print  "Fetching pagecategories: " + '|'.join(articles)+ "...complete"
+        #print  "Fetching pagecategories: %s...complete" %'|'.join(articles)
         return dDict #in case one was not supplied
     
     def apiaction(self, action, form=None):
@@ -683,14 +685,14 @@ class WikiApi(object):
         jsonr = self.httpPOST('logout',[('','')])
 
     def limitByBytes(self, valList, reqlimit=None):
-        '''
+        """
         php $_GET is limited to 512 bytes per request and parameter
         This function therefore provides a way of limiting the number
         of values further than reqlimit to respect this limitation.
         :param valList: a list of values to be compressed into one parameter
         :param reqlimit: (optional) the number of values to send in each request
         :return: a new reqlimit
-        '''
+        """
         byteLimit = 512.0
         if reqlimit == None:
             reqlimit = len(valList)
@@ -702,11 +704,11 @@ class WikiApi(object):
                 break
             reqlimit = int(reqlimit/num)
             if reqlimit <1:
-                print '%r byte limit broken by a single parameter! What to do?' %int(byteLimit)
+                print "%r byte limit broken by a single parameter! What to do?" %int(byteLimit)
                 return None #Should do proper error handling
             #prevent infinite loop
             if reqlimit == oldresult:
-                print 'limitByBytes() in a loop with b/n/r = %r/%f/%r' %(byteLength, num, reqlimit)
+                print "limitByBytes() in a loop with b/n/r = %r/%f/%r" %(byteLength, num, reqlimit)
                 if reqlimit>1:
                     reqlimit = reqlimit - 1
                 break
@@ -716,9 +718,9 @@ class WikiApi(object):
 
     @classmethod
     def setUpApi(cls, user, password, site, reqlimit=50, verbose=False, separator='w', scriptidentify=u'OdokBot/0.5'):
-        '''
+        """
         Creates a WikiApi object, log in and aquire an edit token
-        '''
+        """
         #Provide url and identify (either talk-page url)
         wiki = cls('%s/%s/api.php' %(site, separator),"%s/wiki/User_talk:%s" %(site, user), scriptidentify)
         
@@ -737,10 +739,10 @@ class WikiApi(object):
 
 
 class WikiDataApi(WikiApi):
-    '''Extends the WikiApi class with wikidataSpecific methods'''
+    """Extends the WikiApi class with wikidataSpecific methods"""
     
     def getArticles(self, entities, dDict=None, site=u'svwiki', debug=False):
-        '''
+        """
         Given a list of entityIds this returns their article names (at the specified site)
         :param entities: a list of entity_ids (or a single entity_id) to look at
         :param dDict: (optional) a dict object into which output is placed
@@ -752,13 +754,13 @@ class WikiDataApi(WikiApi):
                          'missing':<False or True if entity is missing>,
                          'missingSite':<False or True if entity exists but does not have an article on that site>}
                 If an error is encountered it returns None
-        '''
+        """
         #if only one article given
         if not isinstance(entities,list):
             if (isinstance(entities,str) or isinstance(entities,unicode)):
                 entities = [entities,]
             else:
-                print '"getArticles" requires a list of entity_ids or a single entity_id.'
+                print "getArticles() requires a list of entity_ids or a single entity_id."
                 return None
         
         #if no initial dict suplied
@@ -782,7 +784,7 @@ class WikiDataApi(WikiApi):
         jsonr = self.httpPOST("wbgetentities", [('props', 'sitelinks/urls'),
                                     ('ids', '|'.join(entities).encode('utf-8'))])
         if debug:
-            print u'getArticles() : site=%s ; entities=%s\n' %(site, '|'.join(entities))
+            print u"getArticles() : site=%s ; entities=%s\n" %(site, '|'.join(entities))
             print jsonr
         
         #deal with problems
@@ -806,7 +808,7 @@ class WikiDataApi(WikiApi):
         return dDict #in case one was not supplied
     
     def makeEntity(self, article, site=u'svwiki', lang=None, label=None, debug=False):
-        '''
+        """
         Given an article on a certain site creates a wikidata entity for this object and returns the entity id
         :param article: the article for which to create a wikidata entity
         :param site: the site where the article exists
@@ -814,12 +816,12 @@ class WikiDataApi(WikiApi):
         :param lang: the language in which to add the label
         :return: the entityId of the new object
                 If an error is encountered it returns None
-        '''
+        """
         if not (isinstance(article,str) or isinstance(article,unicode)): #does this give trouble with utf-8 strings?
-            print '"makeEntity" requires a single article name as its parameter'
+            print "makeEntity() requires a single article name as its parameter"
             return None
         if not article or len(article.strip()) == 0:
-            print '"makeEntity" does not allow an empty parameter'
+            print "makeEntity() does not allow an empty parameter"
             return None
         
         #if lang and label:
@@ -836,17 +838,17 @@ class WikiDataApi(WikiApi):
                                     ('data', data.encode('utf-8')),
                                     ('token', str(self.edittoken))])
         if debug:
-            print u'makeEntity() : site=%s ; article=%s\n' %(site, article)
+            print u"makeEntity() : site=%s ; article=%s\n" %(site, article)
             print jsonr
         
         #possible errors
         if u'error' in jsonr.keys():
             if (jsonr[u'error'][u'code'] == u'failed-save' and jsonr[u'error'][u'messages'][u'0'][u'name'] == u'wikibase-error-sitelink-already-used'):
                 entity = jsonr[u'error'][u'messages'][u'0'][u'parameters'][2]
-                print u'%s:%s already saved as %s' %(site, article, entity)
+                print u"%s:%s already saved as %s" %(site, article, entity)
                 return entity
             elif (jsonr[u'error'][u'code'] == u'no-external-page') :
-                print u'%s:%s does not exist' %(site, article)
+                print u"%s:%s does not exist" %(site, article)
             else:
                 print jsonr[u'error']
             return None
