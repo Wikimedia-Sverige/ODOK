@@ -24,19 +24,19 @@ def is_number(s):
     try:
         float(s)
         return True
-    except ValueError, TypeError:
+    except (ValueError, TypeError):
         return False
 
 def is_int(s):
     try:
         int(s)
         return True
-    except ValueError, TypeError:
+    except (ValueError, TypeError):
         return False
 
 def extractName(entry):
     '''If field includes square brackets then this ignores any part of name field which lies outside
-       If field contains semicolons then treats thes as separate objects'''
+       If field contains semicolons then treats these as separate objects'''
     if u'[' in entry:
         pos1 = entry.find(u'[')
         pos2 = entry.find(u']')
