@@ -369,7 +369,10 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     #comparing artist_links: u'artist_links':u'artist_links'
     artist_links = list(set(wikiObj[u'artist_links'])-set(odokObj[u'artist_links']))
     if artist_links and len(''.join(artist_links))>0:
-        log = log + u'difference in artist links, linkdiff: %s\n' %';'.join(artist_links)
+        log = log + u'difference in artist links, linkdiff+: %s\n' %';'.join(artist_links)
+    artist_links = list(set(odokObj[u'artist_links'])-set(wikiObj[u'artist_links']))
+    if artist_links and len(''.join(artist_links))>0:
+        log = log + u'difference in artist links, linkdiff-: %s\n' %';'.join(artist_links)
     
     ##Post-processing
     #fotnot-namn without fotnot - needs to look-up fotnot for o:cmt
