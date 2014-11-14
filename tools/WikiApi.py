@@ -53,12 +53,14 @@ class WikiApi(object):
         self.reqlimit = None
 
         #Response buffer
-        self.responsebuffer= cStringIO.StringIO()
+        self.responsebuffer = cStringIO.StringIO()
+        self.headerbuffer = cStringIO.StringIO()
         self.clearresponsebufferafterresponse = False #True will clear, and save memory, but less useful if error
 
         #Set up reusable curl connection
-        self.sitecurl=pycurl.Curl()
+        self.sitecurl = pycurl.Curl()
         self.sitecurl.setopt(pycurl.WRITEFUNCTION, self.responsebuffer.write) #Writes to response buffer
+        self.sitecurl.setopt(pycurl.HEADERFUNCTION, self.headerbuffer.write) #Writes to response buffer
         self.sitecurl.setopt(pycurl.COOKIEFILE, "") #Use in-memory cookie
         self.sitecurl.setopt(pycurl.USERAGENT, scriptidentify.encode('utf-8') + ' (' + useragentidentify.encode('utf-8') + ')')
         self.sitecurl.setopt(pycurl.POST, 1)
@@ -109,11 +111,16 @@ class WikiApi(object):
         
         if debug:
             print self.responsebuffer.getvalue()
-        json = ujson.loads(self.responsebuffer.getvalue())
+        try:
+            json = ujson.loads(self.responsebuffer.getvalue())
+        except ValueError:
+            print self.headerbuffer.getvalue()
+            exit(1)
         
         if self.clearresponsebufferafterresponse:
             self.responsebuffer.truncate(0)
-
+        
+        self.headerbuffer.truncate(0)  # no need to keep more than the last
         return json
     
     def httpGET(self, action, params, timeoutretry=0, form=None, debug=False):
@@ -235,7 +242,7 @@ class WikiApi(object):
             exit()
         else:
             if verbose: print "%s token retrieved: %s" %(token, str(jsonr['query']['tokens'][tokenkey]))
-            return str(jsonr['tokens'][tokenkey])
+            return str(jsonr['query']['tokens'][tokenkey])
     
     def setEditToken(self, verbose=True):
         self.edittoken = self.setToken('csrf', verbose=verbose)
@@ -279,6 +286,7 @@ class WikiApi(object):
         jsonr = self.httpPOST("query", [('list', 'embeddedin'),
                                         ('eititle', templatename.encode('utf-8')),
                                         ('einamespace', str(einamespace)),
+                                        ('rawcontinue', ''),
                                         ('eilimit', '500')])
         if debug:
             print u"getEmbeddedin(): templatename=%s\n" %templatename
@@ -295,6 +303,7 @@ class WikiApi(object):
                                             ('eititle', templatename.encode('utf-8')),
                                             ('eilimit', '500'),
                                             ('einamespace', str(einamespace)),
+                                            ('rawcontinue', ''),
                                             ('eicontinue', str(jsonr['query-continue']['embeddedin']['eicontinue']))])
             for page in jsonr['query']['embeddedin']:
                 members.append((page['title']))
@@ -319,6 +328,7 @@ class WikiApi(object):
                                         ('generator', 'embeddedin'),
                                         ('geititle', templatename.encode('utf-8')),
                                         ('geinamespace', str(einamespace)),
+                                        ('rawcontinue', ''),
                                         ('geilimit', '500')])
         if debug:
             print u"getEmbeddedinTimestamps() templatename:%s \n" %templatename
@@ -337,6 +347,7 @@ class WikiApi(object):
                                         ('generator', 'embeddedin'),
                                         ('geititle', templatename.encode('utf-8')),
                                         ('geinamespace', str(einamespace)),
+                                        ('rawcontinue', ''),
                                         ('geilimit', '500'),
                                         ('geicontinue',str(jsonr['query-continue']['embeddedin']['geicontinue']))])
             for page in jsonr['query']['pages']:
@@ -359,6 +370,7 @@ class WikiApi(object):
         jsonr = self.httpPOST("query", [('list', 'categorymembers'),
                                         ('cmtitle', categoryname.encode('utf-8')),
                                         ('cmnamespace', str(cmnamespace)),
+                                        ('rawcontinue', ''),
                                         ('cmlimit', '500')])
         if debug:
             print u"getCategoryMembers() categoryname:%s \n" %categoryname
@@ -374,6 +386,7 @@ class WikiApi(object):
             jsonr = self.httpPOST("query", [('list', 'categorymembers'),
                                         ('cmtitle', categoryname.encode('utf-8')),
                                         ('cmnamespace', str(cmnamespace)),
+                                        ('rawcontinue', ''),
                                         ('cmlimit', '500'),
                                         ('cmcontinue',str(jsonr['query-continue']['categorymembers']['cmcontinue']))])
             for page in jsonr['query']['categorymembers']:
@@ -394,6 +407,7 @@ class WikiApi(object):
         #action=query&list=imageusage&iutitle=File:Foo.jpg
         requestparams = [('list', 'imageusage'),
                          ('iutitle', filename.encode('utf-8')),
+                         ('rawcontinue', ''),
                          ('iulimit', '500')]
         if iunamespace:
             requestparams.append(('iunamespace', str(iunamespace)))
@@ -623,6 +637,7 @@ class WikiApi(object):
         jsonr = self.httpPOST("query", [('prop', 'categories'),
                                         ('cllimit', '500'),
                                         ('clshow', clshow),
+                                        ('rawcontinue', ''),
                                         ('titles', '|'.join(articles).encode('utf-8'))])
         
         if debug:
@@ -653,6 +668,7 @@ class WikiApi(object):
             jsonr = self.httpPOST("query", [('prop', 'categories'),
                                         ('cllimit', '500'),
                                         ('clshow', clshow),
+                                        ('rawcontinue', ''),
                                         ('titles', '|'.join(articles).encode('utf-8'))
                                         ('clcontinue',str(jsonr['query-continue']['categories']['clcontinue']))])
             
