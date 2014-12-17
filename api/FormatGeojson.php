@@ -106,6 +106,96 @@
                 return($feature);
             }
         }
+
+        private function writeRowMedium($row, $imgsize = 100){
+            # rows to skip
+            $skip = Array('created', 'changed', 'ugc', 'year_cmt', 'cmt', 'owner');
+            
+            $row = $row['hit'];
+            #Ignore rows without coords
+            if (!empty($row['lat']) and !empty($row['lon'])){
+                $feature = Array(
+                                 'type' => 'Feature',
+                                 'id' => $row['id'],
+                                 'geometry' => Array(
+                                                     'type' => 'Point',
+                                                     'coordinates' => Array((float)$row['lon'], (float)$row['lat'])
+                                                     )
+                                 );
+                $handled = Array('id','lat','lon');
+                
+                #Deal with properties
+                $prop=Array();
+                
+                #Spatial info
+                array_push($handled, 'inside','address','county','muni','district');
+                $spatial = Array(
+                                 'inside' => $row['inside'],
+                                 'address' => $row['address'],
+                                 'county' => 'SE-'. $row['county'],
+                                 'muni' =>  $row['muni'],
+                                 'district' => $row['district']
+                                 );
+                $prop['spatial'] = $spatial;
+                
+                #image
+                array_push($handled, 'image');
+                if ($row['image']) {
+                    $prop['image'] = $row['image'];
+                    # thumb is not needed as it is just
+                    # "https://commons.wikimedia.org/w/thumb.php?f=" . $row['image'] . "&width=" . $size;
+                    # leaving it out allows size to be set by recipient
+                }else {
+                    $prop['image'] = null;
+                }
+                
+                #descriptions
+                array_push($handled, 'descr', 'wiki_article', 'official_url');
+                $desc_text = Array(
+                                 'descr' => $row['descr'],
+                                 'wiki' => ApiBase::getArticleFromWikidata($row['wiki_article']),
+                                 'wikidata' => !empty($row['wiki_article']) ? $row['wiki_article'] : null
+                                 );
+                $prop['descriptions'] = $desc_text;
+                
+                #artists
+                array_push($handled, 'artist');
+                $artist = Array();
+                $artist_info = ApiBase::getArtistInfo($row['id']);
+                if (!empty($artist_info)){
+                   foreach ($artist_info as $ai){
+                         array_push($artist, Array(
+                                                   'wikidata' => !empty($ai['wiki']) ? $ai['wiki'] : null,
+                                                   'name' => $ai['name'])
+                                                   );
+                   }
+                }elseif($row['artist']) {
+                   $artistsList = explode(';',$row['artist']);
+                   foreach ($artistsList as $a){
+                         array_push($artist, Array('name' => $a));
+                   }
+                }else {
+                    $artist = null;
+                }
+                $prop['artist'] = $artist;
+                
+                #any remaining
+                foreach($row as $key => $value){
+                    if (in_array($key, $handled)){
+                        continue;
+                    }else if (in_array($key, $skip)){
+                        continue;
+                    }else{
+                        $prop[$key] = $value;
+                    }
+                }
+                
+                #store and return
+                $feature['properties'] = $prop;
+                return($feature);
+            }
+        }
+
         
         private function writeRowBasic($row){
             $row = $row['hit'];
@@ -148,7 +238,7 @@
                 $features=Array();
                 foreach($results['body'] as $row){
                     if ($full){
-                        $f = self::writeRowFull($row);
+                        $f = self::writeRowMedium($row);
                     }else {
                         $f = self::writeRowBasic($row);
                     }
