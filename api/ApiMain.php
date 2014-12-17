@@ -11,8 +11,8 @@
     class ApiMain{
         function search(){
             # Database info (including username+pass) in external file
-            if ( file_exists('./../../../../andre/config.php')){
-                require_once('./../../../../andre/config.php');
+            if ( file_exists('/home/andre/config.php')){
+                require_once('/home/andre/config.php');
             } elseif (file_exists('config.php')){
                 require_once('config.php');
             } else {
