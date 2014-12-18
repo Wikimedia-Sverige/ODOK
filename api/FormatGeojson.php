@@ -153,8 +153,8 @@
                 array_push($handled, 'descr', 'wiki_article', 'official_url');
                 $desc_text = Array(
                                  'descr' => $row['descr'],
-                                 'wiki' => ApiBase::getArticleFromWikidata($row['wiki_article']),
-                                 'wikidata' => !empty($row['wiki_article']) ? $row['wiki_article'] : null
+                                 'wikidata' => !empty($row['wiki_article']) ? $row['wiki_article'] : null,
+                                 'ingress' => !empty($row['wiki_article']) ? ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false)) : null
                                  );
                 $prop['descriptions'] = $desc_text;
                 
