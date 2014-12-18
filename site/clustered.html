@@ -6,14 +6,16 @@
     <title>Offentlig konst i Sverige</title>
     <link rel="profile" href="//www.w3.org/2005/10/profile" />
     <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
-    <link rel="stylesheet" href="css/MarkerCluster.css" />
-    <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
     <link rel="icon" 
           type="image/ico" 
           href="favicon.ico" />
     <link rel="stylesheet" href="css/my.css" />
-    <script src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
-    <script src="//raw.github.com/Leaflet/Leaflet.markercluster/master/dist/leaflet.markercluster-src.js"></script>
+    <script type="text/javascript" src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script type="text/javascript" src="map.js"></script>
   </head>
   <body>
     <div id="wrap">
@@ -47,101 +49,6 @@
             Ett projekt fr&aring;n <a href="//wikimedia.se/">Wikimedia Sverige</a> med st&ouml;d av <a href="http://www.vinnova.se">Vinnova</a>. <a href="cookieinfo.html">Om kakor</a>.
         </footer>
     </div>
-    <!-- Map script-->
-    <script src="AllFeatures.geo.json" type="text/javascript"></script>
-    <script type="text/javascript">
-        //load basic Leaflet map
-        var map = L.map('map').setView([59.3145,18.0162], 12); //setView is overrriden by cluseter function
-        
-        //settings for MapQuest
-        var mapQuest = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
-            attribution: "&copy; <a href='//www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='//www.openstreetmap.org/copyright' title='ODbL'>open license</a>. Tiles Courtesy of <a href='//www.mapquest.com/'>MapQuest</a> <img src='//developer.mapquest.com/content/osm/mq_logo.png'>",
-            maxZoom: 19,
-            subdomains: ['otile1','otile2','otile3','otile4']
-        });
-        
-        //settings for OSM Sweden
-        var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            subdomains: 'abc',
-            attribution: 'Map data &copy; <a href="//www.openstreetmap.org">OpenStreetMap</a> contributors, Imagery by <a href="http://openstreetmap.se">OpenStreetMap Sweden</a>'
-        }).addTo(map);
-        map.addLayer(osmSE);
-        
-        //settings for OSM
-        var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: 'Map data © <a href="//openstreetmap.org">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-        });
-        
-        //set-up markers
-        var noPicIcon = L.icon({
-			iconUrl: '//maps.google.com/mapfiles/kml/paddle/ylw-blank.png',
-			iconSize: [32, 32],
-			iconAnchor: [16, 32],
-			popupAnchor: [0, -33]
-		});
-        var picIcon = L.icon({
-			iconUrl: '//maps.google.com/mapfiles/kml/paddle/blu-circle.png',
-			iconSize: [32, 32],
-			iconAnchor: [16, 32],
-			popupAnchor: [0, -33]
-		});
-        
-        //trigger for each feature
-        function onEachFeature(feature, layer) {
-            //Based on https://stackoverflow.com/questions/10889954
-			var popupContent = "";
-            //var popupContent = document.createElement('DIV');
-
-			if (feature.properties && feature.properties.popupContent) {
-				popupContent += feature.properties.popupContent;
-                //popupContent.innerHTML += feature.properties.popupContent;
-			}
-
-			layer.bindPopup(popupContent);
-		}
-        
-        //geoJson
-        var odokLayer = L.geoJson(features, {
-            onEachFeature: onEachFeature,
-            pointToLayer: function (feature, latlng) {
-                if (feature.properties.image){
-                    return L.marker(latlng, {icon: picIcon, title:feature.properties.title });
-                }else{
-                    return L.marker(latlng, {icon: noPicIcon, title:feature.properties.title });
-                }
-			}
-        });
-        
-        //Clustering
-        var markers = new L.MarkerClusterGroup({showCoverageOnHover: false});
-        markers.addLayer(odokLayer);        // add it to the cluster group
-        map.addLayer(markers);		        // add it to the map
-        map.fitBounds(markers.getBounds()); //set view on the cluster extent
-        
-        //for layers control
-        var baseMaps = {
-            "MapQuest": mapQuest,
-            "OSM": osm,
-            "OSM Sweden": osmSE
-        };
-        var overlayMaps = {
-            "clustered": markers,
-            "individual": odokLayer
-        };
-        L.control.layers(baseMaps, overlayMaps).addTo(map);
-        
-        //Rightclick gives coords (for improving data)
-        var popup = L.popup();
-        function onMapClick(e) {
-            popup
-                .setLatLng(e.latlng)
-                .setContent("You clicked the map at " + e.latlng.toString())
-                .openOn(map);
-        }
-        map.on('contextmenu', onMapClick);
-    </script>
     <!-- Piwik -->
     <script type="text/javascript">
         var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.wikimedia.se/" : "http://piwik.wikimedia.se/");
