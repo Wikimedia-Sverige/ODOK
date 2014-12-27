@@ -14,7 +14,7 @@ $(document).ready(function() {
 
     // set up map
     //load basic Leaflet map
-    var map = L.map('map').setView([59.3145,18.0162], 12); //setView is overrriden by cluseter function
+    var map = L.map('map').setView([63.5,16.9], 6); //setView is overrriden by cluster function
 
     //settings for MapQuest
     var mapQuest = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
