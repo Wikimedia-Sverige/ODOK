@@ -15,14 +15,14 @@ $(document).ready(function() {
     // set up map
     //load basic Leaflet map
     var map = L.map('map').setView([59.3145,18.0162], 12); //setView is overrriden by cluseter function
-    
+
     //settings for MapQuest
     var mapQuest = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
         attribution: "&copy; <a href='//www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='//www.openstreetmap.org/copyright' title='ODbL'>open license</a>. Tiles Courtesy of <a href='//www.mapquest.com/'>MapQuest</a> <img src='//developer.mapquest.com/content/osm/mq_logo.png'>",
         maxZoom: 19,
         subdomains: ['otile1','otile2','otile3','otile4']
     });
-    
+
     //settings for OSM Sweden
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -30,27 +30,27 @@ $(document).ready(function() {
         attribution: 'Map data &copy; <a href="//www.openstreetmap.org">OpenStreetMap</a> contributors, Imagery by <a href="http://openstreetmap.se">OpenStreetMap Sweden</a>'
     }).addTo(map);
     map.addLayer(osmSE);
-    
+
     //settings for OSM
     var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: 'Map data © <a href="//openstreetmap.org">OpenStreetMap</a> contributors',
         maxZoom: 19,
     });
-    
+
     //set-up markers
     var noPicIcon = L.icon({
-        iconUrl: '//maps.google.com/mapfiles/kml/paddle/ylw-blank.png',
+        iconUrl: 'images/withoutimageicon.png',
         iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -33]
+        iconAnchor: [16, 31],
+        popupAnchor: [0, -16]
     });
     var picIcon = L.icon({
-        iconUrl: '//maps.google.com/mapfiles/kml/paddle/blu-circle.png',
+        iconUrl: 'images/withimageicon.png',
         iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -33]
+        iconAnchor: [16, 31],
+        popupAnchor: [0, -16]
     });
-    
+
     //geoJson, once it is loaded
     jqxhrFeat.complete( function() {
         var odokLayer = L.geoJson(features, {
@@ -65,14 +65,14 @@ $(document).ready(function() {
                 }
             }
         });
-    
+
         //Clustering
         console.log("And now I'm here");
         var markers = new L.MarkerClusterGroup({showCoverageOnHover: false});
         markers.addLayer(odokLayer);        // add it to the cluster group
         map.addLayer(markers);		        // add it to the map
         map.fitBounds(markers.getBounds()); //set view on the cluster extent
-        
+
         //for layers control
         var baseMaps = {
             "MapQuest": mapQuest,
@@ -85,7 +85,13 @@ $(document).ready(function() {
         };
         L.control.layers(baseMaps, overlayMaps).addTo(map);
     });
-    
+
+    // Geocoder and hash
+    var osmOptions = {text: 'Hitta'};
+    var osmGeocoder = new L.Control.OSMGeocoder(osmOptions);
+    map.addControl(osmGeocoder);
+    var hash = new L.Hash(map);
+
     //Rightclick gives coords (for improving data)
     var popup = L.popup();
     function onMapClick(e) {
@@ -102,7 +108,7 @@ function makePopup(feature) {
     // Based on https://stackoverflow.com/questions/10889954
     var properties = feature.properties;
     var desc = "";
-    
+
     // code originally from updateFeatures.py
     // image
     if (properties.image) {
@@ -116,7 +122,7 @@ function makePopup(feature) {
         desc += '<a href="http://commons.wikimedia.org/wiki/File:' + showImage + '" target="_blank">';
         desc += '<img src="https://commons.wikimedia.org/w/thumb.php?f=' + showImage + '&width=100" class="thumb" />';
         desc += '</a>';
-        
+
         // info
     }
     desc += '<ul>';
@@ -125,7 +131,7 @@ function makePopup(feature) {
         desc += '<b>' + properties.title + '</b>';
         desc += '</li>';
     }
-    
+
     // artist - year
     desc += '<li> ';
     if (properties.artist) {
@@ -148,7 +154,7 @@ function makePopup(feature) {
     if (properties.year) {
         desc += ' - ' + properties.year;
     }
-    
+
     // Muni - address
     desc += '</li><li> ';
     desc += muni[properties.spatial.muni].full;
@@ -173,7 +179,7 @@ function makePopup(feature) {
     else if (properties.descriptions.descr) {
         desc += properties.descriptions.descr;
     }
-    
+
     return desc;
-    
+
 }

@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="leaflet/Control.OSMGeocoder.css" />
+    <link rel="stylesheet" href="leaflet/L.Control.Sidebar.css" />
     <link rel="icon" 
           type="image/ico" 
           href="favicon.ico" />
@@ -15,40 +17,64 @@
     <script type="text/javascript" src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script type="text/javascript" src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
+    <script type="text/javascript" src="leaflet/Control.OSMGeocoder.js"></script>
+    <script type="text/javascript" src="leaflet/L.Control.Sidebar.js"></script>
     <script type="text/javascript" src="map.js"></script>
   </head>
   <body>
     <div id="wrap">
-        <div id="nav-wrapper" style="text-align: center">    
-            <div id="nav">
-            <div class="navimage"><img src="http://offentligkonst.se/Offentligkonst_logo.png" alt="Offentligkonst.se logo" width="100%"/></div>
-            <div><a href="odok.html">Om projektet<!-- (should include info[AT]offentligkonst.se) --></a></div>
-            <div><a href="about.html">Om oss</a></div>
-            <div><a href="HACK4DK/web/#odok/">Sök bland konstverken</a></div>
+        <header class="navbox">
+            <h1 class="logo">Offentligkonst.se</h1>
+            <nav>
+            <a id="menu_btn" href="#" class="menu" title="Meny"></a>
+            </nav>
+        </header>
+        <div id="menu" class="clearfix" style="visibility:hidden">
+            <div id="about" class="clearfix">
+                <h2>Om offentligkonst.se</h2>
+                <p>
+                Välkommen! Här presenteras Wikimedia Sveriges databas över offentlig konst.
+                Information om projektet och vad du som volontär eller utvecklare kan hjälpa till med
+                finns på vår <a href="//se.wikimedia.org/wiki/Offentligkonst.se">föreningswiki</a>.
+                </p>
+                <p>
+                Nedan visas de konstverk i Sverige för vilka vi har koordinater. Kartan kompletteras löpande.
+                Det går även att <a href="/HACK4DK/web/#odok/">söka bland konstverken</a>.
+                </p>
+                <p>
+                Läs <a href="https://wikimediasverige.wordpress.com/2014/06/13/angaende-stamningsansokan-fran-bus-mot-offentligkonst-se/">vårt svar</a> på BUS pressmeddelande om offentligkonst.se.
+                </p>
+            </div>
+            <div id="contact" class="clearfix">
+                <h2>Kontakt</h2>
+                Du når oss enklast via en av följande:
+                <ul>
+                    <li>E-post: info[AT]offentligkonst.se</li>
+                    <li>Twitter:</li>
+                    <ul>
+                    <li><a href="//twitter.com/WikimediaSE">@WikimediaSE</a></li>
+                    <li><a href="//twitter.com/Lokal_Profil">@Lokal_Profil</a> (tekniska frågor)</li>
+                    </ul>
+                </ul>
+            </div>
         </div>
-        </div>
-        <!-- Basic navigational menu 
-        <div id="nav">
-            <div class="navimage"><img src="http://offentligkonst.se/Offentligkonst_logo.png" alt="Offentligkonst.se logo" width="100%"/></div>
-            <div><a href="odok.html">Om projektet<!-- (should include info[AT]offentligkonst.se) </a></div>
-            <div><a href="about.html">Om oss</a></div>
-            <div><a href="HACK4DK/web/#odok/">Sök bland konstverken</a></div>
-        </div>-->
-        <!-- <div id="header">
-            V&auml;lkommen! H&auml;r presenteras Wikimedia Sveriges databas &ouml;ver offentlig. 
-            Nedan visas de konstverk f&ouml;r vilka vi har koordinater. Kartan kompletteras l&ouml;pande.<br/>
-            Det g&aring;r &auml;ven att <a href="./HACK4DK/web/#odok/">s&ouml;ka bland konstverken</a>.<br/><br/>
-            Information om projektet och vad du som volont&auml;r kan hj&auml;lpa till med finns p&aring; v&aring;r 
-            <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst">projektsida</a>. 
-            Vi har &auml;ven en <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/To_do">&ouml;nskelista</a> 
-            speciellt f&ouml;r utvecklare.
-        </div> -->
         <!-- The map -->
         <div id="map"></div>
         <footer>
             Ett projekt fr&aring;n <a href="//wikimedia.se/">Wikimedia Sverige</a> med st&ouml;d av <a href="http://www.vinnova.se">Vinnova</a>. <a href="cookieinfo.html">Om kakor</a>.
         </footer>
     </div>
+    <script type="text/javascript">
+        $('#menu_btn').click(function(){
+            if ($('#menu').css("visibility") == "hidden") {
+                $('#menu').css("visibility", "visible");
+            }
+            else {
+                $('#menu').css("visibility", "hidden");
+            }
+        });
+    </script>
     <!-- Piwik -->
     <script type="text/javascript">
         var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.wikimedia.se/" : "http://piwik.wikimedia.se/");
