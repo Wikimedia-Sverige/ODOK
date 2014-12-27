@@ -26,7 +26,7 @@ body{
     bottom:0;
     left:0;
     right:0;
-    border-bottom:1px solid rgba(0,0,0,0.3);
+    border-bottom:1px solid black;
     padding:10px;
 	background-color:#efefef;
     -webkit-transition:top 0.4s ease-out;
@@ -44,11 +44,11 @@ body{
     display:block;
     min-width:230px;
 }
-#menu #about{
+#menu.about{
     float:left;
     padding-right:2.5%
 }
-#menu #contact{
+#menu.contact{
     float:right;
     padding-left:2.5%
 }

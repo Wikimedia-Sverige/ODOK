@@ -7,7 +7,7 @@ $(document).ready(function() {
         muni = data;
     });
     // load features json into variable
-    var jqxhrFeat = $.getJSON("./AllFeaturesNoPopup.geo.json", function( data ) {
+    var jqxhrFeat = $.getJSON("./AllFeatures.geo.json", function( data ) {
         features = data;
             console.log("popup-features.head.hits: " + features.head.hits);
     });
