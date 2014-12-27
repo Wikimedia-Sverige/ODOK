@@ -44,11 +44,11 @@ body{
     display:block;
     min-width:230px;
 }
-#menu.about{
+#menu .about{
     float:left;
     padding-right:2.5%
 }
-#menu.contact{
+#menu .contact{
     float:right;
     padding-left:2.5%
 }
