@@ -86,10 +86,12 @@ $(document).ready(function() {
         L.control.layers(baseMaps, overlayMaps).addTo(map);
     });
 
-    // Geocoder and hash
+    // search
     var osmOptions = {text: 'Hitta'};
     var osmGeocoder = new L.Control.OSMGeocoder(osmOptions);
     map.addControl(osmGeocoder);
+    
+    // hHash
     var hash = new L.Hash(map);
 
     //Rightclick gives coords (for improving data)
