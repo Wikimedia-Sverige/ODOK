@@ -43,14 +43,10 @@ body{
     width:47.5%;
     display:block;
     min-width:230px;
+    float:left;
 }
 #menu .about{
-    float:left;
-    padding-right:2.5%
-}
-#menu .contact{
-    float:right;
-    padding-left:2.5%
+    padding-right:5%
 }
 header.navbox{
 	top:0;
