@@ -14,11 +14,12 @@ $(document).ready(function() {
 
     // set up map
     //load basic Leaflet map
-    var map = L.map('map').setView([63.5,16.9], 6); //setView is overrriden by cluster function
+    var map = L.map('map').setView([63.5,16.9], 4); //setView is overrriden by cluster function
 
+    var attribution = 'A project from <a href="//wikimedia.se/">Wikimedia Sverige</a> with support from <a href="http://www.vinnova.se">Vinnova</a>. | ';
     //settings for MapQuest
     var mapQuest = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
-        attribution: "&copy; <a href='//www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='//www.openstreetmap.org/copyright' title='ODbL'>open license</a>. Tiles Courtesy of <a href='//www.mapquest.com/'>MapQuest</a> <img src='//developer.mapquest.com/content/osm/mq_logo.png'>",
+        attribution: attribution + 'Map data © <a href="//openstreetmap.org/">OpenStreetMap</a> contributors. Tiles courtesy of <a href="//www.mapquest.com/">MapQuest</a>',
         maxZoom: 19,
         subdomains: ['otile1','otile2','otile3','otile4']
     });
@@ -27,13 +28,13 @@ $(document).ready(function() {
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
-        attribution: 'Map data &copy; <a href="//www.openstreetmap.org">OpenStreetMap</a> contributors, Imagery by <a href="http://openstreetmap.se">OpenStreetMap Sweden</a>'
+        attribution: attribution + 'Map data © <a href="//openstreetmap.org">OpenStreetMap</a> contributors, Imagery by <a href="http://openstreetmap.se">OpenStreetMap Sweden</a>'
     }).addTo(map);
     map.addLayer(osmSE);
 
     //settings for OSM
     var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: 'Map data © <a href="//openstreetmap.org">OpenStreetMap</a> contributors',
+        attribution: attribution + 'Map data © <a href="//openstreetmap.org">OpenStreetMap</a> contributors',
         maxZoom: 19,
     });
 
@@ -71,7 +72,8 @@ $(document).ready(function() {
         var markers = new L.MarkerClusterGroup({showCoverageOnHover: false});
         markers.addLayer(odokLayer);        // add it to the cluster group
         map.addLayer(markers);		        // add it to the map
-        map.fitBounds(markers.getBounds()); //set view on the cluster extent
+        // commented out since it overrides the hash
+        //map.fitBounds(markers.getBounds()); //set view on the cluster extent
 
         //for layers control
         var baseMaps = {
@@ -90,7 +92,7 @@ $(document).ready(function() {
     var osmOptions = {text: 'Hitta'};
     var osmGeocoder = new L.Control.OSMGeocoder(osmOptions);
     map.addControl(osmGeocoder);
-    
+
     // hHash
     var hash = new L.Hash(map);
 
