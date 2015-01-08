@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 '''
-    Tool for scraping artistYears from sv.wiki articles and udating these in the ÖDOK database
-    once possible use Property:P569 and Property:P570 on wikidata instead/as well
+Tool for scraping artistYears from sv.wiki articles and updating these in the ÖDOK database
+once possible use Property:P569 and Property:P570 on wikidata instead/as well
 '''
 import dconfig as config
 import odok as odokConnect
@@ -143,3 +143,6 @@ def run(testing=False):
         print u'File with sqlcode to be run can be found at scrapeYears.sql'
     print u'Done!'
     exit(1)
+
+if __name__ == "__main__":
+    run()

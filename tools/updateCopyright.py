@@ -8,7 +8,7 @@ ToDO:
 '''
 import odok as odokConnect
 import dconfig as config
-import codecs
+#import codecs
 
 YEARS_AFTER_BIRTH = 150 #Number of years since birth before considering the work to be free (if year of death is unknown)
 YEARS_AFTER_DEATH = 70  #Number of years since death before considering the work to be free
@@ -138,3 +138,6 @@ def run(testing=False):
     showMultipleArtists(dbWriteSQL, testing=testing)
     dbWriteSQL.closeConnections()
     exit(1)
+
+if __name__ == "__main__":
+    run()

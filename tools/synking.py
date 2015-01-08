@@ -407,7 +407,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             pass
         elif not common.is_number(diff['lon']['new']):
             lat = diff.pop('lon')
-            log = log + u'Non-decimal lon: %s\n' %lon['new']
+            log = log + u'Non-decimal lon: %s\n' %diff['lon']['new']
     
     #Basic validation of artist field:
     if 'artist' in diff.keys():
@@ -443,3 +443,7 @@ def unwiki(wikitext):
     else:
         return wikitext, None
     
+
+if __name__ == "__main__":
+    print "running over last 15 days"
+    run(days=15)
