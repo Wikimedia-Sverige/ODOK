@@ -68,7 +68,6 @@ $(document).ready(function() {
         });
 
         //Clustering
-        console.log("And now I'm here");
         var markers = new L.MarkerClusterGroup({showCoverageOnHover: false});
         markers.addLayer(odokLayer);        // add it to the cluster group
         map.addLayer(markers);		        // add it to the map
@@ -89,11 +88,28 @@ $(document).ready(function() {
     });
 
     // search
-    var osmOptions = {text: 'Hitta'};
+    var osmOptions = {text: 'Sök plats'};
     var osmGeocoder = new L.Control.OSMGeocoder(osmOptions);
     map.addControl(osmGeocoder);
 
-    // hHash
+    // locate
+    L.control.locate({
+        position: 'topleft',  // set the location of the control
+        drawCircle: true,  // controls whether a circle is drawn that shows the uncertainty about the location
+        icon: 'fa fa-crosshairs',  // class for icon, fa-location-arrow or fa-map-marker
+        metric: true,  // use metric or imperial units
+        showPopup: true, // display a popup when the user click on the inner marker
+        strings: {
+            title: "Visa mig var jag är",  // title of the locate control
+            popup: "Du är inom {distance} meter från denna punkt",  // text to appear if user clicks on circle
+            outsideMapBoundsMsg: "Du verkar befinna dig utanför kartans gränser" // default message for onLocationOutsideMapBounds
+        },
+        locateOptions :{
+            maxZoom: 16
+        }
+    }).addTo(map);
+
+    // Hash
     var hash = new L.Hash(map);
 
     //Rightclick gives coords (for improving data)
@@ -101,7 +117,7 @@ $(document).ready(function() {
     function onMapClick(e) {
         popup
             .setLatLng(e.latlng)
-            .setContent("You clicked the map at " + e.latlng.toString())
+            .setContent("Du klickade på koordinaten: " + e.latlng.toString())
             .openOn(map);
     }
     map.on('contextmenu', onMapClick);
@@ -161,7 +177,12 @@ function makePopup(feature) {
 
     // Muni - address
     desc += '</li><li> ';
-    desc += muni[properties.spatial.muni].full;
+    if (muni[properties.spatial.muni]) {
+        desc += muni[properties.spatial.muni].full;
+    }
+    else {
+        console.log("Object has weird muni. Id: " + properties.id + " muni: " + properties.spatial.muni);
+    }
     if (properties.spatial.district) {
         desc += ' (' + properties.spatial.district + ')';
     }
