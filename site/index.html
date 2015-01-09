@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Offentlig konst i Sverige</title>
     <link rel="profile" href="//www.w3.org/2005/10/profile" />
-    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
     <link rel="stylesheet" href="leaflet/Control.OSMGeocoder.min.css" />
@@ -19,7 +19,7 @@
           type="image/ico"
           href="favicon.ico" />
     <link rel="stylesheet" href="css/my.css" />
-    <script type="text/javascript" src="//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+    <script type="text/javascript" src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
     <script type="text/javascript" src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
@@ -61,7 +61,7 @@
                 <h2>Kontakt</h2>
                 Du når oss enklast via en av följande:
                 <ul>
-                    <li>E-post: info[AT]offentligkonst.se</li>
+                    <li>E-post: <a href="mailto:info[AT]offentligkonst.se" class="at">info<span class="at">[AT]</span>offentligkonst.se</a></li>
                     <li>Twitter:
                     <ul>
                     <li><a href="//twitter.com/WikimediaSE">@WikimediaSE</a></li>
@@ -83,6 +83,9 @@
                 $('#menu').css("visibility", "hidden");
             }
         });
+        // quick and dirty obfuscation
+        $('a.at').attr('href', $('a.at').attr('href').replace("[AT]","@"));
+        $('span.at').text("@");
     </script>
     <!-- Piwik -->
     <script type="text/javascript">

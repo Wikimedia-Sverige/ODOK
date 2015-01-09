@@ -14,7 +14,7 @@ $(document).ready(function() {
 
     // set up map
     //load basic Leaflet map
-    var map = L.map('map').setView([63.5,16.9], 4); //setView is overrriden by cluster function
+    var map = L.map('map').setView([63.5,16.9], 4);
 
     var attribution = 'A project from <a href="//wikimedia.se/">Wikimedia Sverige</a> with support from <a href="http://www.vinnova.se">Vinnova</a>. | ';
     //settings for MapQuest
