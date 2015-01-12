@@ -1,0 +1,108 @@
+html{
+    height:100%;
+    margin:0
+}
+body{
+    height:100%;
+    margin:0;
+    padding:0
+}
+#wrap{
+    height:100%;
+    position:relative
+}
+#map{
+    z-index:1;
+    position:absolute;
+    top:80px;
+    bottom:0;
+    left:0;
+    right:0
+}
+#menu{
+    z-index:10;
+    position:absolute;
+    top:80px;
+    bottom:0;
+    left:0;
+    right:0;
+    border-bottom:1px solid black;
+    padding:10px;
+	background-color:#efefef;
+    -webkit-transition:top 0.4s ease-out;
+	-moz-transition:top 0.4s ease-out;
+	-o-transition:top 0.4s ease-out;
+    transition:top 0.4s ease-out 0s;
+    display:block;
+}
+#menu h2{
+    text-align:center
+}
+#menu div{
+    font-size:small;
+    width:47.5%;
+    display:block;
+    min-width:230px;
+    float:left;
+}
+#menu .about{
+    padding-right:5%
+}
+header.navbox{
+	top:0;
+	left:0;
+	height:80px;
+	width:100%;
+	z-index:2;
+	background:black
+}
+header.navbox h1.logo{
+	margin:0 auto;
+	height:69px;
+	width:157px;
+	overflow:hidden;
+    padding:5px;
+}
+header.navbox h1:before{
+	content:url(../images/Offentligkonst_logo_nav.png);
+	display:inline-block
+}
+header.navbox nav{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:70px
+}
+header.navbox nav a.menu{
+	display:block;
+	position:absolute;
+	top:20px;
+	left:20px;
+	width:33px;
+	height:33px;
+	background:url(../images/menu.png) top left no-repeat
+}
+ul{
+    list-style:disc outside none;
+}
+.thumb{
+    max-height:100px;
+    max-width:100px;
+    float:right;
+    clear:right;
+    padding:5px;
+}
+footer{
+    position:absolute;
+    bottom:0;
+    left:0;
+    z-index:2;
+    font-size:small;
+    background:rgba(255,255,255,0.5);
+    text-align:left;
+}
+@font-face{
+    font-family:'Varela';
+    src:url('varela.woff') format('woff');
+}

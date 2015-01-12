@@ -2,105 +2,94 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Offentlig konst i Sverige</title>
     <link rel="profile" href="//www.w3.org/2005/10/profile" />
-    <link rel="icon" 
-          type="image/ico" 
+    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="leaflet/Control.OSMGeocoder.min.css" />
+    <link rel="stylesheet" href="leaflet/L.Control.Sidebar.min.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="leaflet/L.Control.Locate.min.css" />
+    <!--[if lt IE 9]>
+        <link rel="stylesheet" href="leaflet/L.Control.Locate.ie.min.css"/>
+    <![endif]-->
+    <link rel="icon"
+          type="image/ico"
           href="favicon.ico" />
-    <style type="text/css">
-      html { height: 100% }
-      body { height: 100%; margin: 0px; padding: 0px; background: url(Stockholm._Gustav_II_Adolfs_crop.JPG); background-repeat: repeat-x}
-      ul   { list-style-type: none; padding:0; margin:0; //consider adding "width:50%;" if bubble size can be controlled}
-      #map {
-        height: 85%;//whilst infobox
-      }
-      @font-face{
-        font-family: 'Varela';
-        src: url("varela.woff") format("woff");
-      }
-      #OpenLayers_Control_Attribution_7 {
-        bottom: 1.0em;
-        position: fixed;
-      }
-    </style>
-    <script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
-    <script>
-      function init() {
-        //load basic OSM map
-        map = new OpenLayers.Map("map");
-        //var mapnik         = new OpenLayers.Layer.OSM();
-        var mapQuest       = new OpenLayers.Layer.OSM("MapQuest Open",                                                   
-        ["http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-        "http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-        "http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
-        "http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png"],
-        {attribution: "&copy; <a href='//www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='//www.openstreetmap.org/copyright' title='ODbL'>open license</a>. Tiles Courtesy of <a href='//www.mapquest.com/'>MapQuest</a> <img src='//developer.mapquest.com/content/osm/mq_logo.png'>" });
-        var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
-        var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
-        var position       = new OpenLayers.LonLat(18.0162, 59.3145).transform( fromProjection, toProjection);
-        var zoom           = 12; 
-        //map.addLayer(mapnik);
-        map.addLayer(mapQuest);
-        map.setCenter(position, zoom );
-        
-        //var kmlUrl = "http://offentligkonst.se/dump.kml?fulhack=true";
-        var kmlLayer = new OpenLayers.Layer.Vector("KML", {
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            protocol: new OpenLayers.Protocol.HTTP({
-                url: "dump.kml",
-                format: new OpenLayers.Format.KML({
-                    extractStyles: true, 
-                    extractAttributes: true,
-                    maxDepth: 2
-                })
-            })
-        })
-        map.addLayer(kmlLayer);
-        //map.zoomToExtent(kmlLayer.getDataExtent());
-        
-        //Add a selector control to the kmllayer with popup functions
-        var controls = {
-            selector: new OpenLayers.Control.SelectFeature(kmlLayer, { onSelect: createPopup, onUnselect: destroyPopup })
-        };
-        map.addControl(controls['selector']);
-        controls['selector'].activate();
-      }
-      function createPopup(feature) {
-        feature.popup = new OpenLayers.Popup.FramedCloud("pop",
-            feature.geometry.getBounds().getCenterLonLat(),
-            null,
-            '<div class="markerContent">'+feature.attributes.description+'</div>',
-            null,
-            true,
-            function() { destroyPopup(feature); }
-        );
-        //feature.popup.closeOnMove = true;
-        map.addPopup(feature.popup);
-      }
-      
-      function destroyPopup(feature) {
-        feature.popup.destroy();
-        feature.popup = null;
-      }
-    </script>
+    <link rel="stylesheet" href="css/my.css" />
+    <script type="text/javascript" src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script type="text/javascript" src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
+    <script type="text/javascript" src="leaflet/Control.OSMGeocoder.min.js"></script>
+    <script type="text/javascript" src="leaflet/L.Control.Sidebar.min.js"></script>
+    <script type="text/javascript" src="leaflet/L.Control.Locate.min.js" ></script>
+    <script type="text/javascript" src="map.js"></script>
   </head>
-  <body onload="init();">
-    <div style="font-family:Varela; text-align:justify; background:white; padding:5px; border:2px solid red; width:50%; margin-left: auto; margin-right: auto ;">
-        V&auml;lkommen! H&auml;r kommer Wikimedia Sveriges databas &ouml;ver offentlig konst att presenteras. 
-        Information om projektet och vad du som volont&auml;r eller utvecklare kan hj&auml;lpa till med finns p&aring; v&aring;r 
-        <a href="//se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst" target="_blank">projektsida</a>. 
-                
-        <p>Nedan visas tills vidare de konstverk i Stockholm f&ouml;r vilka vi har koordinater. Zooma ut f&ouml;r att se konstverk i 
-        &ouml;vriga Sverige. 
-        Det går även att <a href="./HACK4DK/web/#odok/">söka bland konstverken</a>.</p>
-        
-        Läs <a href="https://wikimediasverige.wordpress.com/2014/06/13/angaende-stamningsansokan-fran-bus-mot-offentligkonst-se/" target="_blank">vårt svar</a> på BUS pressmeddelande om offentligkonst.se.
+  <body>
+    <div id="wrap">
+        <header class="navbox">
+            <h1 class="logo">Offentligkonst.se</h1>
+            <nav>
+            <a id="menu_btn" href="#" class="menu" title="Meny"></a>
+            </nav>
+        </header>
+        <div id="menu" class="clearfix" style="visibility:hidden">
+            <div id="about" class="about clearfix">
+                <h2>Om offentligkonst.se</h2>
+                <p>
+                Välkommen! Här presenteras Wikimedia Sveriges databas över offentlig konst.
+                Projektet består dels av den öppna databasen, med tillhörande <a href="//offentligkonst.se/api/">API</a>
+                och dels av denna webbplats där informationen lättare kan konsumeras. För mer information
+                om projektet och vad du som volontär eller utvecklare kan hjälpa till med finns
+                på vår <a href="//se.wikimedia.org/wiki/Offentligkonst.se">föreningswiki</a>.
+                </p>
+                <p>
+                Nedan visas de konstverk i Sverige för vilka vi har koordinater. Kartan kompletteras löpande.
+                Det går även att <a href="/HACK4DK/web/#odok/">söka bland konstverken</a>.
+                </p>
+                <p>
+                Läs <a href="https://wikimediasverige.wordpress.com/2014/06/13/angaende-stamningsansokan-fran-bus-mot-offentligkonst-se/">vårt svar</a>
+                på BUS pressmeddelande om offentligkonst.se. Tills mer klarhet finns i denna fråga uppdateras
+                databasen inte med nya bilder (annan information läggs till löpande).
+                </p>
+                <p>
+                Detta är ett projekt från <a href="//wikimedia.se/">Wikimedia Sverige</a> som möjliggjorts med stöd av <a href="http://www.vinnova.se">Vinnova</a>.
+                För information <a href="cookieinfo.html">om kakor</a>.
+                </p>
+            </div>
+            <div id="contact" class="contact clearfix">
+                <h2>Kontakt</h2>
+                Du når oss enklast via en av följande:
+                <ul>
+                    <li>E-post: <a href="mailto:info[AT]offentligkonst.se" class="at">info<span class="at">[AT]</span>offentligkonst.se</a></li>
+                    <li>Twitter:
+                    <ul>
+                    <li><a href="//twitter.com/WikimediaSE">@WikimediaSE</a></li>
+                    <li><a href="//twitter.com/Lokal_Profil">@Lokal_Profil</a> (tekniska frågor)</li>
+                    </ul></li>
+                    <li>GitHub: <a href="//github.com/lokal-profil/ODOK">lokal-profil/ODOK</a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- The map -->
+        <div id="map"></div>
     </div>
-    <div id="map"></div>
-    <footer style="font-size:small">
-    	<div style="float:left; text-align:left;">Ett projekt fr&aring;n <a href="//wikimedia.se/">Wikimedia Sverige</a> med st&ouml;d av <a href="http://www.vinnova.se">Vinnova</a>. <a href="cookieinfo.html">Om kakor</a>.</div>
-        <div style="float:right; text-align:right;">Bakgrundsbild: <a href="//commons.wikimedia.org/wiki/File:Stockholm._Gustav_II_Adolfs_ryttarstaty_p%C3%A5_Gustav_Adolfs_torg.JPG">Stockholm. Gustav II Adolfs ryttarstaty p&aring; Gustav Adolfs torg</a> av <a href="//commons.wikimedia.org/wiki/User:Lars_%28Lon%29_Olsson">Lars (Lon) Olsson</a>, <a href="//creativecommons.org/licenses/by-sa/3.0/deed.sv">CC BY-SA 3.0</a></div>
-    </footer>
+    <script type="text/javascript">
+        $('#menu_btn').click(function(){
+            if ($('#menu').css("visibility") == "hidden") {
+                $('#menu').css("visibility", "visible");
+            }
+            else {
+                $('#menu').css("visibility", "hidden");
+            }
+        });
+        // quick and dirty obfuscation
+        $('a.at').attr('href', $('a.at').attr('href').replace("[AT]","@"));
+        $('span.at').text("@");
+    </script>
     <!-- Piwik -->
     <script type="text/javascript">
         var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.wikimedia.se/" : "http://piwik.wikimedia.se/");
