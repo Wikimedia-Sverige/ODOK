@@ -8,7 +8,7 @@ import odok as odokConnect
 import dconfig as config
 
 
-def allGeoJson(filename="AllFeatures.geo.json", source=None, full=True, debug=False):
+def allGeoJson(filename="../site/AllFeatures.geo.json", source=None, full=True, debug=False):
     '''
     repetedly queries api for geojson of all features and
     outputs a file with the data
