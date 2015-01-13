@@ -47,6 +47,21 @@
                 null);
                 $errors=1;
             }
+            
+            /*
+             * Set up jsonp compatibility
+             */
+            if(strtolower($_GET['format']) == 'jsonp'){
+                if(!isset($_GET['callback'])){
+                    $results = ApiBase::makeErrorResult(
+                    '640',
+                    'JSONP Error. '.
+                                'Cannot request JSONP without a callback',
+                    null);
+                    $errors=1;
+                }
+            }
+                
         
             /*
              * If no errors were found during connection
@@ -109,7 +124,7 @@
                         $results = ApiBase::makeErrorResult(
                                     '601',
                                     'Action Failed. '.
-                                        'Sorry but ['.$_GET['action'].'] is not a valid action for this api.',
+                                        'Sorry but "'.$_GET['action'].'" is not a valid action for this api.',
                                     $warning
                                     );
                         break;  
@@ -140,12 +155,20 @@
                     case 'geojson' :
                         Format::outputGeojson($results);
                         break;
+                    case 'jsonp' :
+                        Format::outputJsonp($results, $_GET['callback']);
+                        break;
                     default:
                         $results['head']['warning'] .= 'You chose an output format ['.$_GET['format'].'] which does not exist ; defaulting to xml. ';
                         Format::outputDefault($results);
                 };
             }else{
-                Format::outputDefault($results);
+                if(isset($_GET['callback'])){
+                    Format::outputJsonp($results, $_GET['callback']);
+                }
+                else {
+                    Format::outputDefault($results);
+                }
             }
             
             mysql_close();

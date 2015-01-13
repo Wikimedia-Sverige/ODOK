@@ -10,6 +10,14 @@
      
     class Format{
         
+        function outputJsonp($results, $callback){
+            /* Setting up JSONP headers */
+            @header ("content-type: application/javascript charset=utf-8");
+            
+            /* Printing the wrapped JSON Object */
+            echo $callback.'('.json_encode($results).');';
+        }
+        
         function outputJson($results){
             /* Setting up JSON headers */
             @header ("content-type: text/json charset=utf-8");
