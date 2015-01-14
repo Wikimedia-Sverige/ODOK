@@ -12,6 +12,7 @@ var messages = {
     "to_many_results": "Sökningen fick {toManyResults}+ träffar, du vill antalgigen begränsa den på något sätt",
     "no_title": "[Ingen titel i databasen]",
     "no_coord": "Detta verk saknar koordinater",
+    "no_image": "Detta verk saknar bild",
     "on_wiki": "Läs om det på Wikipedia",
     "osmSE_attrib": "Kartdata © {OSM_link}-bidragsgivare, kartrendering av {OSM_Sweden}"
 };
@@ -125,6 +126,9 @@ function populateSearchResult(rObjs) {
         imgLnk = 'https://commons.wikimedia.org/wiki/ro.image';
         newCard.append('<a href="' + imgLnk + '" target="_blank">' + imgSrc + '</a>');
     }
+    else {
+        newCard.append('<img src="/images/noImage.svg" title="' + messages.no_image + '" alt="' + messages.no_image + '" class="nopic"/>');
+    }
 
     var content = '';
 
@@ -141,7 +145,7 @@ function populateSearchResult(rObjs) {
         content += ' (' + ro.year + ')';
     }
     if(!ro.lat || !ro.lon) {
-        newCard.append('<img src="/images/noCoord.svg" title="' + messages.no_coord + '" alt="' + messages.no_coord + '" class="nocoordpic"/>');
+        newCard.append('<img src="/images/noCoord.svg" title="' + messages.no_coord + '" alt="' + messages.no_coord + '" class="nopic"/>');
     }
 
     newCard.append(content);

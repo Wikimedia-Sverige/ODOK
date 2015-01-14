@@ -67,11 +67,11 @@
        id="a-9">
       <stop
          id="stop3858-9"
-         style="stop-color:#126fc6;stop-opacity:1"
+         style="stop-color:#6c6c6c;stop-opacity:1"
          offset="0" />
       <stop
          id="stop3860-8"
-         style="stop-color:#4c9cd1;stop-opacity:1"
+         style="stop-color:#8e8e8e;stop-opacity:1"
          offset="1" />
     </linearGradient>
     <linearGradient
@@ -87,11 +87,11 @@
        id="b-4">
       <stop
          id="stop3853-8"
-         style="stop-color:#2e6c97;stop-opacity:1"
+         style="stop-color:#636363;stop-opacity:1"
          offset="0" />
       <stop
          id="stop3855-7"
-         style="stop-color:#3883b7;stop-opacity:1"
+         style="stop-color:#818181;stop-opacity:1"
          offset="1" />
     </linearGradient>
     <linearGradient
@@ -160,10 +160,10 @@
     <path
        d="m 440.12249,582.79861 c -5.944,0 -10.938,5.219 -10.938,10.75 0,2.359 1.443,5.832 2.563,8.25 l 0.031,0.031 8.313,15.969 8.25,-15.969 0.031,-0.031 c 1.135,-2.448 2.625,-5.706 2.625,-8.25 0,-5.538 -4.931,-10.75 -10.875,-10.75 z m 0,4.969 c 3.168,0.021 5.781,2.601 5.781,5.781 0,3.18 -2.613,5.761 -5.781,5.781 -3.168,-0.02 -5.75,-2.61 -5.75,-5.781 0,-3.172 2.582,-5.761 5.75,-5.781 z"
        id="path3916-9"
-       style="fill:none;stroke:#ffffff;stroke-width:1.10000002;stroke-linecap:round;stroke-opacity:0.122" />
+       style="fill:none;stroke:#ffffff;stroke-width:1.10000002;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:0.122;stroke-dasharray:none" />
   </g>
   <path
-     d="M -2.510178,45.575336 28.516841,-5.3089747"
+     d="M -2.3364492,45.575336 28.169383,-5.3089747"
      id="path3165"
      style="fill:none;stroke:#494949;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
 </svg>
