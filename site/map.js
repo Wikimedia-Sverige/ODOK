@@ -14,12 +14,18 @@ $(document).ready(function() {
 
     // set up map
     //load basic Leaflet map
-    var map = L.map('map').setView([63.5,16.9], 4);
+    var map = L.map('map', {'zoomControl':false}).setView([63.5,16.9], 4);
+    map.addControl(
+        L.control.zoom({
+            'zoomInTitle':'Zooma in',
+            'zoomOutTitle':'Zooma ut'
+        })
+    );
 
-    var attribution = 'A project from <a href="//wikimedia.se/">Wikimedia Sverige</a> with support from <a href="http://www.vinnova.se">Vinnova</a>. | ';
+    var attribution = 'Ett projekt från <a href="//wikimedia.se/">Wikimedia Sverige</a> med stöd av <a href="http://www.vinnova.se">Vinnova</a>. | ';
     //settings for MapQuest
     var mapQuest = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
-        attribution: attribution + 'Map data © <a href="//openstreetmap.org/">OpenStreetMap</a> contributors. Tiles courtesy of <a href="//www.mapquest.com/">MapQuest</a>',
+        attribution: attribution + 'Kartdata © <a href="//openstreetmap.org/">OpenStreetMap</a>-bidragsgivare. kartrendering av <a href="//www.mapquest.com/">MapQuest</a>',
         maxZoom: 19,
         subdomains: ['otile1','otile2','otile3','otile4']
     });
@@ -28,13 +34,13 @@ $(document).ready(function() {
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
-        attribution: attribution + 'Map data © <a href="//openstreetmap.org">OpenStreetMap</a> contributors, Imagery by <a href="http://openstreetmap.se">OpenStreetMap Sweden</a>'
+        attribution: attribution + 'Kartdata © <a href="//openstreetmap.org">OpenStreetMap</a>-bidragsgivare, kartrendering av <a href="http://openstreetmap.se">OpenStreetMap Sweden</a>'
     }).addTo(map);
     map.addLayer(osmSE);
 
     //settings for OSM
     var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: attribution + 'Map data © <a href="//openstreetmap.org">OpenStreetMap</a> contributors',
+        attribution: attribution + 'Kartdata © <a href="//openstreetmap.org">OpenStreetMap</a>-bidragsgivare',
         maxZoom: 19,
     });
 
@@ -81,8 +87,8 @@ $(document).ready(function() {
             "OSM Sweden": osmSE
         };
         var overlayMaps = {
-            "clustered": markers,
-            "individual": odokLayer
+            "kluster": markers,
+            "individuella": odokLayer
         };
         L.control.layers(baseMaps, overlayMaps).addTo(map);
     });
@@ -100,7 +106,7 @@ $(document).ready(function() {
         metric: true,  // use metric or imperial units
         showPopup: true, // display a popup when the user click on the inner marker
         strings: {
-            title: "Visa mig var jag är",  // title of the locate control
+            title: "Visa var jag är",  // title of the locate control
             popup: "Du är inom {distance} meter från denna punkt",  // text to appear if user clicks on circle
             outsideMapBoundsMsg: "Du verkar befinna dig utanför kartans gränser" // default message for onLocationOutsideMapBounds
         },
