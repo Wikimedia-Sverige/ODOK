@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta property="og:title" content="Public art search engine"/>
+<meta property="og:description" content="Search for public art in Sweden, Denmark and Norway"/>
+<title>Public art search engine</title>
+<link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.min.css" />
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<script type="text/javascript" src="//raw.github.com/urin/jquery.balloon.js/master/jquery.balloon.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
+<script type="text/javascript" src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script type="text/javascript" src="search.js"></script>
+
+<link rel="stylesheet" href="http://yui.yahooapis.com/combo?pure/0.3.0/pure-min.css&amp;pure/0.3.0/base-min.css&amp;pure/0.3.0/forms-min.css&amp;pure/0.3.0/grids-min.css"/>
+<link rel="stylesheet" href="/HACK4DK/web/css/pure-skin-mine.css"/>
+<link rel="stylesheet" href="/css/search.css"/>
+
+</head>
+<body>
+
+  <div class="pure-g-r" id="outer">
+    <div class="pure-u-3-5">
+      <div id="main"></div>
+    </div>
+
+    <div class="pure-u-2-5" id="sidebarholder">
+      <div id="sidebar">
+        <div class="pure-form" id="searchheader">
+          <fieldset style="padding-bottom: 2px;">
+            <legend class="logo">&nbsp; &mdash; The search engine</legend>
+            <div style="width: 99%;display: inline-block; float:right">
+                <label for="coord_input">&nbsp;med Koordinater</label>
+                <input id="coord_input" type="checkbox" value="coord" name="ci" title="Require coordinate"/>
+                &nbsp;
+                <label for="image_input">&nbsp;med Bild</label>
+                <input id="image_input" type="checkbox" value="image" name="ii" title="Require image"/>
+            </div>
+            <div style="width: 99%;display: inline-block">
+                <label for="artist_input" style="width: 24%">&nbsp;Konstnär:</label>
+                <input type="text" id="artist_input" title="Enter artist name" placeholder="<alla>" style="width: 75%; float:right"/>
+            </div>
+            <div style="width: 99%;display: inline-block">
+                <label for="title_input" style="width: 24%">&nbsp;Titel:</label>
+                <input type="text" id="title_input" title="Enter title" placeholder="<alla>" style="width: 75%; float:right"/>
+            </div>
+            <div style="width: 99%;display: inline-block">
+                <label for="muni_selector" style="width: 24%">&nbsp;Kommun:</label>
+                <select id="muni_selector" title="Choose municipality" data-placeholder="<alla>" multiple style="width: 75%; float:right; "></select>
+            </div>
+            <button id="button_search" style="float:right">Sök!</button>
+          </fieldset>
+          <div id="feedbackbox" style="display:none"></div>
+        </div>
+        <div id="searchresults"></div>
+        <div id="bottom" style="bottom: .3em; right: .3em; position:fixed"><a href="/HACK4DK/web/about.html">Om</a></div>
+      </div>
+    </div>
+  </div>
+    <!-- Piwik -->
+    <script type="text/javascript">
+        var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.wikimedia.se/" : "http://piwik.wikimedia.se/");
+        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script><script type="text/javascript">
+        try {
+            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
+            piwikTracker.trackPageView();
+            piwikTracker.enableLinkTracking();
+        } catch( err ) {}
+    </script><noscript><p><img src="http://piwik.wikimedia.se/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
+    <!-- End Piwik Tracking Code -->
+</body>
+</html>

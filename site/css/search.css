@@ -1,0 +1,113 @@
+
+/* Outer div of sidebar */
+#sidebarholder {
+    background-color: #000000;
+    height: 100%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: absolute;
+    overflow: auto;
+}
+
+#sidebar {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+/* header part of sidebar, inputbox etc */
+#searchheader {
+    position: fixed;
+    background-color: #000000;
+    right:2%;
+    left: 61%;
+}
+#searchheader label {
+    color: #b3b3b3;
+}
+
+/* Feedback box shows messages to the user */
+#feedbackbox {
+    color: red;
+    background-color: #ADADAD;
+    border: 1px black;
+    border-radius: 5px;
+    font-size: .8em;
+    padding: .1em 1.2em;
+    opacity: .75;
+}
+
+/* Div for results of search */
+#searchresults {
+    padding-top: 15em;
+}
+
+/* Main map div */
+#main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 40%;
+    bottom: 0;
+}
+
+/* main nocoord-div class */
+.nocoord {
+    zoom: 1;
+    opacity: 0.3;
+    filter: alpha(0.3);
+}
+
+.hascoord {
+    opacity: 1;
+    filter: alpha(1);
+}
+
+/* class for result cards shown inside #searchresults */
+.resultcard {
+    border-radius: 5px;
+    border: 1px solid white;
+    background-color: #000000;
+    color: #b3b3b3;
+    padding: .7em;
+    margin-bottom: .5em;
+    font-size: .7em;
+    overflow: auto;
+}
+/* Image size inside the resultcard */
+.resultcard img.thumb {
+    padding-right: .5em;
+    width: 15%;
+    float: left;
+}
+.resultcard img.nocoordpic {
+    padding-left: .5em;
+    width: 3%;
+    float: right;
+}
+
+/* The balloon shown on mouse over a resultcard */
+.rcballoon {
+    max-width: 40%;
+}
+/* Image size inside balloon */
+.rcballoon img.thumb {
+    padding-right: .5em;
+    width: 20%;
+    float: left;
+}
+.rcballoon img.nocoordpic {
+    padding-left: .5em;
+    width: 3%;
+    float: right;
+}
+
+@font-face{
+    font-family:'Varela';
+    src:url('varela.woff') format('woff');
+}
+
+legend.logo:before{
+	content:url(../images/Offentligkonst_logo_nav.png);
+	display:inline-block
+}
