@@ -14,7 +14,8 @@ $(document).ready(function() {
 
     // set up map
     //load basic Leaflet map
-    var map = L.map('map', {'zoomControl':false}).setView([63.5,16.9], 4);
+    var bounds = [[55.2, 10.8], [69.1, 24.4]];
+    var map = L.map('map', {'zoomControl':false}).fitBounds(bounds);
     map.addControl(
         L.control.zoom({
             'zoomInTitle':'Zooma in',

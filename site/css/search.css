@@ -105,8 +105,3 @@
     font-family:'Varela';
     src:url('varela.woff') format('woff');
 }
-
-legend.logo:before{
-	content:url(../images/Offentligkonst_logo_nav.svg);
-	display:inline-block
-}

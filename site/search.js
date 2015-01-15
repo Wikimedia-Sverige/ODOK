@@ -228,7 +228,8 @@ window.onload = function load() {
     });
 
     // Load map from OSM
-    map = L.map('main', {'zoomControl':false}).setView([63.5,16.9], 4);
+    var bounds = [[55.2, 10.8], [69.1, 24.4]];
+    map = L.map('main', {'zoomControl':false}).fitBounds(bounds);
     map.addControl(
         L.control.zoom({
             'zoomInTitle':'Zooma in',
