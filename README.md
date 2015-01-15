@@ -19,7 +19,7 @@ For more information see:
 
 * The search is forked from [HACK4DK](https://github.com/lokal-profil/HACK4DK) by [fluffis](https://github.com/fluffis) and [lokal-profil](https://github.com/lokal-profil)
 * [WikiApi](https://github.com/lokal-profil/ODOK/blob/master/tools/WikiApi.py) is based on PyCJWiki Version 1.31 (C) by [Smallman12q](https://en.wikipedia.org/wiki/User_talk:Smallman12q) GPL, see http://www.gnu.org/licenses/.
-* The various plugins at site/leaflet are by several different authors and under different licenses, see the header of each file for source/credit info.
+* The various plugins at *site/leaflet* and *site/external* are by several different authors and under different licenses, see the header of each file for source/credit info.
 * The images in site/images are modified from:
   * search.svg [Magnifyinglass.svg](https://commons.wikimedia.org/wiki/File:Magnifyinglass.svg) by MGalloway (WMF)
   * noImage.svg [LockImage_icon.svg](https://commons.wikimedia.org/wiki/File:LockImage_icon.svg) by MGalloway (WMF)

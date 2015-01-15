@@ -64,7 +64,7 @@ header.navbox h1.logo{
     padding:5px;
 }
 header.navbox h1:before{
-	content:url(../images/Offentligkonst_logo_nav.png);
+	content:url(../images/Offentligkonst_logo_nav.svg);
 	display:inline-block
 }
 header.navbox nav{
@@ -81,7 +81,16 @@ header.navbox nav a.menu{
 	left:20px;
 	width:33px;
 	height:33px;
-	background:url(../images/menu.png) top left no-repeat
+	background:url(../images/menu.svg) top left no-repeat
+}
+header.navbox nav a.search{
+	display:block;
+	position:absolute;
+	top:20px;
+	right:20px;
+	width:33px;
+	height:33px;
+	background:url(../images/search.svg) top left no-repeat
 }
 ul{
     list-style:disc outside none;

@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.min.css" />
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-<script type="text/javascript" src="//raw.github.com/urin/jquery.balloon.js/master/jquery.balloon.js"></script>
+<script type="text/javascript" src="/external/jquery.balloon.min.js"></script>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
 <script type="text/javascript" src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 <script type="text/javascript" src="search.js"></script>
@@ -39,22 +39,22 @@
             </div>
             <div style="width: 99%;display: inline-block">
                 <label for="artist_input" style="width: 24%">&nbsp;Konstnär:</label>
-                <input type="text" id="artist_input" title="Enter artist name" placeholder="<alla>" style="width: 75%; float:right"/>
+                <input type="text" id="artist_input" title="Ange konstnär" placeholder="<alla>" style="width: 75%; float:right"/>
             </div>
             <div style="width: 99%;display: inline-block">
                 <label for="title_input" style="width: 24%">&nbsp;Titel:</label>
-                <input type="text" id="title_input" title="Enter title" placeholder="<alla>" style="width: 75%; float:right"/>
+                <input type="text" id="title_input" title="Ange titel" placeholder="<alla>" style="width: 75%; float:right"/>
             </div>
             <div style="width: 99%;display: inline-block">
-                <label for="muni_selector" style="width: 24%">&nbsp;Kommun:</label>
-                <select id="muni_selector" title="Choose municipality" data-placeholder="<alla>" multiple style="width: 75%; float:right; "></select>
+                <label for="muni_selector" style="width: 24%">&nbsp;Kommun:</label><br/>
+                <select id="muni_selector" title="Välj kommun" data-placeholder="<alla>" multiple style="width: 100%; float:right; "></select>
             </div>
             <button id="button_search" style="float:right">Sök!</button>
           </fieldset>
           <div id="feedbackbox" style="display:none"></div>
         </div>
+        <br clear="right" />
         <div id="searchresults"></div>
-        <div id="bottom" style="bottom: .3em; right: .3em; position:fixed"><a href="/HACK4DK/web/about.html">Om</a></div>
       </div>
     </div>
   </div>
