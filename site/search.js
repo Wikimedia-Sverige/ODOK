@@ -29,7 +29,8 @@ function executeSearch(a, t, m, c, i) {
     rObjs = [];
     url = "http://offentligkonst.se/api/api.php?" +
           "action=get" +
-          "&limit=" + toManyResults;
+          "&limit=" + toManyResults +
+          "&has_same=false";
     if(a){
         url += "&artist=" + a;
     }

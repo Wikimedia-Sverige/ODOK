@@ -130,6 +130,7 @@
                     case 'title':
                     case 'address':
                     case 'wiki':
+                    case 'same':
                         #these are already in mysql format
                         $query .= $value.'
                 AND ';
@@ -236,7 +237,8 @@
                              'district', 'bbox', 'BBOX', 'source', 'changed',
                              'created', 'wiki_article', 'commons_cat',
                              'official_url', 'free', 'owner', 'has_cmt',
-                             'is_inside', 'has_ugc', 'has_image', 'has_coords', 'has_wiki');
+                             'is_inside', 'has_ugc', 'has_image', 'has_coords',
+                             'has_wiki', 'has_same');
             $maxValues = 50;
             try{
                 ApiBase::largeParam();
@@ -278,6 +280,7 @@
                         case 'has_cmt':
                         case 'has_image':
                         case 'has_wiki':
+                        case 'has_same':
                             $val = self::boolParam($key, $value);
                             if (!empty($val)){
                                 $keyparts = explode('_', $key);
@@ -415,6 +418,12 @@
                             return '`wiki_article` = ""';
                         else
                             return '`wiki_article` != ""';
+                        break;
+                    case 'same':
+                        if ($value=='false')
+                            return '`same_as` IS NULL';
+                        else
+                            return '`same_as` IS NOT NULL';
                         break;
                     case 'coords':
                         if ($value=='false')
