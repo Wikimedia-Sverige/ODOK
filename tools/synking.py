@@ -22,7 +22,6 @@ def run(verbose=False, days=100):
     update database based on all list changes
     INCOMPLETE
     '''
-
     # wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.wp_local_password, site=config.wp_local, separator='wiki')
     dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_test)
     dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_test, db=config.db, user=config.db_read, passwd=config.db_test_read_password)
@@ -44,7 +43,6 @@ def run(verbose=False, days=100):
     thisSync = datetime.datetime.utcnow()
     flog.write(u'------START of updates-------------\n')
     flog.write(u'last_sync: %s\nthis_sync: %s\n' %(lastSync,thisSync))
-
 
     # find changed pages
     checkList=[]
@@ -185,7 +183,7 @@ def commitToDatabase(odokWriter, changes, verbose=False):
 
         problem = odokWriter.updateTable(key, diff)
         if problem:
-            log = log + 'SQL update for %s had the problem: %s\n' %(key, problem)
+            log += 'SQL update for %s had the problem: %s\n' %(key, problem)
     # done
     return log
 
@@ -235,7 +233,7 @@ def listToObjects(objects, pagename, contents):
                         else:
                             params[p[0]]=p[1]
                     else:
-                        log = log + u'Unrecognised parameter: %s = %s (%s)\n' %(p[0], p[1], pagename)
+                        log += u'Unrecognised parameter: %s = %s (%s)\n' %(p[0], p[1], pagename)
             if params['id']:
                 if params['id'] in objects.keys():  # until I can deal with mulitple entries
                     objects[params['id']]['clash'] = pagename
@@ -282,7 +280,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
 
     log=''
     if wikiObj['clash']:
-        log = log + u'clash with another page. Don\'t know how to resolve this. Skipping: %s\n' %wikiObj['clash']
+        log += u'clash with another page. Don\'t know how to resolve this. Skipping: %s\n' %wikiObj['clash']
         return (None, log)
 
     ## Pre-processing
@@ -301,7 +299,6 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     if odokObj[u'wiki_article']:
         odokObj[u'wiki_article'] = odokObj[u'wiki_article'].upper()
 
-
     # the following may be inherited from the header
     if wikiObj[u'döljKommun']:
        wikiObj[u'kommun'] = wikiObj[u'header'][u'kommun']
@@ -318,7 +315,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         elif wikiObj[u'inomhus'].lower() == 'nej':
             wikiObj[u'inomhus'] = 0
         else:
-            log = log +  'unexpected value for inside-parameter (defaulting to no): %s\n' %wikiObj[u'inomhus']
+            log +=  'unexpected value for inside-parameter (defaulting to no): %s\n' %wikiObj[u'inomhus']
             wikiObj[u'inomhus'] = 0
     else:
         wikiObj[u'inomhus'] = 0
@@ -338,7 +335,6 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         wikiObj[u'lon'] =wikiObj[u'lon'].strip('0')  # due to how numbers are stored
     if wikiObj[u'årtal'] == '': wikiObj[u'årtal']=None
 
-
     # Deal with artists (does not deal with order of artists being changed):
     artist_param = [u'konstnär', u'konstnär2', u'konstnär3', u'konstnär4', u'konstnär5']
     wikiObj[u'artists'] =''
@@ -355,14 +351,14 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     links = artists_links.values()
     if wikiObj[u'artikel']:
         if u'#' in wikiObj[u'artikel']:
-            log = log + u'link to section: %s\n' %wikiObj[u'artikel']
+            log += u'link to section: %s\n' %wikiObj[u'artikel']
         else:
             links.append(wikiObj[u'artikel'])
     if links:
         links = wpApi.getPageInfo(links)
         for k,v in links.iteritems():
             if u'disambiguation' in v.keys():
-                log = log + u'link to disambigpage: %s\n' %k
+                log += u'link to disambigpage: %s\n' %k
                 links[k] = ''
             elif u'wikidata' in v.keys():
                 links[k] = v[u'wikidata']
@@ -377,7 +373,6 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         else:
             wikiObj[u'artikel'] = ''
     wikiObj[u'artist_links'] = links.values()
-
 
     ## Main-process
     diff = {}
@@ -442,7 +437,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     ## Post-processing
     # fotnot-namn without fotnot - needs to look-up fotnot for o:cmt
     if wikiObj[u'fotnot-namn'] and not wikiObj[u'fotnot']:
-        log = log + u'fotnot-namn so couldn\'t compare, fotnot-namn: %s\n' %wikiObj[u'fotnot-namn']
+        log += u'fotnot-namn so couldn\'t compare, fotnot-namn: %s\n' %wikiObj[u'fotnot-namn']
         if u'cmt' in diff.keys():
             del diff[u'cmt']
 
@@ -456,7 +451,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     if 'year' in diff.keys():
         if not common.is_int(diff['year']['new']):
             year = diff.pop('year')
-            log = log + u'Non-integer year: %s\n' %year['new']
+            log += u'Non-integer year: %s\n' %year['new']
 
     # lat/lon reqires an extra touch as only decimal numbers and nones may be sent to db
     if 'lat' in diff.keys():
@@ -465,31 +460,31 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             pass
         elif not common.is_number(diff['lat']['new']):
             lat = diff.pop('lat')
-            log = log + u'Non-decimal lat: %s\n' %lat['new']
+            log += u'Non-decimal lat: %s\n' %lat['new']
     if 'lon' in diff.keys():
         if not diff['lon']['new']:
             pass
         elif not common.is_number(diff['lon']['new']):
             lat = diff.pop('lon')
-            log = log + u'Non-decimal lon: %s\n' %diff['lon']['new']
+            log += u'Non-decimal lon: %s\n' %diff['lon']['new']
 
     # Basic validation of artist field:
     if 'artist' in diff.keys():
         # check that number of artists is the same
         if '[' in diff['artist']['old']:
             artist = diff.pop('artist')
-            log = log + u'cannot deal with artists which include group affilitations: %s --> %s\n' %(artist['old'],artist['new'])
+            log += u'cannot deal with artists which include group affilitations: %s --> %s\n' %(artist['old'],artist['new'])
         elif (len(diff['artist']['old'].split(';')) != len(diff['artist']['new'].split(';'))) and (len(diff['artist']['old']) > 0):
             # if not the same number when there were originally some artists
             artist = diff.pop('artist')
-            log = log + u'difference in number of artists: %s --> %s\n' %(artist['old'],artist['new'])
+            log += u'difference in number of artists: %s --> %s\n' %(artist['old'],artist['new'])
 
     # Unstripped refrences
     for k in diff.keys():
         if k == u'official_url' or k == u'inside': continue
         if diff[k]['new'] and 'http:' in diff[k]['new']:
             val = diff.pop(k)
-            log = log + u'new value for %s seems to include a url: %s --> %s\n' %(k, val['old'],val['new'])
+            log += u'new value for %s seems to include a url: %s --> %s\n' %(k, val['old'],val['new'])
 
     return (diff, log)
 
