@@ -18,7 +18,7 @@ class OdokApi(wikiApi.WikiApi):
     Need to override setUpApi
     Should replace login/token/logout by dummyfunction to prevent these from being executed
     '''
-    
+
     #dummy functions to prevent these from being executed
     def login(self, userName, userPass, verbose=True): dummyFunction(u'login')
     def setToken(self, token, verbose=True): dummyFunction(u'setToken')
@@ -28,7 +28,7 @@ class OdokApi(wikiApi.WikiApi):
     def dummyFunction(self, name):
         print u'%s() not supported by OdokApi' %name
         exit(2)
-        
+
     @classmethod
     def setUpApi(cls, user, site, scriptidentify=u'OdokBot/0.5', verbose=False):
         '''
@@ -36,24 +36,24 @@ class OdokApi(wikiApi.WikiApi):
         '''
         #Provide url and identify (using e-mail)
         odok = cls('%s/api.php' %site, user, scriptidentify)
-        
+
         #Set reqlimit for odok
         odok.reqlimit = 50
-        
+
         return odok
-    
+
     def apiaction(self, action, form=None):
         if not form:
             return self._apiurl + "?action=" + action + "&format=json&json=compact"
         else:
             return self._apiurl + "?action=" + action + "&format=" + form
-    
+
     def failiure(self, jsonr, debug=False):
         '''
         Standardised function to present errors
         '''
         return (jsonr['head']['error_number'], jsonr['head']['error_message'])
-    
+
     def getIds(self, idList, members=None, debug=False):
         '''
         Returns list of all objects matching one of the provided ids
@@ -65,7 +65,7 @@ class OdokApi(wikiApi.WikiApi):
         #if no initial list supplied
         if members is None:
             members =[]
-        
+
         #do an upper limit check and split into several requests if necessary
         reqlimit = self.limitByBytes(idList, self.reqlimit) #max reqlimit values per request but further limited by the bytelimit
         idList = list(set(idList)) #remove dupes
@@ -79,26 +79,26 @@ class OdokApi(wikiApi.WikiApi):
             idList = idList[i:]
             if len(idList) < 1: #i.e. exactly divisible by reqlimit
                 return members
-        
+
         #Single run
         #action=query&list=embeddedin&cmtitle=Template:!
         jsonr = self.httpGET("get", [('id', '|'.join(idList).encode('utf-8')),
                                       ('limit', str(100))], debug=debug)
-        
+
         if debug:
             print u'getIds(): idList=%s\n' %idList
             print jsonr
-        
+
         #find errors
         if not jsonr['head']['status'] == '1':
             print self.failiure(jsonr)
             return None
-        
+
         for hit in jsonr['body']:
             members.append(hit['hit'])
-        
+
         return members
-    
+
     def getQuery(self, queries, members=None, debug=False):
         '''
         Returns list of all objects matching the provided query (blunt function which should be avoided if possible)
@@ -109,7 +109,7 @@ class OdokApi(wikiApi.WikiApi):
         #if no initial list supplied
         if members is None:
             members =[]
-        
+
         #do a limited reqlimit check
         for k,v in queries.iteritems():
             v = v.split('|')
@@ -118,7 +118,7 @@ class OdokApi(wikiApi.WikiApi):
                 print '''getQuery() requires input to be correctly formated and limited\n
                          this request had %r/%r parameters for %s''' %(len(v), reqlimit, k)
                 return None
-        
+
         #Single run
         if not 'limit' in queries.keys():
             queries['limit'] = str(100)
@@ -130,22 +130,22 @@ class OdokApi(wikiApi.WikiApi):
         if debug:
             print u'getQuery(): queries=%s\n' %queries
             print jsonr
-        
+
         #find errors
         if not jsonr['head']['status'] == '1':
             print self.failiure(jsonr)
             return None
-        
+
         for hit in jsonr['body']:
             members.append(hit['hit'])
-        
+
         if 'continue' in jsonr['head'].keys():
             offset = jsonr['head']['continue']
             queries['offset'] = str(offset)
             self.getQuery(queries, members=members, debug=debug)
-        
+
         return members
-    
+
     def getGeoJson(self, members=None, full=False, source=None, offset=0, debug=False):
         '''
         Returns list of all objects matching one of the provided ids
@@ -155,36 +155,36 @@ class OdokApi(wikiApi.WikiApi):
         #if no initial list supplied
         if members is None:
             members =[]
-        
+
         query = [('limit', str(100)),
                  ('offset', str(offset))]
         if full:
             query = query +[('geojson', 'full')]
         if source:
             query = query +[('source', str(source))]
-        
+
         #Single run
         #action=get&limit=100&format=geojson&geojson=full&offset=0
         jsonr = self.httpGET("get", query, form="geojson", debug=debug)
-        
+
         if debug:
             print u'getGeoJson()\n'
             print jsonr
-        
+
         #find errors
         if not jsonr['head']['status'] == '1':
             print self.failiure(jsonr)
             return None
-        
+
         for feature in jsonr['features']:
             members.append(feature)
-        
+
         if 'continue' in jsonr['head'].keys():
             offset = jsonr['head']['continue']
             members = self.getGeoJson(members=members, full=full, offset=offset, debug=debug)
-        
+
         return members
-    
+
 #End of OdokApi()
 
 class OdokSQL():
@@ -201,7 +201,7 @@ class OdokSQL():
     class OdokReader(OdokSQL)
         edit=False
     '''
-    
+
     def connectDatabase(self, host, db, user, passwd):
         '''
         Connect to the mysql database, if it fails, go down in flames
@@ -209,15 +209,15 @@ class OdokSQL():
         conn = MySQLdb.connect(host=host, db=db, user=user, passwd=passwd, use_unicode=True, charset='utf8')
         cursor = conn.cursor()
         return (conn, cursor)
-    
+
     def closeConnections(self):
         '''
         Closes the connection to the database and returns the logfile
         '''
-        self.conn.commit() 
+        self.conn.commit()
         self.conn.close()
         return self.log
-    
+
     def __init__(self, host, db, user, passwd, testing=False):
         '''
         Establish connection to database, set up logfile and determine testing
@@ -243,7 +243,7 @@ class OdokSQL():
         self.conn = None
         self.cursor = None
         (self.conn, self.cursor) = self.connectDatabase(host=host, db=db, user=user, passwd=passwd)
-    
+
     def multiQuery(self, queries, testing=False):
         '''
         Multiple queries where executemany is not suitable and multiple executes are needed
@@ -255,15 +255,15 @@ class OdokSQL():
         if not isinstance(queries, list):
             print u'multiQuery requires a list of queries without parameters'
             return None
-        
+
         for q in queries:
             results.append(self.query(query=q, params=None, testing=testing))
         self.conn.commit()
         return results
-    
+
     def query(self, query, params, testing=False, expectReply=False):
         '''
-        NEEDS to deal with no params (i.e. a commit) 
+        NEEDS to deal with no params (i.e. a commit)
         Sends a query to the databse and returns the result
         :param query: the SQL safe query
         :param params: the parameters to stick into the query
@@ -274,26 +274,26 @@ class OdokSQL():
             params=tuple()
         elif not isinstance(params, tuple):
             params = (params,)
-        
+
         if testing:
             self.log = u'%s\n%s' %(self.log, query %self.conn.literal(params))
             if expectReply: return (None,None)
             else: return None
-        
+
         reply = self.cursor.execute(query, params)
-        
+
         #return results
         result=[]
         row = self.cursor.fetchone()
         while row is not None:
             result.append(row)
             row = self.cursor.fetchone()
-        
+
         if expectReply:
             return (reply, result)
         else:
             return result
-    
+
     @classmethod
     def setUp(cls, host, db, user, passwd, testing=False):
         '''create an OdokSQL object'''
@@ -305,7 +305,7 @@ class OdokWriter(OdokSQL):
     #some of OdokSQL.__init__ should probably be here instead to govern accessible fields
     #make a general updater/adder followed by more specific add artist etc. which requires a dict of a certain type and checks formating duplication etc.
     #make sure commit/respone handeling is done by the more general OdokSQL
-    
+
     def updateTable(self, key, changes, table='main'):
         '''
         Makes a single update to the database
@@ -320,7 +320,7 @@ class OdokWriter(OdokSQL):
         elif not changes:
             self.log += u'updateTable: no changes given\n'
             return None
-            
+
         query = u"""UPDATE %s SET""" %self.tables[table]
         vals=[]
         for k, v in changes.iteritems():
@@ -341,7 +341,7 @@ class OdokWriter(OdokSQL):
             except MySQLdb.Warning, e:
                 return e.message
         return None
-    
+
     def insertIntoTable(self, table, values):
         '''
         Insert a single update to the database
@@ -356,7 +356,7 @@ class OdokWriter(OdokSQL):
         elif not values or len(values) == 0:
             self.log += u'insertIntoTable: no values given\n'
             return None
-            
+
         query = u"""INSERT INTO %s (%s) VALUES""" % (self.tables[table], ','.join(self.parameters[table]))
         row = u','.join(['%s']*len(self.parameters[table]))
         vals=[]
@@ -386,7 +386,7 @@ class OdokReader(OdokSQL):
     #e.g.
     #ArtistApi:
     ##writeToDatabase.getArtistByWiki()
-    
+
     def findAkas(self, idNo):
         '''
         given one id in main_table find and return the corresponding akas from aka_table
@@ -401,13 +401,13 @@ class OdokReader(OdokSQL):
             for r in rows:
                 results.append({'id':str(r[0]), 'aka':r[1], 'main_id':r[2]})
         return results
-    
+
     def findArtist(self, idNo):
         '''
         given one id in main_table find and return the corresponding artists from artist_table mapped via artist_links
         SHOULD BE IN ApiArtist
         '''
-        q = u"""SELECT `id`, `first_name`, `last_name`, `wiki` FROM `artist_table` WHERE `id` IN 
+        q = u"""SELECT `id`, `first_name`, `last_name`, `wiki` FROM `artist_table` WHERE `id` IN
                 (SELECT a.`artist` FROM `artist_links` a WHERE a.`object` = %s);"""
         rows = self.query(q, idNo)
         if len(rows) == 0:
@@ -417,7 +417,7 @@ class OdokReader(OdokSQL):
             for r in rows:
                 results.append({'id':str(r[0]), 'first_name':r[1], 'last_name':r[2], 'wiki':r[3].upper()})
         return results
-        
+
     def getArtistByWiki(self, wikidata):
         '''
         given a list of wikidata entities this checks id any are present in the artist_table
@@ -438,18 +438,18 @@ class OdokReader(OdokSQL):
         if len(wikidata) == 0:
             return None
         result = {}
-        
+
         format_strings = ','.join(['%s'] * len(wikidata))
         q = u"""SELECT id, first_name, last_name, wiki, birth_date, death_date, birth_year, death_year
                 FROM `artist_table`
                 WHERE wiki IN (%s);""" % format_strings
         #print q %self.conn.literal(tuple(wikidata))
         rows = self.query(q, tuple(wikidata))
-        
+
         for r in rows:
             (artistID, first_name, last_name, wiki, birth_date, death_date, birth_year, death_year) = r
             result[str(artistID)] = {'first_name':first_name, 'last_name':last_name, 'wiki':wiki, 'birth_date':birth_date, 'death_date':death_date, 'birth_year':birth_year, 'death_year':death_year}
-        
+
         return result
 
 #End of OdokSQL()

@@ -119,7 +119,7 @@ def run(verbose=False, days=100):
             not_changed[k] = {}
             if u'cmt' in v.keys(): not_changed[k][u'cmt'] = changes[k].pop(u'cmt')                  # check changes, problem with multiple footnotes and some made with templates
             if u'free' in v.keys(): not_changed[k][u'free'] = changes[k].pop(u'free')               # need to establish wiki_policy+need to enable synk db->wiki as this is set by updateCopyright
-            if u'aka' in v.keys(): not_changed[k][u'aka'] = changes[k].pop(u'aka')                  # separate changed_list which either creates/removes or changes an aka
+            #if u'aka' in v.keys(): not_changed[k][u'aka'] = changes[k].pop(u'aka')                  # separate changed_list which either creates/removes or changes an aka
 
             if not_changed[k] == {}: del not_changed[k]
             else: ncounter = ncounter+len(not_changed[k].keys())
@@ -171,8 +171,18 @@ def commitToDatabase(odokWriter, changes, verbose=False):
                     values.append({u'object':key, u'artist':v})
                 problem = odokWriter.insertIntoTable('artist_links', values)
                 if problem:
-                    log = log + 'SQL update for %s had the problem: %s\n' %(key, problem)
+                    log += 'SQL update for %s had the problem: %s\n' %(key, problem)
                 del(diff[param])
+            elif param == u'aka_list':
+                # handle here then remove from diff
+                values = []
+                for v in diff[param]:
+                    values.append({u'main_id':key, u'title':v})  # id is autoincremented
+                problem = odokWriter.insertIntoTable('aka', values)
+                if problem:
+                    log += 'SQL update for %s had the problem: %s\n' %(key, problem)
+                del(diff[param])
+
         problem = odokWriter.updateTable(key, diff)
         if problem:
             log = log + 'SQL update for %s had the problem: %s\n' %(key, problem)
@@ -385,14 +395,14 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
 
     ## Needing separate treatment
     # comparing artist_links: u'artist_links':u'artist_links'
-    artist_links = list(set(wikiObj[u'artist_links'])-set(odokObj[u'artist_links']))
     artist_diff = {'+':[], '-':[]}
+    artist_links = list(set(wikiObj[u'artist_links'])-set(odokObj[u'artist_links']))
     if artist_links and len(''.join(artist_links))>0:
         artist_diff['+'] = artist_links[:]  # slice to clone the list
     artist_links = list(set(odokObj[u'artist_links'])-set(wikiObj[u'artist_links']))
     if artist_links and len(''.join(artist_links))>0:
         artist_diff['-'] = artist_links[:]  # slice to clone the list
-    #handler can only deal with new artists
+    # handler can only deal with new artists
     if len(artist_diff['-']) == 0 and len(artist_diff['+']) > 0:
         artIds = dbReadSQL.getArtistByWiki(artist_diff['+'])  # list of id:{'first_name', 'last_name', 'wiki', 'birth_date', 'death_date', 'birth_year', 'death_year'}
         newArtistLinks = []
@@ -400,10 +410,34 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             artist_diff['+'].remove(v['wiki'])
             newArtistLinks.append(k)
         diff[u'artist_links'] = {'new':newArtistLinks, 'old':[]}
-    #output remaining to log
+    # output remaining to log
     for k,v in artist_diff.iteritems():
         if len(v)>0:
-            log = log + u'difference in artist links, linkdiff%s: %s\n' %(k, ';'.join(v))
+            log += u'difference in artist links, linkdiff%s: %s\n' %(k, ';'.join(v))
+
+    ## akas
+    if 'aka' not in diff.keys():
+        pass
+    elif sorted(diff['aka']['new'].split(';')) == sorted(diff['aka']['old'].split(';')):
+        del(diff['aka'])
+    else:
+        aka_diff = {'+':[], '-':[]}
+        aka_list = list(set(diff['aka']['new'].split(';'))-set(diff['aka']['old'].split(';')))
+        if aka_list and len(''.join(aka_list))>0:
+            aka_diff['+'] = aka_list[:]  # slice to clone the list
+        aka_list = list(set(diff['aka']['old'].split(';'))-set(diff['aka']['new'].split(';')))
+        if aka_list and len(''.join(aka_list))>0:
+            aka_diff['-'] = aka_list[:]  # slice to clone the list
+        # handler can only deal with new akas
+        if len(aka_diff['-']) == 0 and len(aka_diff['+']) > 0:
+            diff[u'aka_list'] = {'new':aka_diff['+'], 'old':[]}
+        # output remaining to log
+        for k,v in aka_diff.iteritems():
+            if len(v)>0:
+                log += u'difference in akas, diff%s: %s\n' %(k, ';'.join(v))
+        # remove these for now
+        del(diff['aka'])
+
 
     ## Post-processing
     # fotnot-namn without fotnot - needs to look-up fotnot for o:cmt
