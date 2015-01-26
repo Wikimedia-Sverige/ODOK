@@ -14,19 +14,30 @@ var messages = {
     "no_coord": "Detta verk saknar koordinater",
     "no_image": "Detta verk saknar bild",
     "on_wiki": "Läs om det på Wikipedia",
-    "osmSE_attrib": "Kartdata © {OSM_link}-bidragsgivare, kartrendering av {OSM_Sweden}"
+    "osmSE_attrib": "Kartdata © {OSM_link}-bidragsgivare, kartrendering av {OSM_Sweden}",
+    "year_warning": "Tillkomstår måste vara ett årtal",
+    "year_negative_range": "Från måste vara större än Till i spannet för tillkomstår"
 };
 
-function executeSearch(a, t, m, c, i) {
+function executeSearch(a, t, m, c, i, yf, yt) {
     // a = artist
     // t = title
     // m = muni
     // c = coord
     // i = image
+    // yf = year_from
+    // yt = year_til
 
-    console.log('ai: ' + a + ', ti: ' + t + ', mi: ' + m + ', ci: ' + c + ', ii: ' + i);
+    console.log('ai: ' + a +
+                ', ti: ' + t +
+                ', mi: ' + m +
+                ', ci: ' + c +
+                ', ii: ' + i +
+                ', yf: ' + yf +
+                ', yt: ' + yt);
 
     rObjs = [];
+    warnings = '';
     url = "http://offentligkonst.se/api/api.php?" +
           "action=get" +
           "&limit=" + toManyResults +
@@ -46,6 +57,38 @@ function executeSearch(a, t, m, c, i) {
     if(i){
         url += "&has_image=true";
     }
+    //test if yf and yt are indeed integers
+    //url needs to know if one or both are specified
+    if(yf){
+        if(!isInteger(yf)){
+            warnings = messages.year_warning;
+        }
+        if(yt){
+            if(!isInteger(yt)){
+                warnings = messages.year_warning;
+            }
+            else if(parseInt(yf)>parseInt(yt)){
+                warnings = messages.year_negative_range;
+            }
+            url += "&year=" + yf + "|" + yt;
+        }
+        else{
+            url += "&year=" + yf + "|";
+        }
+    }
+    else if(yt){
+        if(!isInteger(yt)){
+            warnings = messages.year_warning;
+        }
+        url += "&year=|" + yt;
+    }
+
+    //check warnings, if any then don't perform search
+    if(warnings){
+        populateSearchResult({"head":{"warning":warnings},"body":""});
+        return;
+    }
+
     //disable before ajax
     $('#button_search').prop("disabled", true);
     console.log( "url: " + url );
@@ -54,6 +97,7 @@ function executeSearch(a, t, m, c, i) {
     )
     .always(function() {
         $('#button_search').prop("disabled", false);
+        console.log('Search executed.');
     })
     .done(function(json) {
         populateSearchResult(json);
@@ -66,30 +110,38 @@ function executeSearch(a, t, m, c, i) {
 
 
 function populateSearchResult(rObjs) {
-
     var header = rObjs.head;
     var body = rObjs.body;
+    var run = true;
 
     // reset markers, bounds and searchresult
     $('#searchresults').html('');
     markers.clearLayers();
+    $('#feedbackbox').empty();
 
     // handle errormsgs
     if(header.error_message) {
-        $('#feedbackbox').html('<p>' + header.error_message + '</p>').show().delay(5000).fadeOut();
+        $('#feedbackbox').append('<p>' + header.error_message + '</p>');
+        run = false;
     }
-
     if(header.warning) {
-        $('#feedbackbox').html('<p>' + header.warning + '</p>').show().delay(5000).fadeOut();
+        $('#feedbackbox').append('<p>' + header.warning + '</p>');
     }
     if(!body) {
-        $('#feedbackbox').html('<p>' + messages.no_results + '</p>').show().delay(5000).fadeOut();
-        return;
+        $('#feedbackbox').append('<p>' + messages.no_results + '</p>');
+        run = false;
     }
     else if(body.length >= toManyResults) {
-        $('#feedbackbox').html('<p>' + messages.to_many_results.replace('{toManyResults}',toManyResults) + '</p>').show().delay(5000).fadeOut();
+        $('#feedbackbox').append('<p>' + messages.to_many_results.replace('{toManyResults}',toManyResults) + '</p>');
     }
 
+    //show only if there are any messages
+    if(!$('#feedbackbox').is(':empty')){
+        $('#feedbackbox').show().delay(5000).fadeOut();
+    }
+    if(!run){
+        return;
+    }
 
     //map.addLayer(markers);
 
@@ -192,7 +244,7 @@ function populateSearchResult(rObjs) {
 }
 
 function addMarker(id, lon, lat) {
-    console.log("Addded a marker at longitude: " + lon + " latitude: " + lat);
+    //console.log("Addded a marker at longitude: " + lon + " latitude: " + lat);
     var llmark = L.marker(L.latLng(lat, lon), {icon: normalIcon});
     allMarkers[id] = llmark;//._leaflet_id;
     markers.addLayer(llmark);
@@ -210,6 +262,13 @@ function highlightMarker(id) {
 
 function zoomToMarker(lon, lat, zoomLevel) {
     map.panTo(L.latLng(lat, lon));
+}
+
+function isInteger(val) {
+    if($.isNumeric(val) && Math.floor(val) == val){
+        return true;
+    }
+    return false;
 }
 
 
@@ -264,13 +323,20 @@ window.onload = function load() {
        var mi = $('#muni_selector').val();
        var ci = $('#coord_input').is(":checked");
        var ii = $('#image_input').is(":checked");
+       var yfi = $('#year_input_from').val();
+       var yti = $('#year_input_til').val();
 
-       executeSearch(ai, ti, mi, ci, ii);
-       console.log('Search executed.');
+       executeSearch(ai, ti, mi, ci, ii, yfi, yti);
        if (mi){
            mi = mi.join(',');
        }
-       window.location.hash = mi + '/' + ai + '/' + ti + '/' + ci + '/' + ii;
+       window.location.hash = mi + '/' +
+                              ai + '/' +
+                              ti + '/' +
+                              ci + '/' +
+                              ii + '/' +
+                              yfi + '/' +
+                              yti;
     });
 
     // Handle incoming hash
@@ -293,6 +359,8 @@ window.onload = function load() {
         if (hashparts[4] == 'true'){
             $('#image_input').prop('checked', true);
         }
+        $('#year_input_from').val(hashparts[5]);
+        $('#year_input_til').val(hashparts[6]);
 
     }
     console.log('Loaded.');

@@ -51,6 +51,12 @@
                 <input type="text" id="title_input" title="Ange titel" placeholder="<alla>" style="width: 75%; float:right"/>
             </div>
             <div style="width: 99%;display: inline-block">
+                <label for="year_input_from" style="width: 24%">&nbsp;Tillkomstår:</label>
+                <input type="number" min="1000" max="2500" step="1" id="year_input_til" title="Till" placeholder="<till>" style="width: 36%; float:right"/>
+                <span style="width: 3%; float:right">&nbsp;&ndash;&nbsp;</span>
+                <input type="number" min="1000" max="2500" step="1" id="year_input_from" title="Från" placeholder="<från>" style="width: 36%; float:right"/>                
+            </div>
+            <div style="width: 99%;display: inline-block">
                 <label for="muni_selector" style="width: 24%">&nbsp;Kommun:</label><br/>
                 <select id="muni_selector" title="Välj kommun" data-placeholder="<alla>" multiple style="width: 100%; float:right; "></select>
             </div>

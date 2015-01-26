@@ -24,6 +24,11 @@
 #searchheader label {
     color: #b3b3b3;
 }
+#searchheader span {
+    display:inline-block;
+    vertical-align: middle;
+    color: #b3b3b3;
+}
 
 /* Feedback box shows messages to the user */
 #feedbackbox {
