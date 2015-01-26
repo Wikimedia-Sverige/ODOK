@@ -332,7 +332,7 @@ class OdokWriter(OdokSQL):
         query = u"""%s WHERE id = %%s; """ %query[:-1]
         #break this out into OdokSQL.commit(self, query, vals)
         if self.testing:
-            #not that this may give unicodeerror related to how literal works
+            #note that this may give unicodeerror related to how literal works
             self.log += query % self.conn.literal(tuple(vals)+(key,)) + u'\n'
         else:
             try:
@@ -358,11 +358,11 @@ class OdokWriter(OdokSQL):
             return None
             
         query = u"""INSERT INTO %s (%s) VALUES""" % (self.tables[table], ','.join(self.parameters[table]))
-        row = u'%%s,'*len(self.parameters[table])
+        row = u','.join(['%s']*len(self.parameters[table]))
         vals=[]
         for v in values:
             if sorted(v.keys()) == sorted(self.parameters[table]):
-                query = u"""%s (%s),""" % (query, row[:-1])
+                query = u"""%s (%s),""" % (query, row)
                 for p in self.parameters[table]:
                     vals.append(v[p])
             else:
@@ -371,10 +371,11 @@ class OdokWriter(OdokSQL):
         #break this out into OdokSQL.commit(self, query, vals)
         if self.testing:
             #not that this may give unicodeerror related to how literal works
-            self.log += query %self.conn.literal(tuple(vals)+(key,)) + u'\n'
+            self.log += query % self.conn.literal(tuple(vals)) + u'\n'
         else:
+            print query % self.conn.literal(tuple(vals))
             try:
-                self.cursor.execute(query, (tuple(vals)+(key,)))
+                self.cursor.execute(query, (tuple(vals)))
                 self.conn.commit()
             except MySQLdb.Warning, e:
                 return e.message
@@ -431,10 +432,18 @@ class OdokReader(OdokSQL):
             else:
                 print '"getArtistByWiki()" requires a list of wikidata entities or a single entity.'
                 return None
+        # remove empties
+        if '' in wikidata:
+            wikidata.remove('')
+        if len(wikidata) == 0:
+            return None
         result = {}
         
         format_strings = ','.join(['%s'] * len(wikidata))
-        q = u"""SELECT id, first_name, last_name, wiki, birth_date, death_date, birth_year, death_year FROM `artist_table` WHERE wiki IN (%s)""" % format_strings
+        q = u"""SELECT id, first_name, last_name, wiki, birth_date, death_date, birth_year, death_year
+                FROM `artist_table`
+                WHERE wiki IN (%s);""" % format_strings
+        #print q %self.conn.literal(tuple(wikidata))
         rows = self.query(q, tuple(wikidata))
         
         for r in rows:

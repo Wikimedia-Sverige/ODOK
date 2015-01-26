@@ -24,13 +24,13 @@ def run(verbose=False, days=100):
     '''
 
     # wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.wp_local_password, site=config.wp_local, separator='wiki')
-    # dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_test)
+    dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_test)
     dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_test, db=config.db, user=config.db_read, passwd=config.db_test_read_password)
     dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_test, db=config.db, user=config.db_edit, passwd=config.db_test_edit_password)
 
     # open connections
     wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site)
-    dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_site)
+    #dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_site)
     #dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_server, db=config.db, user=config.db_read, passwd=config.db_read_password)
     #dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
 
@@ -53,6 +53,11 @@ def run(verbose=False, days=100):
         if convertTimestamp(p['timestamp'])>lastSync:
             checkList.append(p['title'])
     flog.write(u'changed pages: %r\n------------------\n' %len(checkList))
+
+    # stop if nothing to check
+    if len(checkList) == 0:
+        print u'Found no changed pages.'
+        exit(1)
 
     # deal with new UGC items
     (log, newUGC) = UGCsynk.run(checkList, wpApi, dbWriteSQL)
@@ -388,7 +393,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     if artist_links and len(''.join(artist_links))>0:
         artist_diff['-'] = artist_links[:]  # slice to clone the list
     #handler can only deal with new artists
-    if len(artist_diff['-']) == 0 and artist_diff['+'] > 0:
+    if len(artist_diff['-']) == 0 and len(artist_diff['+']) > 0:
         artIds = dbReadSQL.getArtistByWiki(artist_diff['+'])  # list of id:{'first_name', 'last_name', 'wiki', 'birth_date', 'death_date', 'birth_year', 'death_year'}
         newArtistLinks = []
         for k, v in artIds.iteritems():
@@ -396,7 +401,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             newArtistLinks.append(k)
         diff[u'artist_links'] = {'new':newArtistLinks, 'old':[]}
     #output remaining to log
-    for k,v in artist_diff:
+    for k,v in artist_diff.iteritems():
         if len(v)>0:
             log = log + u'difference in artist links, linkdiff%s: %s\n' %(k, ';'.join(v))
 
