@@ -310,10 +310,18 @@ window.onload = function load() {
 
     //set-up markers
     specialIcon = L.icon({
-        iconUrl: 'images/selected.svg'
+        iconUrl: 'images/selected.svg',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
     });
     normalIcon = L.icon({
-        iconUrl: 'images/default.svg'
+        iconUrl: 'images/default.svg',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
     });
 
     // Trigger search
