@@ -315,10 +315,10 @@ class OdokWriter(OdokSQL):
         :return: None if successful
         '''
         if not table in self.tables.keys():
-            self.log = self.log + u'updateTable: %s is not a valid table\n' %table
+            self.log += u'updateTable: %s is not a valid table\n' % table
             return None
         elif not changes:
-            self.log = self.log + u'updateTable: no changes given\n'
+            self.log += u'updateTable: no changes given\n'
             return None
             
         query = u"""UPDATE %s SET""" %self.tables[table]
@@ -328,12 +328,12 @@ class OdokWriter(OdokSQL):
                 query = u"""%s %s=%%s,""" %(query, k)
                 vals.append(v)
             else:
-                self.log = self.log + u'%s is not a valid parameter for %s\n' %(k, table)
+                self.log += u'%s is not a valid parameter for %s\n' %(k, table)
         query = u"""%s WHERE id = %%s; """ %query[:-1]
         #break this out into OdokSQL.commit(self, query, vals)
         if self.testing:
             #not that this may give unicodeerror related to how literal works
-            self.log = self.log + query %self.conn.literal(tuple(vals)+(key,)) + u'\n'
+            self.log += query % self.conn.literal(tuple(vals)+(key,)) + u'\n'
         else:
             try:
                 self.cursor.execute(query, (tuple(vals)+(key,)))
@@ -342,7 +342,43 @@ class OdokWriter(OdokSQL):
                 return e.message
         return None
     
-    #def insertIntoTable(self, table, values):
+    def insertIntoTable(self, table, values):
+        '''
+        Insert a single update to the database
+        :param table: table to update
+        :param values: list with {param:value}-set to be added,
+            must contain all keys in self.parameters[table], all others are ignored
+        :return: None if successful
+        '''
+        if not table in self.tables.keys():
+            self.log += u'insertIntoTable: %s is not a valid table\n' %table
+            return None
+        elif not values or len(values) == 0:
+            self.log += u'insertIntoTable: no values given\n'
+            return None
+            
+        query = u"""INSERT INTO %s (%s) VALUES""" % (self.tables[table], ','.join(self.parameters[table]))
+        row = u'%%s,'*len(self.parameters[table])
+        vals=[]
+        for v in values:
+            if sorted(v.keys()) == sorted(self.parameters[table]):
+                query = u"""%s (%s),""" % (query, row[:-1])
+                for p in self.parameters[table]:
+                    vals.append(v[p])
+            else:
+                self.log += u'insertIntoTable: a required parameter is missing for table %s (given: %s; required: %s)\n' % (table, ','.join(v.keys()), ','.join(self.parameters[table]))
+        query = query[:-1]
+        #break this out into OdokSQL.commit(self, query, vals)
+        if self.testing:
+            #not that this may give unicodeerror related to how literal works
+            self.log += query %self.conn.literal(tuple(vals)+(key,)) + u'\n'
+        else:
+            try:
+                self.cursor.execute(query, (tuple(vals)+(key,)))
+                self.conn.commit()
+            except MySQLdb.Warning, e:
+                return e.message
+        return None
 
 class OdokReader(OdokSQL):
     #Special searches needed for new uploads and temporary searches not yet included in api

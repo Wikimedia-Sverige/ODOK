@@ -58,7 +58,7 @@ def run(verbose=False, days=100):
     (log, newUGC) = UGCsynk.run(checkList, wpApi, dbWriteSQL)
     flog.write(u'\n---------- New UGC items (%r): --------\n' % newUGC)
     if log:
-            flog.write('%s\n' %log)
+        flog.write('%s\n' %log)
 
     # read pages (after UGC updates)
     checkPages = wpApi.getPage(checkList)
@@ -159,6 +159,15 @@ def commitToDatabase(odokWriter, changes, verbose=False):
             elif param == u'year':
                 if diff[param]:  # if not blank
                     diff[param] = int(diff[param])
+            elif param == u'artist_links':
+                # handle here then remove from diff
+                values = []
+                for v in diff[param]:
+                    values.append({u'object':key, u'artist':v})
+                problem = odokWriter.insertIntoTable('artist_links', values)
+                if problem:
+                    log = log + 'SQL update for %s had the problem: %s\n' %(key, problem)
+                del(diff[param])
         problem = odokWriter.updateTable(key, diff)
         if problem:
             log = log + 'SQL update for %s had the problem: %s\n' %(key, problem)
@@ -241,7 +250,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             log: list of issues encountered e.g. incorrecly formated wikitext
     TODO:
         proper log for coordinates
-        only care about first X decimals in coordinte
+        only care about first X decimals in coordinate
         return needed/removed links
         fotnot-name
         should anything be done with:
@@ -372,11 +381,24 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     ## Needing separate treatment
     # comparing artist_links: u'artist_links':u'artist_links'
     artist_links = list(set(wikiObj[u'artist_links'])-set(odokObj[u'artist_links']))
+    artist_diff = {'+':[], '-':[]}
     if artist_links and len(''.join(artist_links))>0:
-        log = log + u'difference in artist links, linkdiff+: %s\n' %';'.join(artist_links)
+        artist_diff['+'] = artist_links[:]  # slice to clone the list
     artist_links = list(set(odokObj[u'artist_links'])-set(wikiObj[u'artist_links']))
     if artist_links and len(''.join(artist_links))>0:
-        log = log + u'difference in artist links, linkdiff-: %s\n' %';'.join(artist_links)
+        artist_diff['-'] = artist_links[:]  # slice to clone the list
+    #handler can only deal with new artists
+    if len(artist_diff['-']) == 0 and artist_diff['+'] > 0:
+        artIds = dbReadSQL.getArtistByWiki(artist_diff['+'])  # list of id:{'first_name', 'last_name', 'wiki', 'birth_date', 'death_date', 'birth_year', 'death_year'}
+        newArtistLinks = []
+        for k, v in artIds.iteritems():
+            artist_diff['+'].remove(v['wiki'])
+            newArtistLinks.append(k)
+        diff[u'artist_links'] = {'new':newArtistLinks, 'old':[]}
+    #output remaining to log
+    for k,v in artist_diff:
+        if len(v)>0:
+            log = log + u'difference in artist links, linkdiff%s: %s\n' %(k, ';'.join(v))
 
     ## Post-processing
     # fotnot-namn without fotnot - needs to look-up fotnot for o:cmt
