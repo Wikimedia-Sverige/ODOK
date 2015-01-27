@@ -142,7 +142,6 @@ def run(testing=False):
         f.close()
         print u'File with sqlcode to be run can be found at scrapeYears.sql'
     print u'Done!'
-    exit(1)
 
 if __name__ == "__main__":
     run()
