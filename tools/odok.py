@@ -373,7 +373,6 @@ class OdokWriter(OdokSQL):
             #not that this may give unicodeerror related to how literal works
             self.log += query % self.conn.literal(tuple(vals)) + u'\n'
         else:
-            print query % self.conn.literal(tuple(vals))
             try:
                 self.cursor.execute(query, (tuple(vals)))
                 self.conn.commit()
