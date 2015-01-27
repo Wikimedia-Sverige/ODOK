@@ -146,7 +146,7 @@ def run(verbose=False, days=100):
     flog.close()
 
     # TOBUILD db.makeDump() #change create a dump (ideally one which is incremental)
-    exit(1)
+    print 'Done, woho!'
 # ----------------
 def commitToDatabase(odokWriter, changes, verbose=False):
     '''
@@ -182,9 +182,10 @@ def commitToDatabase(odokWriter, changes, verbose=False):
                     log += 'SQL update for %s had the problem: %s\n' %(key, problem)
                 del(diff[param])
 
-        problem = odokWriter.updateTable(key, diff)
-        if problem:
-            log += 'SQL update for %s had the problem: %s\n' %(key, problem)
+        if len(diff.keys()) > 0:
+            problem = odokWriter.updateTable(key, diff)
+            if problem:
+                log += 'SQL update for %s had the problem: %s\n' %(key, problem)
     # done
     return log
 
@@ -405,7 +406,8 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         for k, v in artIds.iteritems():
             artist_diff['+'].remove(v['wiki'])
             newArtistLinks.append(k)
-        diff[u'artist_links'] = {'new':newArtistLinks, 'old':[]}
+        if len(newArtistLinks) > 0:
+            diff[u'artist_links'] = {'new':newArtistLinks, 'old':[]}
     # output remaining to log
     for k,v in artist_diff.iteritems():
         if len(v)>0:
@@ -427,6 +429,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         # handler can only deal with new akas
         if len(aka_diff['-']) == 0 and len(aka_diff['+']) > 0:
             diff[u'aka_list'] = {'new':aka_diff['+'], 'old':[]}
+            del(aka_diff['+'])
         # output remaining to log
         for k,v in aka_diff.iteritems():
             if len(v)>0:
