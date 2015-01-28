@@ -15,7 +15,6 @@ var messages = {
     "no_image": "Detta verk saknar bild",
     "on_wiki": "Läs om det på Wikipedia",
     "osmSE_attrib": "Kartdata © {OSM_link}-bidragsgivare, kartrendering av {OSM_Sweden}",
-    "osm_attrib": "Kartdata © {OSM_link}-bidragsgivare",
     "year_warning": "Tillkomstår måste vara ett årtal",
     "year_negative_range": "Från måste vara större än Till i spannet för tillkomstår"
 };
@@ -177,7 +176,7 @@ function populateSearchResult(rObjs) {
     if(ro.image) {
         imgSrc = '<img src="https://commons.wikimedia.org/w/thumb.php?f=' + ro.image +
                  '&width=' + thumb_width + '" class="thumb" />';
-        imgLnk = 'https://commons.wikimedia.org/wiki/ro.image';
+        imgLnk = 'https://commons.wikimedia.org/wiki/File:' + ro.image;
         newCard.append('<a href="' + imgLnk + '" target="_blank">' + imgSrc + '</a>');
     }
     else {
@@ -320,11 +319,6 @@ window.onload = function load() {
     );
     //settings for tile Layer
     //settings for OSM
-    var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18,
-        attribution: messages.osm_attrib
-                    .replace('{OSM_link}','<a href="//openstreetmap.org">OpenStreetMap</a>')
-    });
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
