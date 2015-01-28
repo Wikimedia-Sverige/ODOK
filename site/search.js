@@ -15,6 +15,7 @@ var messages = {
     "no_image": "Detta verk saknar bild",
     "on_wiki": "Läs om det på Wikipedia",
     "osmSE_attrib": "Kartdata © {OSM_link}-bidragsgivare, kartrendering av {OSM_Sweden}",
+    "osm_attrib": "Kartdata © {OSM_link}-bidragsgivare",
     "year_warning": "Tillkomstår måste vara ett årtal",
     "year_negative_range": "Från måste vara större än Till i spannet för tillkomstår"
 };
@@ -239,7 +240,7 @@ function populateSearchResult(rObjs) {
 
     // Adjust map zoom
     if(body.length > 0) {
-        map.fitBounds(markers.getBounds());
+        map.fitBounds(markers.getBounds(), {'maxZoom':16});
     }
 }
 
@@ -271,6 +272,28 @@ function isInteger(val) {
     return false;
 }
 
+function triggerSearch() {
+    var ai = $('#artist_input').val();
+    var ti = $('#title_input').val();
+    var mi = $('#muni_selector').val();
+    var ci = $('#coord_input').is(":checked");
+    var ii = $('#image_input').is(":checked");
+    var yfi = $('#year_input_from').val();
+    var yti = $('#year_input_til').val();
+
+    executeSearch(ai, ti, mi, ci, ii, yfi, yti);
+    if (mi){
+        mi = mi.join(',');
+    }
+    window.location.hash = mi + '/' +
+                           ai + '/' +
+                           ti + '/' +
+                           ci + '/' +
+                           ii + '/' +
+                           yfi + '/' +
+                           yti;
+}
+
 
 window.onload = function load() {
     // load muni json into variable and populate selectorlist
@@ -296,6 +319,12 @@ window.onload = function load() {
         })
     );
     //settings for tile Layer
+    //settings for OSM
+    var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: messages.osm_attrib
+                    .replace('{OSM_link}','<a href="//openstreetmap.org">OpenStreetMap</a>')
+    });
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
@@ -326,25 +355,7 @@ window.onload = function load() {
 
     // Trigger search
     $('#button_search').click(function(){
-       var ai = $('#artist_input').val();
-       var ti = $('#title_input').val();
-       var mi = $('#muni_selector').val();
-       var ci = $('#coord_input').is(":checked");
-       var ii = $('#image_input').is(":checked");
-       var yfi = $('#year_input_from').val();
-       var yti = $('#year_input_til').val();
-
-       executeSearch(ai, ti, mi, ci, ii, yfi, yti);
-       if (mi){
-           mi = mi.join(',');
-       }
-       window.location.hash = mi + '/' +
-                              ai + '/' +
-                              ti + '/' +
-                              ci + '/' +
-                              ii + '/' +
-                              yfi + '/' +
-                              yti;
+        triggerSearch();
     });
 
     // Handle incoming hash
@@ -370,6 +381,15 @@ window.onload = function load() {
         $('#year_input_from').val(hashparts[5]);
         $('#year_input_til').val(hashparts[6]);
 
+        jqxhrMuni.done(function(){ //needs to wait for load
+            $.each(hashparts, function( index, value ) {
+                if ($.inArray(value, ['', 'false', 'null']) < 0){
+                    console.log('Triggered for hashpart: ' + value);
+                    triggerSearch();
+                    return false; // to break out of .each-loop
+                }
+            });
+        });
     }
     console.log('Loaded.');
 
