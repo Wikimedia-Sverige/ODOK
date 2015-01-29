@@ -124,7 +124,7 @@ $(document).ready(function() {
     function onMapClick(e) {
         popup
             .setLatLng(e.latlng)
-            .setContent("Du klickade på koordinaten: " + e.latlng.toString())
+            .setContent("Du klickade på koordinaten: " + e.latlng.lat + ", " + e.latlng.lng)
             .openOn(map);
     }
     map.on('contextmenu', onMapClick);
