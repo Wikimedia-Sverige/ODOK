@@ -1,32 +1,32 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
+'''
+Module for various means of communicating with the ODOK database
 
-# Module for various means of communicating with the ODOK database
-
-#To do for sql:
-#Switch over to SSCursor
-
-#----------------------------------------------------------------------------------------
+To do for sql:
+Switch over to SSCursor
+'''
 
 import WikiApi as wikiApi
 import MySQLdb
-#import pycurl
+# import pycurl
 
 class OdokApi(wikiApi.WikiApi):
     '''
     When possible connect through the api
     Need to override setUpApi
-    Should replace login/token/logout by dummyfunction to prevent these from being executed
+    Should replace login/token/logout by dummyfunction to prevent
+    these from being executed
     '''
 
-    #dummy functions to prevent these from being executed
-    def login(self, userName, userPass, verbose=True): dummyFunction(u'login')
-    def setToken(self, token, verbose=True): dummyFunction(u'setToken')
-    def setEditToken(self, verbose=True): dummyFunction(u'setEditToken')
-    def clearEditToken(self): dummyFunction(u'clearEditToken')
-    def logout(self): dummyFunction(u'logout')
+    # dummy functions to prevent these from being executed
+    def login(self, userName, userPass, verbose=True): self.dummyFunction(u'login')
+    def setToken(self, token, verbose=True): self.dummyFunction(u'setToken')
+    def setEditToken(self, verbose=True): self.dummyFunction(u'setEditToken')
+    def clearEditToken(self): self.dummyFunction(u'clearEditToken')
+    def logout(self): self.dummyFunction(u'logout')
     def dummyFunction(self, name):
-        print u'%s() not supported by OdokApi' %name
+        print u'%s() not supported by OdokApi' % name
         exit(2)
 
     @classmethod
@@ -34,10 +34,10 @@ class OdokApi(wikiApi.WikiApi):
         '''
         Creates a OdokApi object
         '''
-        #Provide url and identify (using e-mail)
-        odok = cls('%s/api.php' %site, user, scriptidentify)
+        # Provide url and identify (using e-mail)
+        odok = cls('%s/api.php' % site, user, scriptidentify)
 
-        #Set reqlimit for odok
+        # Set reqlimit for odok
         odok.reqlimit = 50
 
         return odok
@@ -61,35 +61,35 @@ class OdokApi(wikiApi.WikiApi):
         :param members: (optional) A list to which to add the results (internal use)
         :return: list odok objects (dicts)
         '''
-        #print "Fetching pages with ids: " + '|'.join(idList)
-        #if no initial list supplied
+        # print "Fetching pages with ids: " + '|'.join(idList)
+        # if no initial list supplied
         if members is None:
-            members =[]
+            members = []
 
-        #do an upper limit check and split into several requests if necessary
-        reqlimit = self.limitByBytes(idList, self.reqlimit) #max reqlimit values per request but further limited by the bytelimit
-        idList = list(set(idList)) #remove dupes
+        # do an upper limit check and split into several requests if necessary
+        reqlimit = self.limitByBytes(idList, self.reqlimit)  # max reqlimit values per request but further limited by the bytelimit
+        idList = list(set(idList))  # remove dupes
         if len(idList) > reqlimit:
-            i=0
+            i = 0
             while (i+reqlimit < len(idList)):
-                reqlimit = self.limitByBytes(idList[i:], reqlimit) #tests if reqlimit is small enough
+                reqlimit = self.limitByBytes(idList[i:], reqlimit)  # tests if reqlimit is small enough
                 self.getIds(idList[i:i+reqlimit], members, debug=debug)
-                i=i+reqlimit
-            #less than reqlimit left
+                i += reqlimit
+            # less than reqlimit left
             idList = idList[i:]
-            if len(idList) < 1: #i.e. exactly divisible by reqlimit
+            if len(idList) < 1:  # i.e. exactly divisible by reqlimit
                 return members
 
-        #Single run
-        #action=query&list=embeddedin&cmtitle=Template:!
+        # Single run
+        # action=query&list=embeddedin&cmtitle=Template:!
         jsonr = self.httpGET("get", [('id', '|'.join(idList).encode('utf-8')),
-                                      ('limit', str(100))], debug=debug)
+                                     ('limit', str(100))], debug=debug)
 
         if debug:
-            print u'getIds(): idList=%s\n' %idList
+            print u'getIds(): idList=%s\n' % idList
             print jsonr
 
-        #find errors
+        # find errors
         if not jsonr['head']['status'] == '1':
             print self.failiure(jsonr)
             return None
@@ -106,32 +106,32 @@ class OdokApi(wikiApi.WikiApi):
         :param members: (optional) A list to which to add the results (internal use)
         :return: list odok objects (dicts)
         '''
-        #if no initial list supplied
+        # if no initial list supplied
         if members is None:
-            members =[]
+            members = []
 
-        #do a limited reqlimit check
-        for k,v in queries.iteritems():
+        # do a limited reqlimit check
+        for k, v in queries.iteritems():
             v = v.split('|')
             reqlimit = self.limitByBytes(v, self.reqlimit)
-            if len(v)> reqlimit:
+            if len(v) > reqlimit:
                 print '''getQuery() requires input to be correctly formated and limited\n
-                         this request had %r/%r parameters for %s''' %(len(v), reqlimit, k)
+                         this request had %r/%r parameters for %s''' % (len(v), reqlimit, k)
                 return None
 
-        #Single run
-        if not 'limit' in queries.keys():
+        # Single run
+        if 'limit' not in queries.keys():
             queries['limit'] = str(100)
-        requestparams=[]
-        for k,v in queries.iteritems():
+        requestparams = []
+        for k, v in queries.iteritems():
             requestparams.append((k, v.encode('utf-8')))
         jsonr = self.httpGET("get", requestparams, debug=debug)
 
         if debug:
-            print u'getQuery(): queries=%s\n' %queries
+            print u'getQuery(): queries=%s\n' % queries
             print jsonr
 
-        #find errors
+        # find errors
         if not jsonr['head']['status'] == '1':
             print self.failiure(jsonr)
             return None
@@ -152,26 +152,26 @@ class OdokApi(wikiApi.WikiApi):
         :param members: (optional) A list to which to add the results (internal use)
         :return: list odok objects (dicts)
         '''
-        #if no initial list supplied
+        # if no initial list supplied
         if members is None:
-            members =[]
+            members = []
 
         query = [('limit', str(100)),
                  ('offset', str(offset))]
         if full:
-            query = query +[('geojson', 'full')]
+            query += [('geojson', 'full')]
         if source:
-            query = query +[('source', str(source))]
+            query += [('source', str(source))]
 
-        #Single run
-        #action=get&limit=100&format=geojson&geojson=full&offset=0
+        # Single run
+        # action=get&limit=100&format=geojson&geojson=full&offset=0
         jsonr = self.httpGET("get", query, form="geojson", debug=debug)
 
         if debug:
             print u'getGeoJson()\n'
             print jsonr
 
-        #find errors
+        # find errors
         if not jsonr['head']['status'] == '1':
             print self.failiure(jsonr)
             return None
@@ -185,7 +185,7 @@ class OdokApi(wikiApi.WikiApi):
 
         return members
 
-#End of OdokApi()
+# End of OdokApi()
 
 class OdokSQL():
     '''
@@ -223,23 +223,28 @@ class OdokSQL():
         Establish connection to database, set up logfile and determine testing
         '''
         self.log = u''
-        #whitelist of editable tables. Excludes muni/county as these are largely inert
-        self.tables={'main':'main_table', 'artist':'artist_table', 'source':'source_table', 'artist_links':'artist_links', 'aka':'aka_table'}
-        #whitelist of editable parameters (per table)
-        self.parameters={
+        # whitelist of editable tables. Excludes muni/county as these are largely inert
+        self.tables = {
+            'main':'main_table',
+            'artist':'artist_table',
+            'source':'source_table',
+            'artist_links':'artist_links',
+            'aka':'aka_table'}
+        # whitelist of editable parameters (per table)
+        self.parameters = {
             'main':[u'name', u'title', u'artist', u'descr', u'year', u'year_cmt', u'type', u'material', u'inside', u'address', u'county', u'muni', u'district', u'lat', u'lon', u'image', u'wiki_article', u'commons_cat', u'official_url', u'same_as', u'free', u'owner', u'cmt'],
             'artist':[u'first_name', u'last_name', u'wiki', u'birth_date', u'death_date', u'birth_year', u'death_year', u'creator', u'cmt'],
             'source':[u'name', u'wiki', u'real_id', u'url', u'cmt'],
             'artist_links':[u'object', u'artist'],
             'aka':[u'title', u'main_id']}
-        #some parameters are only ok to add, not change
-        self.insertParamters={
+        # some parameters are only ok to add, not change
+        self.insertParamters = {
             'main':[u'id', u'source'],
             'artist':[u'id'],
             'source':[u'id'],
             'artist_links':[],
             'aka':[u'id']}
-        self.testing=testing  # outputs to logfile instead of writing to database
+        self.testing = testing  # outputs to logfile instead of writing to database
         self.conn = None
         self.cursor = None
         (self.conn, self.cursor) = self.connectDatabase(host=host, db=db, user=user, passwd=passwd)
@@ -271,19 +276,21 @@ class OdokSQL():
         :returns: list of rows
         '''
         if not params:
-            params=tuple()
+            params = tuple()
         elif not isinstance(params, tuple):
             params = (params,)
 
         if testing:
-            self.log = u'%s\n%s' %(self.log, query %self.conn.literal(params))
-            if expectReply: return (None,None)
-            else: return None
+            self.log = u'%s\n%s' % (self.log, query % self.conn.literal(params))
+            if expectReply:
+                return (None, None)
+            else:
+                return None
 
         reply = self.cursor.execute(query, params)
 
-        #return results
-        result=[]
+        # return results
+        result = []
         row = self.cursor.fetchone()
         while row is not None:
             result.append(row)
@@ -299,12 +306,13 @@ class OdokSQL():
         '''create an OdokSQL object'''
         odok = cls(host=host, db=db, user=user, passwd=passwd, testing=testing)
         return odok
-#End of OdokSQL()
+# End of OdokSQL()
 
 class OdokWriter(OdokSQL):
-    #some of OdokSQL.__init__ should probably be here instead to govern accessible fields
-    #make a general updater/adder followed by more specific add artist etc. which requires a dict of a certain type and checks formating duplication etc.
-    #make sure commit/respone handeling is done by the more general OdokSQL
+    # TODO
+    # some of OdokSQL.__init__ should probably be here instead to govern accessible fields
+    # make a general updater/adder followed by more specific add artist etc. which requires a dict of a certain type and checks formating duplication etc.
+    # make sure commit/respone handeling is done by the more general OdokSQL
 
     def updateTable(self, key, changes, table='main'):
         '''
@@ -314,25 +322,25 @@ class OdokWriter(OdokSQL):
         :parm changes: list with {param:value}-pairs to be updated
         :return: None if successful
         '''
-        if not table in self.tables.keys():
+        if table not in self.tables.keys():
             self.log += u'updateTable: %s is not a valid table\n' % table
             return None
         elif not changes:
             self.log += u'updateTable: no changes given\n'
             return None
 
-        query = u"""UPDATE %s SET""" %self.tables[table]
-        vals=[]
+        query = u"""UPDATE %s SET""" % self.tables[table]
+        vals = []
         for k, v in changes.iteritems():
             if k in self.parameters[table]:
-                query = u"""%s %s=%%s,""" %(query, k)
+                query = u"""%s %s=%%s,""" % (query, k)
                 vals.append(v)
             else:
-                self.log += u'%s is not a valid parameter for %s\n' %(k, table)
-        query = u"""%s WHERE id = %%s; """ %query[:-1]
-        #break this out into OdokSQL.commit(self, query, vals)
+                self.log += u'%s is not a valid parameter for %s\n' % (k, table)
+        query = u"""%s WHERE id = %%s; """ % query[:-1]
+        # break this out into OdokSQL.commit(self, query, vals)
         if self.testing:
-            #note that this may give unicodeerror related to how literal works
+            # note that this may give unicodeerror related to how literal works
             self.log += query % self.conn.literal(tuple(vals)+(key,)) + u'\n'
         else:
             try:
@@ -350,8 +358,8 @@ class OdokWriter(OdokSQL):
             must contain all keys in self.parameters[table], all others are ignored
         :return: None if successful
         '''
-        if not table in self.tables.keys():
-            self.log += u'insertIntoTable: %s is not a valid table\n' %table
+        if table not in self.tables.keys():
+            self.log += u'insertIntoTable: %s is not a valid table\n' % table
             return None
         elif not values or len(values) == 0:
             self.log += u'insertIntoTable: no values given\n'
@@ -359,7 +367,7 @@ class OdokWriter(OdokSQL):
 
         query = u"""INSERT INTO %s (%s) VALUES""" % (self.tables[table], ','.join(self.parameters[table]))
         row = u','.join(['%s']*len(self.parameters[table]))
-        vals=[]
+        vals = []
         for v in values:
             if sorted(v.keys()) == sorted(self.parameters[table]):
                 query = u"""%s (%s),""" % (query, row)
@@ -368,9 +376,9 @@ class OdokWriter(OdokSQL):
             else:
                 self.log += u'insertIntoTable: a required parameter is missing for table %s (given: %s; required: %s)\n' % (table, ','.join(v.keys()), ','.join(self.parameters[table]))
         query = query[:-1]
-        #break this out into OdokSQL.commit(self, query, vals)
+        # break this out into OdokSQL.commit(self, query, vals)
         if self.testing:
-            #not that this may give unicodeerror related to how literal works
+            # not that this may give unicodeerror related to how literal works
             self.log += query % self.conn.literal(tuple(vals)) + u'\n'
         else:
             try:
@@ -381,10 +389,12 @@ class OdokWriter(OdokSQL):
         return None
 
 class OdokReader(OdokSQL):
-    #Special searches needed for new uploads and temporary searches not yet included in api
-    #e.g.
-    #ArtistApi:
-    ##writeToDatabase.getArtistByWiki()
+    '''
+    Special searches needed for new uploads and temporary searches not yet included in api
+    e.g.
+    ArtistApi:
+    replaces: writeToDatabase.getArtistByWiki()
+    '''
 
     def findAkas(self, idNo):
         '''
@@ -424,7 +434,7 @@ class OdokReader(OdokSQL):
         :returns: dictionary of artist matching said entities with artistID as keys {first_name, last_name, wiki, birth_date, death_date, birth_year, death_year}
         SHOULD BE IN ApiArtist
         '''
-        #if only one entity given
+        # if only one entity given
         if not isinstance(wikidata,list):
             if (isinstance(wikidata,str) or isinstance(wikidata,unicode)):
                 wikidata = [wikidata,]
@@ -442,7 +452,7 @@ class OdokReader(OdokSQL):
         q = u"""SELECT id, first_name, last_name, wiki, birth_date, death_date, birth_year, death_year
                 FROM `artist_table`
                 WHERE wiki IN (%s);""" % format_strings
-        #print q %self.conn.literal(tuple(wikidata))
+        # print q %self.conn.literal(tuple(wikidata))
         rows = self.query(q, tuple(wikidata))
 
         for r in rows:
@@ -451,4 +461,4 @@ class OdokReader(OdokSQL):
 
         return result
 
-#End of OdokSQL()
+# End of OdokReader()
