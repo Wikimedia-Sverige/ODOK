@@ -33,7 +33,7 @@ body{
 	-moz-transition:top 0.4s ease-out;
 	-o-transition:top 0.4s ease-out;
     transition:top 0.4s ease-out 0s;
-    display:block;
+    display:table;
 }
 #menu h2{
     text-align:center
