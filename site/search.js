@@ -318,7 +318,6 @@ window.onload = function load() {
         })
     );
     //settings for tile Layer
-    //settings for OSM
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
