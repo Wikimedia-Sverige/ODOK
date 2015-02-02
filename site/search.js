@@ -285,8 +285,8 @@ function triggerSearch() {
         mi = mi.join(',');
     }
     window.location.hash = mi + '/' +
-                           ai + '/' +
-                           ti + '/' +
+                           ai.replace(' ','_') + '/' +
+                           ti.replace(' ','_') + '/' +
                            ci + '/' +
                            ii + '/' +
                            yfi + '/' +
@@ -363,8 +363,8 @@ window.onload = function load() {
             });
             $("#muni_selector").trigger("chosen:updated");
         });
-        $('#artist_input').val(hashparts[1]);
-        $('#title_input').val(hashparts[2]);
+        $('#artist_input').val(hashparts[1].replace('_',' '));
+        $('#title_input').val(hashparts[2].replace('_',' '));
         if (hashparts[3] == 'true'){
             $('#coord_input').prop('checked', true);
         }
