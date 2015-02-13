@@ -236,7 +236,7 @@ def run(testing=False, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp
         wikiHits=[]
         for page in pages:
             contents = wpApi.getPage(page)[page]
-            wikiHits = wikiHits + parseArtwork(contents, page)
+            wikiHits += parseArtwork(contents, page)
             print u'wikiHits: %r' %len(wikiHits)
         postProcessing(wikiHits, mild=True)
         #safety backup

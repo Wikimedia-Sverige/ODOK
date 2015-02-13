@@ -199,7 +199,9 @@ def latLonFromCoord(coord):
     returns lat, lon as decimals based on string using the Coord-template
     @output (lat,lon) as float
     '''
-    if not (coord.lower().startswith(u'{{coord|') or coord.lower().startswith(u'{{coord |')): print 'incorrectly formated coordinate: %s' %coord; return None
+    prefixes = (u'{{coord|', u'{{coord |', u'{{coor|', u'{{coor |')
+    if not coord.lower().startswith(prefixes):
+        print 'incorrectly formated coordinate: %s' %coord; return None
     p = coord.split('|')
     if len(p) >= 9:
         lat_d, lat_m, lat_s, lat_sign = float(p[1].strip()), float(p[2].strip()), float(p[3].strip()), p[4].strip()
