@@ -20,6 +20,27 @@ import WikiApi as wikiApi
 import odok as odokConnect
 import dconfig as config
 
+def makeSource(source):
+    '''
+    Given that a correctly formated file exists at source.csv this
+    parses the file to create a sql file for adding the source to the database
+    '''
+    f = codecs.open(u'%s.csv' % source, 'r', 'utf8')
+    lines = f.read().split('\n')
+    f.close()
+    f = codecs.open(u'%s-source.sql' % source, 'w', 'utf8')
+    d = {'id':None, 'name':None, 'wiki':None, 'real_id':None, 'url':None, 'cmt':None}
+    for l in lines:
+        if len(l) == 0 or not l.startswith('#') or l.startswith('##'):
+            continue
+        label = l[1:].split(':')[0].strip().lower()
+        if label in d.keys():
+            d[label] = l[l.find(':')+1:].strip()
+
+    f.write("""INSERT INTO `source_table`(`id`, `name`, `wiki`, `real_id`, `url`, `cmt`)
+VALUES ("%s","%s","%s",%d,"%s","%s");""" % (d['id'], d['name'], d['wiki'], int(d['real_id']), d['url'], d['cmt']))
+    f.close()
+
 def fileWithWikidata(filename=u'Artists.csv', idcol=0, namecol=[4,3], verbose=False):
     '''
     Given a csv file containing object ids and artist names this checks for matching pages on a wikipedia.
@@ -33,12 +54,12 @@ def fileWithWikidata(filename=u'Artists.csv', idcol=0, namecol=[4,3], verbose=Fa
     wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site, verbose=verbose)
     dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_server, db=config.db, user=config.db_read, passwd=config.db_read_password)
     outfile = filename[:-4]
-    
+
     aDict=file_to_dict(filename=filename, idcol=idcol, namecol=namecol, verbose=verbose)
     if '' in aDict.keys(): #remove any artistless entries (these cause issues with wikidata)
-        del aDict[''] 
+        del aDict['']
     wDict = wpApi.getPageInfo(aDict.keys(), debug=verbose)
-    
+
     wdList =[]
     for k,v in aDict.iteritems():
         #separate wikidata from other pageinfo
@@ -69,17 +90,17 @@ def artistFromLog(filename='artist-dump.csv', idcol=0, namecol=3, verbose=False)
     wdDict = wdApi.getArticles(aDict.keys())
     dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_server, db=config.db, user=config.db_read, passwd=config.db_read_password)
     outfile = filename[:-4]
-    
+
     aDict=file_to_dict(filename=filename, idcol=idcol, namecol=namecol, verbose=verbose)
     #aDict is now wd:([ids],wd)
-    
+
     for k, v in wdDict.iteritems():
         a = aDict.pop(k)
         aDict[v['title']] = a
     #aDict is now wp:([ids],wd)
-    
+
     wpDict = wpApi.getPageInfo(aDict.keys(), debug=verbose)
-    
+
     for k,v in aDict.iteritems():
         info = wpDict[k[:1].upper()+k[1:]] #wp article must start with capital letter
         del info['wikidata']
@@ -88,7 +109,7 @@ def artistFromLog(filename='artist-dump.csv', idcol=0, namecol=3, verbose=False)
         name = ';'.join(k.split(' '))
         aDict[k] = [v[0], name, v[1], info, '']
     wikidataFromOdok(wdDict.keys(), aDict, dbReadSQL)
-    
+
     makeCSV(aDict, '%s-tmp.txt' % outfile)
     makeWiki(aDict, '%s-tmp2.txt' % outfile)
     #Check file as normal + for name formating then openCSV(u'%s-tmp.txt'%outfile, prefix=u'')
@@ -98,7 +119,7 @@ def wikidataFromOdok(wdList, aDict, dbReadSQL):
     Checks a list of wikidata entities against hits in the ODOK database
     '''
     response = dbReadSQL.getArtistByWiki(wdList)
-    
+
     #resonse is a list of odok_ids with wd info, change to become a list of wd_ids with odok_info
     #then add these to aDict
     if response:
@@ -168,14 +189,14 @@ def addArtist(fName, lName, wikidata, ids):
     for i in ids:
         query = u'%s\nINSERT INTO artist_links (object,artist) VALUES ("%s", @last_artist_id); ' %(query,i)
     return u'%s\n' %query
-    
+
 def addLink(artist, ids):
     #check if it exists already
     query = u'INSERT INTO artist_links (object,artist) VALUES'
     for i in ids:
         query = u'%s\n("%s",%s),' %(query,i,artist)
     return u'%s;\n' % query[:-1]
-    
+
 def file_to_dict(filename, idcol=0, namecol=1, verbose=False):
     '''
     reads in a file and passes it to a dict where each row is in turn a dict
