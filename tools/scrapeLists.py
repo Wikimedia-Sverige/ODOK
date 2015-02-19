@@ -8,12 +8,13 @@
  1. Identify pages with relevant lists. store pagenames as list <pages>
  2. Identify municipalitynumber as <muniNo>
  3. Do initial scrape:
-        run(pages=<pages>, queries={'muni':'<muniNo>'}, tmpFile=u'scrapetmp.txt')
+        run(pages=pages, queries={'muni':muniNo,'has_same':'false'}, tmpFile=u'scrapetmp.txt')
  3.1 Results are outputted into <scrapetmp.txt>
  3.2 For further scrapes use
         run(queries={'muni':'<muniNo>'}, listFile=u'scrapetmp1.txt')
  ?Does anythin have to be done manually at this point?
- To convert simply output using outputAll(listFile,county, muni)
+ To convert simply output using
+        outputAll(u'scrapetmp.txt',county, muni)
  == Comparison of scraped results to database objects ==
  4. Do the first quick update which adds only enhancing data
         runUpdates(u'scrapetmp.txt', queries={'muni':'<muniNo>'}, quick=True)
