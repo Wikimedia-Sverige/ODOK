@@ -119,12 +119,12 @@ $(document).ready(function() {
     // Hash
     var hash = new L.Hash(map);
 
-    //Rightclick gives coords (for improving data)
+    //Right-click gives coords (for improving data)
     var popup = L.popup();
     function onMapClick(e) {
         popup
             .setLatLng(e.latlng)
-            .setContent("Du klickade på koordinaten: <br />" + e.latlng.lat + ", " + e.latlng.lng)
+            .setContent("Du klickade på koordinaten: <br />" + e.latlng.lat.toFixed(6) + ", " + e.latlng.lng.toFixed(6))
             .openOn(map);
     }
     map.on('contextmenu', onMapClick);
