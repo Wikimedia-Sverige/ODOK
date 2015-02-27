@@ -16,8 +16,8 @@ def getArtists(dbWriteSQL):
     missing at least one year.
     @ output: list of aritst each as a dict {id, wikidata, birth_year, death_year, svwiki}
     '''
-    query=u"""SELECT `id`, `wiki`, `birth_year`, `death_year` FROM `artist_table` WHERE 
-    `wiki` != '' 
+    query=u"""SELECT `id`, `wiki`, `birth_year`, `death_year` FROM `artist_table` WHERE
+    `wiki` != ''
     AND (
         `death_year` IS NULL
         OR
@@ -40,10 +40,10 @@ def getArticles(wdApi, artists, verbose=False):
     wikidata=[]
     for a in artists:
         wikidata.append(a[u'wikidata'])
-    
+
     # get articles
     dataToArticle = wdApi.getArticles(wikidata, debug=verbose, site=u'svwiki')
-    #match
+    # match
     for a in artists:
         a[u'svwiki'] = dataToArticle[a[u'wikidata']]
 
@@ -58,7 +58,7 @@ def getYears(wpApi, artists, verbose=False):
         if a[u'svwiki'] and a[u'svwiki']['title']:
             withSvWiki[a[u'id']] = a[u'svwiki']['title']
     catDict = wpApi.getPageCategories(withSvWiki.values(), nohidden=True, dDict=None, debug=verbose)
-    
+
     changedArtists=[]
     for a in artists:
         changed = False
@@ -87,7 +87,7 @@ def getYearCats(catList, article):
     '''
     birth=None
     death=None
-    
+
     if not catList:
         print 'no category for "%s" or page did not exist' %article
     else:
@@ -110,13 +110,13 @@ def uppdateArtist(dbWriteSQL, artists, testing):
         vals = []
         query = u"""UPDATE `artist_table` SET """
         if a[u'birth_year']:
-            query = query+u"""`birth_year`=%r"""
+            query += u"""`birth_year`=%r"""
             vals.append(a[u'birth_year'])
         if a[u'death_year']:
-            if a[u'birth_year']: query = query+u""", `death_year`=%r"""
-            else: query = query+u"""`death_year`=%r"""
+            if a[u'birth_year']: query += u""", `death_year`=%r"""
+            else: query += u"""`death_year`=%r"""
             vals.append(a[u'death_year'])
-        query = query+u""" WHERE `id` = %s;\n"""
+        query += u""" WHERE `id` = %s;\n"""
         vals.append(a[u'id'])
         dbWriteSQL.query(query[:-1], tuple(vals), expectReply=False, testing=testing)
 
@@ -127,7 +127,7 @@ def run(testing=False):
     dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
     wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site)
     wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site)
-    
+
     artists = getArtists(dbWriteSQL)
     getArticles(wdApi, artists, verbose=False)
     changedArtists = getYears(wpApi, artists)

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: UTF-8  -*-
 #
 # Methods comonly shared by the tool scripts
@@ -45,9 +46,9 @@ def extractName(entry):
 
 def extractNameParts(name):
     '''Tries to separate a name into first and second name.'''
-    #Algorithm. If one "," in names then asume lName, fName.
-    #Else asume last name is the last word of the name.
-    #Plain name returned if all else fails
+    # Algorithm. If one "," in names then asume lName, fName.
+    # Else asume last name is the last word of the name.
+    # Plain name returned if all else fails
     if u',' in name:
         parts = name.split(u',')
         if len(parts)==2:
@@ -62,7 +63,7 @@ def extractNameParts(name):
 def findUnit(contents, start, end, brackets=None):
     '''
     Method for isolating an object in a string. Will not work with either start or end using the ¤ symbol
-    @input: 
+    @input:
         * content: the string to look at
         * start: the substring indicateing the start of the object
         * end: the substring indicating the end of the object
@@ -75,16 +76,16 @@ def findUnit(contents, start, end, brackets=None):
         OR '','' if no object is found
     '''
     if start in contents:
-        #If end is left blank
+        # If end is left blank
         if end==None:
             noEnd=True
             end = start
         else:
             noEnd=False
-        
+
         uStart = contents.find(start) + len(start)
         uEnd = contents.find(end,uStart)
-        if uEnd < 0: #process till end of string
+        if uEnd < 0:  # process till end of string
             uEnd = None
         if brackets:
             for bStart,bEnd in brackets.iteritems():
@@ -93,20 +94,20 @@ def findUnit(contents, start, end, brackets=None):
                 if diff<0:
                     print 'Negative bracket missmatch for: %s <--> %s' %(bStart,bEnd)
                     return None, None, None
-                #two cases either end is one of these brackets or not
-                if end in bEnd: #end is part of endBracket
+                # two cases either end is one of these brackets or not
+                if end in bEnd:  # end is part of endBracket
                     i=0
                     while(diff >0):
-                        i=i+1
+                        i += 1
                         uEnd = contents.replace(bEnd,dummy,i).find(end,uStart)
                         if uEnd < 0:
                             print 'Positive (final) bracket missmatch for: %s <--> %s' %(bStart,bEnd)
                             return None, None, None
                         diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
-                else: #end is different from endBracket (e.g. a '|')
+                else:  # end is different from endBracket (e.g. a '|')
                     i=0
                     while(diff >0):
-                        i=i+1
+                        i += 1
                         uEnd = contents.find(end,uEnd+len(end))
                         if uEnd < 0:
                             diff = contents[uStart:].count(bStart) - contents[uStart:].count(bEnd)
@@ -115,10 +116,10 @@ def findUnit(contents, start, end, brackets=None):
                                 return None, None, None
                         else:
                             diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
-                        
+
         unit = contents[uStart:uEnd]
         lead_in = contents[:uStart-len(start)]
-        if uEnd: #i.e. if not until end of string
+        if uEnd:  # i.e. if not until end of string
             if noEnd:
                 remainder = contents[uEnd:]
             else:
@@ -146,7 +147,7 @@ def extractLink(text, kill_tags=False):
             else:
                 dummy, remainder, lead_in = findUnit(text, u'<', u'>')
             text = lead_in.strip()+' '+remainder.strip()
-    
+
     if not u'[[' in text: return (text.strip(), '')
     interior, dummy, dummy = findUnit(text, u'[[', u']]')
     wikilink = u'[['+interior+u']]'
@@ -155,30 +156,30 @@ def extractLink(text, kill_tags=False):
     post = text[pos+len(wikilink):]
     center=''
     link=''
-    
-    #determine which type of link we are dealing with see meta:Help:Links#Wikilinks for details
-    if not u'|' in interior: #[[ab]] -> ('ab', 'ab')
+
+    # determine which type of link we are dealing with see meta:Help:Links#Wikilinks for details
+    if not u'|' in interior:  # [[ab]] -> ('ab', 'ab')
         center = interior
         link = interior.strip()
     else:
         pos = interior.find(u'|')
         link = interior[:pos]
         center = interior[pos+1:]
-        if len(link) == 0: #[[|ab]] -> ('ab', 'ab')
+        if len(link) == 0:  # [[|ab]] -> ('ab', 'ab')
             link = center
-        elif len(center)>0:  #[[a|b]] -> ('b', 'a')
+        elif len(center)>0:  # [[a|b]] -> ('b', 'a')
             pass
         else:
             center=link
             if u':' in center:  # [[a:b|]] -> ('b', 'a:b')
                 center = center[center.find(u':')+1:]
-            if u', ' in center: # [[a, b|]] -> ('a', 'a, b')
+            if u', ' in center:  # [[a, b|]] -> ('a', 'a, b')
                 center = center.split(u', ')[0]
-            if u'(' in center: #[[a (b)|]] -> ('a', 'a (b)')
+            if u'(' in center:  # [[a (b)|]] -> ('a', 'a (b)')
                 pos = center.find(u'(')
                 if u')' in center[pos:]:
                     center=center[:pos]
-                    if center.endswith(' '): # the first space separating text and bracket is ignored
+                    if center.endswith(' '):  # the first space separating text and bracket is ignored
                         center = center[:-1]
     return ((pre+center+post).strip(), link.strip())
 
@@ -220,5 +221,3 @@ def latLonFromCoord(coord):
     lat = lat_sign*lat
     lon = lon_sign*lon
     return (lat,lon)
-
-#done

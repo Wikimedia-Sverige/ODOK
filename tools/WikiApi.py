@@ -664,7 +664,7 @@ class WikiApi(object):
             # stash
             title = page['title']
             if title in dDict.keys():  # since clcontinue may split categories into two batches
-                dDict[title] = dDict[title] + categories
+                dDict[title] += categories
             else:
                 dDict[title] = categories
 
@@ -691,7 +691,7 @@ class WikiApi(object):
                 # stash
                 title = page['title']
                 if title in dDict.keys():  # since clcontinue may split categories into two batches
-                    dDict[title] = dDict[title] + categories
+                    dDict[title] += categories
                 else:
                     dDict[title] = categories
 

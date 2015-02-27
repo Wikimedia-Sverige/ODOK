@@ -34,7 +34,7 @@ def allGeoJson(filename="../site/AllFeatures.geo.json", source=None, full=True, 
                 "timestamp": datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
             }
         }
-    out.write(ujson.dumps(outJson))  #, ensure_ascii=False))
+    out.write(ujson.dumps(outJson))  # , ensure_ascii=False))
     out.close()
     print '%s was created with %d features' % (filename, len(features))
 

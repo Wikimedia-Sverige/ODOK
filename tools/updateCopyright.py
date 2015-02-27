@@ -8,10 +8,10 @@ ToDO:
 '''
 import odok as odokConnect
 import dconfig as config
-#import codecs
+# import codecs
 
-YEARS_AFTER_BIRTH = 150 #Number of years since birth before considering the work to be free (if year of death is unknown)
-YEARS_AFTER_DEATH = 70  #Number of years since death before considering the work to be free
+YEARS_AFTER_BIRTH = 150  # Number of years since birth before considering the work to be free (if year of death is unknown)
+YEARS_AFTER_DEATH = 70  # Number of years since death before considering the work to be free
 
 def tagUnfree(dbWriteSQL, testing):
     '''
@@ -20,7 +20,7 @@ def tagUnfree(dbWriteSQL, testing):
     '''
     if testing: query=u"""##would change free=%s\nSELECT `id`, `free`, `title`, `artist` FROM `main_table` """
     else: query = u"""UPDATE `main_table` SET free=%s """
-    query=query+u"""WHERE `free` = '' AND `id` IN
+    query += u"""WHERE `free` = '' AND `id` IN
     (SELECT `object` FROM `artist_links` WHERE `artist` IN
         (SELECT `id` FROM `artist_table` WHERE
             (
@@ -40,7 +40,7 @@ def tagUnfree(dbWriteSQL, testing):
         )
     );"""
     affected_count, results = dbWriteSQL.query(query, (u'unfree', YEARS_AFTER_DEATH, YEARS_AFTER_DEATH), expectReply=True, testing=testing)
-    #do something with the reply
+    # do something with the reply
     print u'-----------\n unfree (%d)\nid | free | title | artist' %affected_count
     for row in results:
         print ' | '.join(row)
@@ -50,10 +50,10 @@ def tagFree(dbWriteSQL, testing):
     identifies free objects based on the birth and/or death year of the artist
     skips any object with multiple artists
     '''
-    
+
     if testing: query=u"""##would set free=%s\nSELECT `id`, `free`, `title`, `artist` FROM `main_table` """
     else: query = u"""UPDATE `main_table` SET free=%s """
-    query=query+u"""WHERE `free` = '' AND `id` IN
+    query += u"""WHERE `free` = '' AND `id` IN
     (SELECT a.`object` FROM `artist_links` a
         JOIN (
             SELECT `object`, COUNT(*) c FROM `artist_links` GROUP BY `object` HAVING c = 1
@@ -75,7 +75,7 @@ def tagFree(dbWriteSQL, testing):
         )
     );"""
     affected_count, results = dbWriteSQL.query(query, (u'pd', YEARS_AFTER_BIRTH, YEARS_AFTER_DEATH), expectReply=True, testing=testing)
-    #do something with the reply
+    # do something with the reply
     print u'-----------\n free (%d)\nid | free | title | artist' %affected_count
     for row in results:
         print ' | '.join(row)
@@ -86,30 +86,30 @@ def tagOldUnknown(dbWriteSQL, testing):
     * unfree:  year + YEARS_AFTER_DEATH > NOW
     * free:    year + YEARS_AFTER_BIRTH < NOW
     '''
-    #Unfree if year + YEARS_AFTER_DEATH > NOW
+    # Unfree if year + YEARS_AFTER_DEATH > NOW
     if testing: query=u"""##would set free=%s\nSELECT `id`, `free`, `title`, `artist` FROM `main_table` """
     else: query = u"""UPDATE `main_table` SET free=%s """
-    query=query+u"""WHERE
+    query += u"""WHERE
     `free` = '' AND
     `artist` = '' AND NOT
     `year` = 0 AND
     `year` + %r > YEAR(CURRENT_TIMESTAMP);"""
     affected_count, results = dbWriteSQL.query(query, (u'unfree', YEARS_AFTER_DEATH), expectReply=True, testing=testing)
-    #do something with the reply
+    # do something with the reply
     print u'-----------\n unfree no artist (%d)\nid | free | title | artist' %affected_count
     for row in results:
         print ' | '.join(row)
-    
-    #Free if year + YEARS_AFTER_BIRTH < NOW
+
+    # Free if year + YEARS_AFTER_BIRTH < NOW
     if testing: query=u"""##would set free=%s\nSELECT `id`, `free`, `title`, `artist` FROM `main_table` """
     else: query = u"""UPDATE `main_table` SET free=%s """
-    query=query+u"""WHERE
+    query += u"""WHERE
     `free` = '' AND
     `artist` = '' AND NOT
     `year` = 0 AND
     `year` + %r < YEAR(CURRENT_TIMESTAMP);"""
     affected_count, results = dbWriteSQL.query(query, (u'pd', YEARS_AFTER_BIRTH), expectReply=True, testing=testing)
-    #do something with the reply
+    # do something with the reply
     print u'-----------\n free no artist (%d)\nid | free | title | artist' %affected_count
     for row in results:
         print ' | '.join(row)
@@ -125,7 +125,7 @@ def showMultipleArtists(dbWriteSQL, testing):
         ) b ON a.`object`=b.`object`
     );"""
     affected_count, results = dbWriteSQL.query(query, None, expectReply=True, testing=testing)
-    #do something with the reply
+    # do something with the reply
     print u'-----------\n with multiple artists and no status (%d)\nid | free | title | artist' %affected_count
     for row in results:
         print ' | '.join(row)

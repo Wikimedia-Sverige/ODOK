@@ -37,20 +37,20 @@ def run(verbose=False, days=100):
     logfile = u'¤syncLog.log'
     # TOBUILD lastSync = db.getLastSync(logfile) #timestamp of last (successful) run of this module
 
-    lastSync = datetime.datetime.utcnow() + datetime.timedelta(days=-days) # TESTING
-    print u'Checking changes since %s' %lastSync
-    flog = codecs.open(logfile,'a','utf8')
+    lastSync = datetime.datetime.utcnow() + datetime.timedelta(days=-days)  # TESTING
+    print u'Checking changes since %s' % lastSync
+    flog = codecs.open(logfile, 'a', 'utf8')
     thisSync = datetime.datetime.utcnow()
     flog.write(u'------START of updates-------------\n')
-    flog.write(u'last_sync: %s\nthis_sync: %s\n' %(lastSync,thisSync))
+    flog.write(u'last_sync: %s\nthis_sync: %s\n' % (lastSync, thisSync))
 
     # find changed pages
-    checkList=[]
+    checkList = []
     pageList = wpApi.getEmbeddedinTimestamps(u'Mall:Offentligkonstlista', 0)
     for p in pageList:
-        if convertTimestamp(p['timestamp'])>lastSync:
+        if convertTimestamp(p['timestamp']) > lastSync:
             checkList.append(p['title'])
-    flog.write(u'changed pages: %r\n------------------\n' %len(checkList))
+    flog.write(u'changed pages: %r\n------------------\n' % len(checkList))
 
     # stop if nothing to check
     if len(checkList) == 0:
@@ -61,87 +61,89 @@ def run(verbose=False, days=100):
     (log, newUGC) = UGCsynk.run(checkList, wpApi, dbWriteSQL)
     flog.write(u'\n---------- New UGC items (%r): --------\n' % newUGC)
     if log:
-        flog.write('%s\n' %log)
+        flog.write('%s\n' % log)
 
     # read pages (after UGC updates)
     checkPages = wpApi.getPage(checkList)
 
     # parse changed pages
-    print u'%r pages to parse...' %len(checkPages)
+    print u'%r pages to parse...' % len(checkPages)
     wiki_objects = {}  # dict containing all rows/objects with an id
-    for pagename, contents  in checkPages.iteritems():
+    for pagename, contents in checkPages.iteritems():
         log = listToObjects(wiki_objects, pagename, contents)  # adds all rows/objects with an id to the dict. Also deals with any case of same obj existing in multiple lists
         if log:
-            flog.write('%s' %log)
+            flog.write('%s' % log)
 
-    print u'Parsed all pages and found %r objects. Looking for corresponding objects in database...' %len(wiki_objects)
+    print u'Parsed all pages and found %r objects. Looking for corresponding objects in database...' % len(wiki_objects)
     # find the corresponding odok objects
     odok_list = dbApi.getIds(wiki_objects.keys())
     odok_objects = {}
     for o in odok_list:
         idNo = o['id']
-        if not idNo in odok_objects.keys():
+        if idNo not in odok_objects.keys():
             odok_objects[idNo] = o
         else:
-            print 'dupe idNo for %s' %idNo
+            print 'dupe idNo for %s' % idNo
 
     # Making sure no fake/wrong id's are kicking about
     for k in wiki_objects.keys():
-        if not k in odok_objects.keys():
-            print u'id not found in database: %s @ %s' %(k, wiki_objects[k]['page'])
+        if k not in odok_objects.keys():
+            print u'id not found in database: %s @ %s' % (k, wiki_objects[k]['page'])
 
-    print u'Looked in database and found %r corresponding objects. Starting comparison.' %len(odok_objects)
+    print u'Looked in database and found %r corresponding objects. Starting comparison.' % len(odok_objects)
     flog.write(u'issues:\n')
     # Compare
     counter = 0
     changes = {}
     for k, o in odok_objects.iteritems():
-        counter = counter+1
-        (diff, log) = compareToDB(wiki_objects[k],o,wpApi,dbReadSQL,verbose=verbose)  # returns changelist if any otherwise NONE
+        counter += 1
+        (diff, log) = compareToDB(wiki_objects[k], o, wpApi, dbReadSQL, verbose=verbose)  # returns changelist if any otherwise NONE
         if diff:
             changes[k] = diff
         if log:
-            flog.write(u'%s @ %s: %s' %(k, wiki_objects[k]['page'], log))
-        if counter%100==0:
-            print u'%r/%r' %(counter,len(odok_objects))
-    flog.write(u'\n') # end of issues
+            flog.write(u'%s @ %s: %s' % (k, wiki_objects[k]['page'], log))
+        if counter % 100 == 0:
+            print u'%r/%r' % (counter, len(odok_objects))
+    flog.write(u'\n')  # end of issues
 
-    print u'Found %r changed objects. Sorting...' %len(changes)
+    print u'Found %r changed objects. Sorting...' % len(changes)
     # update if needed
     if changes:
         ccounter = 0
-        ncounter=0
+        ncounter = 0
         # initially filter out any changes to cmt, artist, free, aka, address - as these are problematic/need to be implemented differently
         not_changed = {}
         for k, v in changes.iteritems():
             not_changed[k] = {}
             if u'cmt' in v.keys(): not_changed[k][u'cmt'] = changes[k].pop(u'cmt')                  # check changes, problem with multiple footnotes and some made with templates
             if u'free' in v.keys(): not_changed[k][u'free'] = changes[k].pop(u'free')               # need to establish wiki_policy+need to enable synk db->wiki as this is set by updateCopyright
-            #if u'aka' in v.keys(): not_changed[k][u'aka'] = changes[k].pop(u'aka')                 # separate changed_list which either creates/removes or changes an aka
             #if u'image' in v.keys(): not_changed[k][u'image'] = changes[k].pop(u'image')           # temping out due to BUS
 
-            if not_changed[k] == {}: del not_changed[k]
-            else: ncounter = ncounter+len(not_changed[k].keys())
+            if not_changed[k] == {}:
+                del not_changed[k]
+            else:
+                ncounter += len(not_changed[k].keys())
 
-            ccounter = ccounter+len(changes[k].keys())
+            ccounter += len(changes[k].keys())
         for k, v in not_changed.iteritems():
-            if changes[k] == {}: del changes[k]
+            if changes[k] == {}:
+                del changes[k]
 
-        flog.write('changes to be done (%r): %s\n' %(ccounter,ujson.encode(changes)))
-        flog.write('changes not to be done (%r): %s\n' %(ncounter,ujson.encode(not_changed)))
+        flog.write('changes to be done (%r): %s\n' % (ccounter, ujson.encode(changes)))
+        flog.write('changes not to be done (%r): %s\n' % (ncounter, ujson.encode(not_changed)))
 
         # implement changes
-        print 'Committing %r of these to SQL db'% ccounter  # testing
+        print 'Committing %r of these to SQL db' % ccounter  # testing
         log = commitToDatabase(dbWriteSQL, changes, verbose=verbose)
         if log:
-            flog.write(u'%s\n' %log)
+            flog.write(u'%s\n' % log)
     else:
         flog.write('no changes to be done!\n')
 
     # TOBUILD db.setSync(thisSync) #change lastSync to thisSync
-    flog.write(u'Done! Changed %r entries\n' %len(changes))
-    flog.write(u'------SQL-log (read)-------------\n%s\n' %dbReadSQL.closeConnections())
-    flog.write(u'------SQL-log (write)-------------\n%s\n' %dbWriteSQL.closeConnections())
+    flog.write(u'Done! Changed %r entries\n' % len(changes))
+    flog.write(u'------SQL-log (read)-------------\n%s\n' % dbReadSQL.closeConnections())
+    flog.write(u'------SQL-log (write)-------------\n%s\n' % dbWriteSQL.closeConnections())
     flog.write(u'------END of updates-------------\n\n')
     flog.close()
 
@@ -152,7 +154,7 @@ def commitToDatabase(odokWriter, changes, verbose=False):
     '''
     Commit the changes to the database after having checked formating of paramters is correct
     '''
-    log=''
+    log = ''
     for key, v in changes.iteritems():
         diff = {}
         for param, value in v.iteritems():
@@ -167,25 +169,25 @@ def commitToDatabase(odokWriter, changes, verbose=False):
                 # handle here then remove from diff
                 values = []
                 for v in diff[param]:
-                    values.append({u'object':key, u'artist':v})
+                    values.append({u'object': key, u'artist': v})
                 problem = odokWriter.insertIntoTable('artist_links', values)
                 if problem:
-                    log += 'SQL update for %s had the problem: %s\n' %(key, problem)
+                    log += 'SQL update for %s had the problem: %s\n' % (key, problem)
                 del(diff[param])
             elif param == u'aka_list':
                 # handle here then remove from diff
                 values = []
                 for v in diff[param]:
-                    values.append({u'main_id':key, u'title':v})  # id is autoincremented
+                    values.append({u'main_id': key, u'title': v})  # id is autoincremented
                 problem = odokWriter.insertIntoTable('aka', values)
                 if problem:
-                    log += 'SQL update for %s had the problem: %s\n' %(key, problem)
+                    log += 'SQL update for %s had the problem: %s\n' % (key, problem)
                 del(diff[param])
 
         if len(diff.keys()) > 0:
             problem = odokWriter.updateTable(key, diff)
             if problem:
-                log += 'SQL update for %s had the problem: %s\n' %(key, problem)
+                log += 'SQL update for %s had the problem: %s\n' % (key, problem)
     # done
     return log
 
@@ -198,24 +200,26 @@ def listToObjects(objects, pagename, contents):
     log = ''
 
     if not contents:
-        log = u'The page %s is missing or invalid\n' %pagename
+        log = u'The page %s is missing or invalid\n' % pagename
         return log
 
     while(True):
         table, contents, lead_in = common.findUnit(contents, u'{{Offentligkonstlista-huvud', u'|}')
-        if not table: break
+        if not table:
+            break
         header = table[:table.find('\n')]
         table = table[len(header):]
         # read in header parameters
-        headerDict = {u'län':None, u'kommun':None, u'stadsdel':None}
+        headerDict = {u'län': None, u'kommun': None, u'stadsdel': None}
         parts = header.split('|')
         for p in parts:
             if '=' in p:
                 pp = p.split('=')
-                headerDict[pp[0].strip()]=pp[1].strip(' }')
+                headerDict[pp[0].strip()] = pp[1].strip(' }')
         while(True):
-            row, table, dummy = common.findUnit(table, u'{{Offentligkonstlista', u'}}', brackets={u'{{':u'}}'})
-            if not row: break
+            row, table, dummy = common.findUnit(table, u'{{Offentligkonstlista', u'}}', brackets={u'{{': u'}}'})
+            if not row:
+                break
             params = {u'id':'', u'id-länk':'', u'titel':'', u'aka':'', u'artikel':'', u'konstnär':'', u'konstnär2':'', u'konstnär3':'', u'konstnär4':'', u'konstnär5':'', u'årtal':'', u'beskrivning':'',
                       u'typ':'', u'material':'', u'fri':'', u'plats':'', u'inomhus':'', u'län':'', u'kommun':'', u'stadsdel':'', u'lat':'',
                       u'lon':'', u'bild':'', u'commonscat':'', u'fotnot':'', u'fotnot-namn':'', u'döljKommun':False, u'döljStadsdel':False, u'visaId':False,
@@ -223,25 +227,28 @@ def listToObjects(objects, pagename, contents):
                       u'page':pagename, 'clash':None, 'header':headerDict}
             boolParams = [u'döljKommun', u'döljStadsdel']  # the following should be treated as booleans
             while(True):
-                part, row, dummy = common.findUnit(row, u'|', None, brackets={u'[[':u']]', u'{{':u'}}'})
-                if not part: break
+                part, row, dummy = common.findUnit(row, u'|', None, brackets={u'[[': u']]', u'{{': u'}}'})
+                if not part:
+                    break
                 if u'=' in part:
-                    p=part.split(u'=')
+                    p = part.split(u'=')
                     p = [p[0], part[len(p[0])+1:]]  # to avoid problems with = signs in urls etc.
-                    for i in range(0,len(p)): p[i] = p[i].strip(' \n\t')
+                    for i in range(0, len(p)):
+                        p[i] = p[i].strip(' \n\t')
                     if p[0] in params.keys():
                         if p[0] in boolParams:
-                            params[p[0]]=True
+                            params[p[0]] = True
                         else:
-                            params[p[0]]=p[1]
+                            params[p[0]] = p[1]
                     else:
-                        log += u'Unrecognised parameter: %s = %s (%s)\n' %(p[0], p[1], pagename)
+                        log += u'Unrecognised parameter: %s = %s (%s)\n' % (p[0], p[1], pagename)
             if params['id']:
                 if params['id'] in objects.keys():  # until I can deal with mulitple entries
                     objects[params['id']]['clash'] = pagename
                 else:
                     objects[params['id']] = params.copy()
-    if log: return log
+    if log:
+        return log
 
 
 # ----------
@@ -254,7 +261,7 @@ def convertTimestamp(timestamp):
     return timestamp
 
 # ----------
-def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
+def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
     '''
     compares a listobj to equiv obj in database
     this needs to deal with links and wikitext
@@ -280,9 +287,9 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     #                   u'wiki_article', u'descr', u'title', u'lon', u'source', u'same_as', u'type', u'muni', u'material', u'free',
     #                   u'district', u'address', u'lat', u'year_cmt', u'artist', u'inside', u'created', u'cmt']
 
-    log=''
+    log = ''
     if wikiObj['clash']:
-        log += u'clash with another page. Don\'t know how to resolve this. Skipping: %s\n' %wikiObj['clash']
+        log += u'clash with another page. Don\'t know how to resolve this. Skipping: %s\n' % wikiObj['clash']
         return (None, log)
 
     ## Pre-processing
@@ -303,7 +310,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
 
     # the following may be inherited from the header
     if wikiObj[u'döljKommun']:
-       wikiObj[u'kommun'] = wikiObj[u'header'][u'kommun']
+        wikiObj[u'kommun'] = wikiObj[u'header'][u'kommun']
     if not wikiObj[u'län']:
         wikiObj[u'län'] = wikiObj[u'header'][u'län']
     if wikiObj[u'döljStadsdel'] and not wikiObj[u'stadsdel']:  # only overwrite non existant
@@ -317,7 +324,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         elif wikiObj[u'inomhus'].lower() == 'nej':
             wikiObj[u'inomhus'] = 0
         else:
-            log +=  'unexpected value for inside-parameter (defaulting to no): %s\n' %wikiObj[u'inomhus']
+            log += 'unexpected value for inside-parameter (defaulting to no): %s\n' % wikiObj[u'inomhus']
             wikiObj[u'inomhus'] = 0
     else:
         wikiObj[u'inomhus'] = 0
@@ -325,42 +332,46 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         wikiObj[u'kommun'] = dataDict.muni_name2code[wikiObj[u'kommun']]
     if wikiObj[u'län'].startswith(u'SE-'):
         wikiObj[u'län'] = wikiObj[u'län'][len(u'SE-'):]
-    if wikiObj[u'lat'] == '': wikiObj[u'lat']=None
+    if wikiObj[u'lat'] == '':
+        wikiObj[u'lat'] = None
     else:
-        if len(wikiObj[u'lat'])>16:
-            wikiObj[u'lat'] = '%.13f' %float(wikiObj[u'lat'])
-        wikiObj[u'lat'] =wikiObj[u'lat'].strip('0')  # due to how numbers are stored
-    if wikiObj[u'lon'] == '': wikiObj[u'lon']=None
+        if len(wikiObj[u'lat']) > 16:
+            wikiObj[u'lat'] = '%.13f' % float(wikiObj[u'lat'])
+        wikiObj[u'lat'] = wikiObj[u'lat'].strip('0')  # due to how numbers are stored
+    if wikiObj[u'lon'] == '':
+        wikiObj[u'lon'] = None
     else:
-        if len(wikiObj[u'lon'])>16:
-            wikiObj[u'lon'] = '%.13f' %float(wikiObj[u'lon'])
-        wikiObj[u'lon'] =wikiObj[u'lon'].strip('0')  # due to how numbers are stored
-    if wikiObj[u'årtal'] == '': wikiObj[u'årtal']=None
+        if len(wikiObj[u'lon']) > 16:
+            wikiObj[u'lon'] = '%.13f' % float(wikiObj[u'lon'])
+        wikiObj[u'lon'] = wikiObj[u'lon'].strip('0')  # due to how numbers are stored
+    if wikiObj[u'årtal'] == '':
+        wikiObj[u'årtal'] = None
 
     # Deal with artists (does not deal with order of artists being changed):
     artist_param = [u'konstnär', u'konstnär2', u'konstnär3', u'konstnär4', u'konstnär5']
-    wikiObj[u'artists'] =''
+    wikiObj[u'artists'] = ''
     artists_links ={}
     for a in artist_param:
         if wikiObj[a]:
             (w_text, w_links) = unwiki(wikiObj[a])
-            wikiObj[u'artists'] = u'%s%s;' %(wikiObj[u'artists'],w_text)
+            wikiObj[u'artists'] = u'%s%s;' % (wikiObj[u'artists'], w_text)
             if w_links:
                 artists_links[w_text] = w_links[0]
-    if wikiObj[u'artists']: wikiObj[u'artists'] = wikiObj[u'artists'][:-1]  # trim trailing ;
+    if wikiObj[u'artists']:
+        wikiObj[u'artists'] = wikiObj[u'artists'][:-1]  # trim trailing ;
 
     ## dealing with links:
     links = artists_links.values()
     if wikiObj[u'artikel']:
         if u'#' in wikiObj[u'artikel']:
-            log += u'link to section: %s\n' %wikiObj[u'artikel']
+            log += u'link to section: %s\n' % wikiObj[u'artikel']
         else:
             links.append(wikiObj[u'artikel'])
     if links:
         links = wpApi.getPageInfo(links)
-        for k,v in links.iteritems():
+        for k, v in links.iteritems():
             if u'disambiguation' in v.keys():
-                log += u'link to disambigpage: %s\n' %k
+                log += u'link to disambigpage: %s\n' % k
                 links[k] = ''
             elif u'wikidata' in v.keys():
                 links[k] = v[u'wikidata']
@@ -370,7 +381,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
         links = {}
     # Stick wikidata back into parameters
     if wikiObj[u'artikel']:
-        if not u'#' in wikiObj[u'artikel']:
+        if u'#' not in wikiObj[u'artikel']:
             wikiObj[u'artikel'] = links.pop(wikiObj[u'artikel'])
         else:
             wikiObj[u'artikel'] = ''
@@ -387,17 +398,17 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     for k,v in trivial_params.iteritems():
         (w_text, w_links) = unwiki(wikiObj[k])
         if not (w_text == odokObj[v]):
-            diff[v] = {'new':w_text, 'old':odokObj[v]}
-            if verbose: print u'%s:"%s"    <--->   %s:"%s"' %(k, w_text, v, odokObj[v])
+            diff[v] = {'new': w_text, 'old': odokObj[v]}
+            if verbose: print u'%s:"%s"    <--->   %s:"%s"' % (k, w_text, v, odokObj[v])
 
     ## Needing separate treatment
     # comparing artist_links: u'artist_links':u'artist_links'
-    artist_diff = {'+':[], '-':[]}
+    artist_diff = {'+': [], '-': []}
     artist_links = list(set(wikiObj[u'artist_links'])-set(odokObj[u'artist_links']))
-    if artist_links and len(''.join(artist_links))>0:
+    if artist_links and len(''.join(artist_links)) > 0:
         artist_diff['+'] = artist_links[:]  # slice to clone the list
     artist_links = list(set(odokObj[u'artist_links'])-set(wikiObj[u'artist_links']))
-    if artist_links and len(''.join(artist_links))>0:
+    if artist_links and len(''.join(artist_links)) > 0:
         artist_diff['-'] = artist_links[:]  # slice to clone the list
     # handler can only deal with new artists
     if len(artist_diff['-']) == 0 and len(artist_diff['+']) > 0:
@@ -407,11 +418,11 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             artist_diff['+'].remove(v['wiki'])
             newArtistLinks.append(k)
         if len(newArtistLinks) > 0:
-            diff[u'artist_links'] = {'new':newArtistLinks, 'old':[]}
+            diff[u'artist_links'] = {'new': newArtistLinks, 'old': []}
     # output remaining to log
-    for k,v in artist_diff.iteritems():
-        if len(v)>0:
-            log += u'difference in artist links, linkdiff%s: %s\n' %(k, ';'.join(v))
+    for k, v in artist_diff.iteritems():
+        if len(v) > 0:
+            log += u'difference in artist links, linkdiff%s: %s\n' % (k, ';'.join(v))
 
     ## akas
     if 'aka' not in diff.keys():
@@ -419,21 +430,21 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     elif sorted(diff['aka']['new'].split(';')) == sorted(diff['aka']['old'].split(';')):
         del(diff['aka'])
     else:
-        aka_diff = {'+':[], '-':[]}
+        aka_diff = {'+': [], '-': []}
         aka_list = list(set(diff['aka']['new'].split(';'))-set(diff['aka']['old'].split(';')))
-        if aka_list and len(''.join(aka_list))>0:
+        if aka_list and len(''.join(aka_list)) > 0:
             aka_diff['+'] = aka_list[:]  # slice to clone the list
         aka_list = list(set(diff['aka']['old'].split(';'))-set(diff['aka']['new'].split(';')))
-        if aka_list and len(''.join(aka_list))>0:
+        if aka_list and len(''.join(aka_list)) > 0:
             aka_diff['-'] = aka_list[:]  # slice to clone the list
         # handler can only deal with new akas
         if len(aka_diff['-']) == 0 and len(aka_diff['+']) > 0:
-            diff[u'aka_list'] = {'new':aka_diff['+'], 'old':[]}
+            diff[u'aka_list'] = {'new': aka_diff['+'], 'old': []}
             del(aka_diff['+'])
         # output remaining to log
-        for k,v in aka_diff.iteritems():
-            if len(v)>0:
-                log += u'difference in akas, diff%s: %s\n' %(k, ';'.join(v))
+        for k, v in aka_diff.iteritems():
+            if len(v) > 0:
+                log += u'difference in akas, diff%s: %s\n' % (k, ';'.join(v))
         # remove these for now
         del(diff['aka'])
 
@@ -441,7 +452,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     ## Post-processing
     # fotnot-namn without fotnot - needs to look-up fotnot for o:cmt
     if wikiObj[u'fotnot-namn'] and not wikiObj[u'fotnot']:
-        log += u'fotnot-namn so couldn\'t compare, fotnot-namn: %s\n' %wikiObj[u'fotnot-namn']
+        log += u'fotnot-namn so couldn\'t compare, fotnot-namn: %s\n' % wikiObj[u'fotnot-namn']
         if u'cmt' in diff.keys():
             del diff[u'cmt']
 
@@ -455,7 +466,7 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
     if 'year' in diff.keys():
         if not common.is_int(diff['year']['new']):
             year = diff.pop('year')
-            log += u'Non-integer year: %s\n' %year['new']
+            log += u'Non-integer year: %s\n' % year['new']
 
     # lat/lon reqires an extra touch as only decimal numbers and nones may be sent to db
     if 'lat' in diff.keys():
@@ -464,31 +475,32 @@ def compareToDB(wikiObj,odokObj,wpApi,dbReadSQL,verbose=False):
             pass
         elif not common.is_number(diff['lat']['new']):
             lat = diff.pop('lat')
-            log += u'Non-decimal lat: %s\n' %lat['new']
+            log += u'Non-decimal lat: %s\n' % lat['new']
     if 'lon' in diff.keys():
         if not diff['lon']['new']:
             pass
         elif not common.is_number(diff['lon']['new']):
             lat = diff.pop('lon')
-            log += u'Non-decimal lon: %s\n' %diff['lon']['new']
+            log += u'Non-decimal lon: %s\n' % diff['lon']['new']
 
     # Basic validation of artist field:
     if 'artist' in diff.keys():
         # check that number of artists is the same
         if '[' in diff['artist']['old']:
             artist = diff.pop('artist')
-            log += u'cannot deal with artists which include group affilitations: %s --> %s\n' %(artist['old'],artist['new'])
+            log += u'cannot deal with artists which include group affilitations: %s --> %s\n' % (artist['old'], artist['new'])
         elif (len(diff['artist']['old'].split(';')) != len(diff['artist']['new'].split(';'))) and (len(diff['artist']['old']) > 0):
             # if not the same number when there were originally some artists
             artist = diff.pop('artist')
-            log += u'difference in number of artists: %s --> %s\n' %(artist['old'],artist['new'])
+            log += u'difference in number of artists: %s --> %s\n' % (artist['old'], artist['new'])
 
     # Unstripped refrences
     for k in diff.keys():
-        if k == u'official_url' or k == u'inside': continue
+        if k in (u'official_url', u'inside'):
+            continue
         if diff[k]['new'] and 'http:' in diff[k]['new']:
             val = diff.pop(k)
-            log += u'new value for %s seems to include a url: %s --> %s\n' %(k, val['old'],val['new'])
+            log += u'new value for %s seems to include a url: %s --> %s\n' % (k, val['old'], val['new'])
 
     return (diff, log)
 
@@ -501,12 +513,26 @@ def unwiki(wikitext):
             text: unformated text
             links: a list of any links found in the text
     '''
-    if isinstance(wikitext,unicode):
+    if isinstance(wikitext, unicode):
         return common.extractAllLinks(wikitext, kill_tags=True)
     else:
         return wikitext, None
 
 
 if __name__ == "__main__":
-    print "running over last 15 days"
-    run(days=15)
+    import sys
+    usage = '''Usage: python synking.py days
+\tdays(optional): number of days back to search for changes (default 100)'''
+    argv = sys.argv[1:]
+    if len(argv) == 0:
+        run()
+    elif len(argv) == 1:
+        if common.is_int(argv[0]):
+            days = int(argv[0])
+            print 'running for %d days' % days
+            run(days=days)
+        else:
+            print usage
+    else:
+        print usage
+# EoF
