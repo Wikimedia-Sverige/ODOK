@@ -146,7 +146,7 @@ class OdokApi(wikiApi.WikiApi):
 
         return members
 
-    def getGeoJson(self, members=None, full=False, source=None, offset=0, debug=False):
+    def getGeoJson(self, members=None, full=False, source=None, offset=0, inside=False, debug=False):
         '''
         Returns list of all objects matching one of the provided ids
         :param members: (optional) A list to which to add the results (internal use)
@@ -162,6 +162,8 @@ class OdokApi(wikiApi.WikiApi):
             query += [('geojson', 'full')]
         if source:
             query += [('source', str(source))]
+        if not inside:
+            query += [('is_inside', 'false')]
 
         # Single run
         # action=get&limit=100&format=geojson&geojson=full&offset=0
@@ -225,25 +227,25 @@ class OdokSQL():
         self.log = u''
         # whitelist of editable tables. Excludes muni/county as these are largely inert
         self.tables = {
-            'main':'main_table',
-            'artist':'artist_table',
-            'source':'source_table',
-            'artist_links':'artist_links',
-            'aka':'aka_table'}
+            'main': 'main_table',
+            'artist': 'artist_table',
+            'source': 'source_table',
+            'artist_links': 'artist_links',
+            'aka': 'aka_table'}
         # whitelist of editable parameters (per table)
         self.parameters = {
-            'main':[u'name', u'title', u'artist', u'descr', u'year', u'year_cmt', u'type', u'material', u'inside', u'address', u'county', u'muni', u'district', u'lat', u'lon', u'image', u'wiki_article', u'commons_cat', u'official_url', u'same_as', u'free', u'owner', u'cmt'],
-            'artist':[u'first_name', u'last_name', u'wiki', u'birth_date', u'death_date', u'birth_year', u'death_year', u'creator', u'cmt'],
-            'source':[u'name', u'wiki', u'real_id', u'url', u'cmt'],
-            'artist_links':[u'object', u'artist'],
-            'aka':[u'title', u'main_id']}
+            'main': [u'name', u'title', u'artist', u'descr', u'year', u'year_cmt', u'type', u'material', u'inside', u'address', u'county', u'muni', u'district', u'lat', u'lon', u'image', u'wiki_article', u'commons_cat', u'official_url', u'same_as', u'free', u'owner', u'cmt'],
+            'artist': [u'first_name', u'last_name', u'wiki', u'birth_date', u'death_date', u'birth_year', u'death_year', u'creator', u'cmt'],
+            'source': [u'name', u'wiki', u'real_id', u'url', u'cmt'],
+            'artist_links': [u'object', u'artist'],
+            'aka': [u'title', u'main_id']}
         # some parameters are only ok to add, not change
         self.insertParamters = {
-            'main':[u'id', u'source'],
-            'artist':[u'id'],
-            'source':[u'id'],
-            'artist_links':[],
-            'aka':[u'id']}
+            'main': [u'id', u'source'],
+            'artist': [u'id'],
+            'source': [u'id'],
+            'artist_links': [],
+            'aka': [u'id']}
         self.testing = testing  # outputs to logfile instead of writing to database
         self.conn = None
         self.cursor = None
@@ -311,7 +313,8 @@ class OdokSQL():
 class OdokWriter(OdokSQL):
     # TODO
     # some of OdokSQL.__init__ should probably be here instead to govern accessible fields
-    # make a general updater/adder followed by more specific add artist etc. which requires a dict of a certain type and checks formating duplication etc.
+    # make a general updater/adder followed by more specific add artist
+    #    etc. which requires a dict of a certain type and checks formating duplication etc.
     # make sure commit/respone handeling is done by the more general OdokSQL
 
     def updateTable(self, key, changes, table='main'):
@@ -390,15 +393,16 @@ class OdokWriter(OdokSQL):
 
 class OdokReader(OdokSQL):
     '''
-    Special searches needed for new uploads and temporary searches not yet included in api
-    e.g.
+    Special searches needed for new uploads and temporary searches not
+    yet included in api e.g.
     ArtistApi:
     replaces: writeToDatabase.getArtistByWiki()
     '''
 
     def findAkas(self, idNo):
         '''
-        given one id in main_table find and return the corresponding akas from aka_table
+        given one id in main_table find and return the corresponding
+        akas from aka_table
         SHOULD BE IN ApiGet
         '''
         q = u"""SELECT `id`, `title`, `main_id` FROM `aka_table` WHERE `main_id` = %s;"""
@@ -408,12 +412,13 @@ class OdokReader(OdokSQL):
         else:
             results = []
             for r in rows:
-                results.append({'id':str(r[0]), 'aka':r[1], 'main_id':r[2]})
+                results.append({'id': str(r[0]), 'aka': r[1], 'main_id': r[2]})
         return results
 
     def findArtist(self, idNo):
         '''
-        given one id in main_table find and return the corresponding artists from artist_table mapped via artist_links
+        given one id in main_table find and return the corresponding artists
+        from artist_table mapped via artist_links
         SHOULD BE IN ApiArtist
         '''
         q = u"""SELECT `id`, `first_name`, `last_name`, `wiki` FROM `artist_table` WHERE `id` IN
@@ -424,20 +429,23 @@ class OdokReader(OdokSQL):
         else:
             results = []
             for r in rows:
-                results.append({'id':str(r[0]), 'first_name':r[1], 'last_name':r[2], 'wiki':r[3].upper()})
+                results.append({'id': str(r[0]), 'first_name': r[1],
+                                'last_name': r[2], 'wiki': r[3].upper()})
         return results
 
     def getArtistByWiki(self, wikidata):
         '''
-        given a list of wikidata entities this checks id any are present in the artist_table
+        given a list of wikidata entities this checks id any are present
+        in the artist_table
         :param wikidata: list of wikidataentities (or a single wikidata entity)
-        :returns: dictionary of artist matching said entities with artistID as keys {first_name, last_name, wiki, birth_date, death_date, birth_year, death_year}
+        :returns: dictionary of artist matching said entities with artistID as
+        keys {first_name, last_name, wiki, birth_date, death_date, birth_year, death_year}
         SHOULD BE IN ApiArtist
         '''
         # if only one entity given
-        if not isinstance(wikidata,list):
-            if (isinstance(wikidata,str) or isinstance(wikidata,unicode)):
-                wikidata = [wikidata,]
+        if not isinstance(wikidata, list):
+            if (isinstance(wikidata, str) or isinstance(wikidata, unicode)):
+                wikidata = [wikidata, ]
             else:
                 print '"getArtistByWiki()" requires a list of wikidata entities or a single entity.'
                 return None
@@ -457,7 +465,13 @@ class OdokReader(OdokSQL):
 
         for r in rows:
             (artistID, first_name, last_name, wiki, birth_date, death_date, birth_year, death_year) = r
-            result[str(artistID)] = {'first_name':first_name, 'last_name':last_name, 'wiki':wiki, 'birth_date':birth_date, 'death_date':death_date, 'birth_year':birth_year, 'death_year':death_year}
+            result[str(artistID)] = {'first_name': first_name,
+                                     'last_name': last_name,
+                                     'wiki': wiki,
+                                     'birth_date': birth_date,
+                                     'death_date': death_date,
+                                     'birth_year': birth_year,
+                                     'death_year': death_year}
 
         return result
 
