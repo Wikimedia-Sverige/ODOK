@@ -153,6 +153,7 @@ function populateSearchResult(rObjs) {
     newCard.attr('id', 'rc_' + index);
 
     $(newCard).mouseenter(function() {
+        highlightCard('rc_' + index);
         highlightMarker('rc_' + index);
         if(ro.lat && ro.lon) {
             zoomToMarker(ro.lon, ro.lat, 13);
@@ -180,7 +181,7 @@ function populateSearchResult(rObjs) {
         newCard.append('<a href="' + imgLnk + '" target="_blank">' + imgSrc + '</a>');
     }
     else {
-        newCard.append('<img src="/images/noImage.svg" title="' + messages.no_image + '" alt="' + messages.no_image + '" class="nopic"/>');
+        newCard.append('<img src="images/noImage.svg" title="' + messages.no_image + '" alt="' + messages.no_image + '" class="nopic"/>');
     }
 
     var content = '';
@@ -198,7 +199,7 @@ function populateSearchResult(rObjs) {
         content += ' (' + ro.year + ')';
     }
     if(!ro.lat || !ro.lon) {
-        newCard.append('<img src="/images/noCoord.svg" title="' + messages.no_coord + '" alt="' + messages.no_coord + '" class="nopic"/>');
+        newCard.append('<img src="images/noCoord.svg" title="' + messages.no_coord + '" alt="' + messages.no_coord + '" class="nopic"/>');
     }
 
     newCard.append(content);
@@ -245,9 +246,37 @@ function populateSearchResult(rObjs) {
 
 function addMarker(id, lon, lat) {
     //console.log("Addded a marker at longitude: " + lon + " latitude: " + lat);
-    var llmark = L.marker(L.latLng(lat, lon), {icon: normalIcon});
+    var llmark = L.marker(L.latLng(lat, lon), {icon: normalIcon}).on('click', onMarkerClick);
     allMarkers[id] = llmark;//._leaflet_id;
     markers.addLayer(llmark);
+}
+
+function onMarkerClick(e) {
+    var id = getKeyByValue(allMarkers, this);
+
+    highlightMarker(id);
+    highlightCard(id);
+
+    $('#sidebarholder').animate({
+        scrollTop: ($('#sidebarholder').scrollTop() +
+                    $('.resultcard#'+id).offset().top -
+                    parseFloat($('#searchresults').css('padding-top')))
+    }, 1000);
+}
+
+function getKeyByValue(object, value) {
+    // https://stackoverflow.com/questions/9907419
+    for( var prop in object ) {
+        if( object.hasOwnProperty( prop ) ) {
+             if( object[ prop ] === value )
+                 return prop;
+        }
+    }
+}
+
+function highlightCard(id) {
+    $('.activeCard').removeClass( 'activeCard' );
+    $('.resultcard#'+id).addClass( 'activeCard' );
 }
 
 function highlightMarker(id) {
