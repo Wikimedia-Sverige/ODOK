@@ -113,7 +113,8 @@
         }
         
         #adds constraints to a query (also deals with the output of readConstraints() )
-        function addConstraints($query, $constraints){
+        #prefix allows to specify which table
+        function addConstraints($query, $constraints, $prefix = ''){
             foreach($constraints as $key => $value){
                 switch ($key){
                     case 'bbox':
@@ -133,20 +134,20 @@
                     case 'same':
                         #these are already in mysql format
                         $query .= $value.'
-                AND ';
+                AND '.$prefix;
                         break;
                     default: #(pipe separated) constraints
                         $v = explode('|', $value);
                         if (count($v)==1){
                             $query .= '`'.mysql_real_escape_string($key).'` = "'.mysql_real_escape_string($value).'"
-                AND ';
+                AND '.$prefix;
                         }else{
                             $query .= '`'.mysql_real_escape_string($key).'` IN ("'.implode('" , "', array_map('mysql_real_escape_string', $v)).'")
-                AND ';
+                AND '.$prefix;
                         }
                 }
             }
-            $query = substr($query, 0, -4);    #killing the last AND
+            $query = substr($query, 0, -strlen('AND '.$prefix));    #killing the last AND
             return $query;
         }
         #adds (pipe separated) column-not-empty constraints to a query
@@ -173,7 +174,7 @@
                 AND ';
                 }
             }
-            $query = substr($query, 0, -4);    #killing the last AND
+            $query = substr($query, 0, -strlen('AND '));    #killing the last AND
             return $query;
         }
         
@@ -473,7 +474,7 @@
                 $idQuery = 'IN (';
                 foreach ($id as $i)
                     $idQuery .= '"'.mysql_real_escape_string($id).'", "';
-                $idQuery = substr($idQuery, 0, -3); #remove trailing ', "'
+                $idQuery = substr($idQuery, 0, -strlen(', "')); #remove trailing ', "'
             }
             else
                 $idQuery = '= "'.mysql_real_escape_string($id).'"';

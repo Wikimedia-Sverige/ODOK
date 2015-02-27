@@ -38,7 +38,7 @@
                 WHERE `main_table`.`ugc` = 1
                 AND `main_table`.`id` = `audit_table`.`id`
                 ';
-            $query = isset($constraints) ? ApiBase::addConstraints($query.'AND ', $constraints) : $query;
+            $query = isset($constraints) ? ApiBase::addConstraints($query.'AND `main_table`.', $constraints, '`main_table`.') : $query;
             $query .= 'LIMIT '.mysql_real_escape_string($offset).', '.mysql_real_escape_string($limit).'
                 ';
             #run query
