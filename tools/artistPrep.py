@@ -184,17 +184,18 @@ def openCSV(filename, prefix=''):
 
 def addArtist(fName, lName, wikidata, ids):
     #check if it exists already
-    query = u'INSERT INTO artist_table (first_name, last_name, wiki) VALUES ("%s","%s","%s"); ' %(fName, lName, wikidata)
-    query = u'%s\nSET @last_artist_id = LAST_INSERT_ID();' %query
+    query = u'INSERT INTO artist_table (first_name, last_name, wiki) VALUES ("%s","%s","%s"); ' % (fName, lName, wikidata)
+    query = u'%s\nSET @last_artist_id = LAST_INSERT_ID();' % query
+    query = u'%s\nINSERT INTO artist_links (object,artist) VALUES' % query
     for i in ids:
-        query = u'%s\nINSERT INTO artist_links (object,artist) VALUES ("%s", @last_artist_id); ' %(query,i)
-    return u'%s\n' %query
+        query = u'%s\n("%s", @last_artist_id),' % (query, i)
+    return u'%s;\n' % query[:-1]
 
 def addLink(artist, ids):
     #check if it exists already
     query = u'INSERT INTO artist_links (object,artist) VALUES'
     for i in ids:
-        query = u'%s\n("%s",%s),' %(query,i,artist)
+        query = u'%s\n("%s",%s),' % (query, i, artist)
     return u'%s;\n' % query[:-1]
 
 def file_to_dict(filename, idcol=0, namecol=1, verbose=False):
