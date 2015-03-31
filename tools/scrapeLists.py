@@ -86,7 +86,7 @@ def postProcessing(units, mild=False):
     mild: leave plats as it was
     '''
     for u in units:
-        if u[u'koordinater']:
+        if u[u'koordinater'] and not u[u'koordinater'].strip().startswith('<ref>'):
             u[u'lat'], u[u'lon'] = common.latLonFromCoord(u[u'koordinater'])
         if u[u'skulptör']:
             u[u'skulptör'], u[u'skulptör_link'] = common.extractAllLinks(u[u'skulptör'])

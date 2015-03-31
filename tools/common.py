@@ -198,26 +198,54 @@ def extractAllLinks(text, kill_tags=False):
 def latLonFromCoord(coord):
     '''
     returns lat, lon as decimals based on string using the Coord-template
+    Does not deal with {{coord|12.123|12.123|...}}
     @output (lat,lon) as float
     '''
-    prefixes = (u'{{coord|', u'{{coord |', u'{{coor|', u'{{coor |')
+    prefixes = (u'{{coord|', u'{{coord |', u'{{coor|', u'{{coor |', u'{{location|', u'{{location |')
     if not coord.lower().startswith(prefixes):
-        print 'incorrectly formated coordinate (prefix): %s' % coord; return None
+        print 'incorrectly formated coordinate (prefix): %s' % coord
+        return None
     p = coord.split('|')
-    if len(p) >= 9:
-        lat_d, lat_m, lat_s, lat_sign = float(p[1].strip()), float(p[2].strip()), float(p[3].strip()), p[4].strip().rstrip('}')
-        lon_d, lon_m, lon_s, lon_sign = float(p[5].strip()), float(p[6].strip()), float(p[7].strip()), p[8].strip().rstrip('}')
-        lat = lat_d + lat_m/60 + lat_s/3600
-        lon = lon_d + lon_m/60 + lon_s/3600
-    elif len(p) >= 5:
-        lat, lat_sign = float(p[1].strip()), p[2].strip().rstrip('}')
-        lon, lon_sign = float(p[3].strip()), p[4].strip().rstrip('}')
-    if lat_sign == u'N': lat_sign=1
-    elif lat_sign == u'S': lat_sign=-1
-    else: print 'incorrectly formated coordinate (lat_sign): %s, %s' % (lat_sign, coord); return None
-    if lon_sign == u'E': lon_sign=1
-    elif lon_sign == u'W': lon_sign=-1
-    else: print 'incorrectly formated coordinate (lon_sign): %s, %s' % (lon_sign, coord); return None
-    lat = lat_sign*lat
-    lon = lon_sign*lon
-    return (lat,lon)
+    
+    if is_number(p[1]):  #
+        try:
+            if is_number(p[2].rstrip('}')):  #
+                if len(p) == 3: # {{coord|12.123|12.123}} implicitly N, E
+                    lat = float(p[1].strip())
+                    lon = float(p[2].strip().rstrip('}'))
+                    lat_sign = u'N'
+                    lon_sign = u'E'
+                elif is_number(p[3]):  # {{coord|12|12|12.123|N|12|12|12.123|E|...}}
+                    lat_d, lat_m, lat_s, lat_sign = float(p[1].strip()), float(p[2].strip()), float(p[3].strip()), p[4].strip().rstrip('}')
+                    lon_d, lon_m, lon_s, lon_sign = float(p[5].strip()), float(p[6].strip()), float(p[7].strip()), p[8].strip().rstrip('}')
+                    lat = lat_d + lat_m/60 + lat_s/3600
+                    lon = lon_d + lon_m/60 + lon_s/3600
+                else:  # {{coord|12|12.123|N|12|12.123|E|...}}
+                    lat_d, lat_m, lat_sign = float(p[1].strip()), float(p[2].strip()), p[3].strip().rstrip('}')
+                    lon_d, lon_m, lon_sign = float(p[4].strip()), float(p[5].strip()), p[6].strip().rstrip('}')
+                    lat = lat_d + lat_m/60
+                    lon = lon_d + lon_m/60
+            else:  # {{coord|12.123|N|12.123|E|...}}
+                lat, lat_sign = float(p[1].strip()), p[2].strip().rstrip('}')
+                lon, lon_sign = float(p[3].strip()), p[4].strip().rstrip('}')
+            if lat_sign == u'N':
+                lat_sign=1
+            elif lat_sign == u'S':
+                lat_sign=-1
+            else:
+                print 'incorrectly formated coordinate (lat_sign): %s, %s' % (lat_sign, coord)
+                return None
+            if lon_sign == u'E':
+                lon_sign=1
+            elif lon_sign == u'W':
+                lon_sign=-1
+            else:
+                print 'incorrectly formated coordinate (lon_sign): %s, %s' % (lon_sign, coord)
+                return None
+            lat = lat_sign*lat
+            lon = lon_sign*lon
+            return (lat,lon)
+        except IndexError:
+            print 'incorrectly formated coordinate (?): %s' % coord
+    else:
+        print 'incorrectly formated coordinate (content): %s' % coord
