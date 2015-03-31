@@ -1,23 +1,24 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
-#
-# WikiApi
-# Forked from PyCJWiki Version 1.31 (C) by Smallman12q <https://en.wikipedia.org/wiki/User_talk:Smallman12q/> GPL, see <http://www.gnu.org/licenses/>.
-# Original source: <https://commons.wikimedia.org/w/index.php?title=User:Smallman12q/PyCJWiki&oldid=93284775/>
-# Requires python2.7, ujson, and PyCurl
-#
-# TODO
-#   Separate debug from verbose. There should be no non-error print statment which is not tied to either of these. Standardise verbose output.
-#       (Do this also for odok.OdokApi)
-#   _http errors should be thrown again so that they can be caught upstream (instead of printed to commandline)
-#   _http timeout errors should output on verbose even if retried
-#   Allow setup to set Delay parameters and for these to be changed during the run
-#   Reintegrate uploadelements from PyCJWiki as class WikiCommonsApi(WikiApi) so as to fully move over to WikiApi
-#       Break out WikiDataApi, WikiCommonsApi as separate files
-#   consider integrating some elements of Europeana.py (e.g. getImageInfos() into WikiCommonsApi.
-#       Deal with encoding of filenames, proper use of ignorewarnings etc., purging (think Broken filelinks)
-#
-# ----------------------------------------------------------------------------------------
+'''
+ WikiApi
+ Forked from PyCJWiki Version 1.31 (C) by Smallman12q <https://en.wikipedia.org/wiki/User_talk:Smallman12q/> GPL, see <http://www.gnu.org/licenses/>.
+ Original source: <https://commons.wikimedia.org/w/index.php?title=User:Smallman12q/PyCJWiki&oldid=93284775/>
+ Requires python2.7, ujson, and PyCurl
+
+ TODO
+   Separate debug from verbose. There should be no non-error print statment which is not tied to either of these. Standardise verbose output.
+       (Do this also for odok.OdokApi)
+   _http errors should be thrown again so that they can be caught upstream (instead of printed to commandline)
+   _http timeout errors should output on verbose even if retried
+   Allow setup to set Delay parameters and for these to be changed during the run
+   Reintegrate uploadelements from PyCJWiki as class WikiCommonsApi(WikiApi) so as to fully move over to WikiApi
+       Break out WikiDataApi, WikiCommonsApi as separate files
+   consider integrating some elements of Europeana.py (e.g. getImageInfos() into WikiCommonsApi.
+       Deal with encoding of filenames, proper use of ignorewarnings etc., purging (think Broken filelinks)
+   Most "while 'query-continue'" could be redone as calling the same function wiht a 'query-continue' parameter
+
+'''
 
 import pycurl, ujson, cStringIO, urllib
 import time
@@ -572,6 +573,70 @@ class WikiApi(object):
 
         return dDict  # in case one was not supplied
 
+    def getContributors(self, article, dDict=None, debug=False):
+        """
+        Given an article this returns the contributors to that page
+        :param article: a single pagename to look at
+        :param dDict: (optional) a dict object into which output is placed
+        :return: dict of username:number of edits + _anon:list_of_anon_ips
+        """
+        # if only one article given
+        if not (isinstance(article, str) or isinstance(article, unicode)):
+            print "getContributors() requires a single pagename."
+            return None
+
+        # if no initial dict suplied
+        if dDict is None:
+            dDict = {'_anon': []}
+
+        # Single run
+        jsonr = self.httpPOST("query", [('prop', 'revisions'),
+                                    ('rvprop', 'user'),
+                                    ('rvlimit', '500'),
+                                    ('rawcontinue', ''),
+                                    ('titles', article.encode('utf-8'))])
+        if debug:
+            print u"getContributors() : article= %s\n" % article
+            print jsonr
+
+        pageid = jsonr['query']['pages'].keys()[0]
+        if int(pageid) < 0:  # Either missing or invalid
+            print "getContributors(): %s was not a valid page" % article
+            return None
+        else:
+            for rev in jsonr['query']['pages'][pageid]['revisions']:
+                if 'anon' in rev.keys():
+                    dDict['_anon'].append(rev['user'])
+                else:
+                    if rev['user'] in dDict.keys():
+                        dDict[rev['user']] += 1
+                    else:
+                        dDict[rev['user']] = 1
+
+        # do remaining
+        while 'query-continue' in jsonr:
+            jsonr = self.httpPOST("query", [('prop', 'revisions'),
+                                    ('rvprop', 'user'),
+                                    ('rvlimit', '500'),
+                                    ('rawcontinue', ''),
+                                    ('titles', article.encode('utf-8')),
+                                    ('rvcontinue', str(jsonr['query-continue']['revisions']['rvcontinue']))])
+
+            # same pageid since only looking at one article
+            for rev in jsonr['query']['pages'][pageid]['revisions']:
+                if 'anon' in rev.keys():
+                    dDict['_anon'].append(rev['user'])
+                else:
+                    if rev['user'] in dDict.keys():
+                        dDict[rev['user']] += 1
+                    else:
+                        dDict[rev['user']] = 1
+
+        # filter out non-unique anons
+        dDict['_anon'] = list(set(dDict['_anon']))
+
+        return dDict
+
     def editText(self, title, newtext, comment, minor=False, bot=True, userassert='bot', nocreate=False, debug=False, append=False):
         print "Editing %s" % title.encode('utf-8', 'ignore')
         requestparams = [('title',  title.encode('utf-8')),
@@ -705,7 +770,7 @@ class WikiApi(object):
             return self._apiurl + "?action=" + action + "&format=" + form
 
     def logout(self):
-        jsonr = self.httpPOST('logout', [('', '')])
+        self.httpPOST('logout', [('', '')])
 
     def limitByBytes(self, valList, reqlimit=None):
         """
