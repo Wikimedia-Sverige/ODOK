@@ -897,13 +897,14 @@ class WikiDataApi(WikiApi):
 
         return dDict  # in case one was not supplied
 
-    def makeEntity(self, article, site=u'svwiki', lang=None, label=None, debug=False):
+    def makeEntity(self, article, site=u'svwiki', lang=None, label=None, claims=None, debug=False):
         """
         Given an article on a certain site creates a wikidata entity for this object and returns the entity id
         :param article: the article for which to create a wikidata entity
         :param site: the site where the article exists
         :param label: (optional) a label to add
         :param lang: the language in which to add the label
+        :param claims: an array of entity claims in the form {'P#':'Q#'}
         :return: the entityId of the new object
                 If an error is encountered it returns None
         """
@@ -914,15 +915,26 @@ class WikiDataApi(WikiApi):
             print "makeEntity() does not allow an empty parameter"
             return None
 
-        # if lang and label:
-        #    data = u'{"sitelinks":{"%s":{"site":"%s","title":"%s"}},"labels":{"%s":{"language":"%s","value":"%s"}}}' % (site, site, article, lang, lang, label)
-        # else:
-        #    data = u'{"sitelinks":{"%s":{"site":"%s","title":"%s"}}}' % (site, site, article)
-
+        # Construct the data object and convert to json
+        data = {'sitelinks': [{'site': site, 'title': article}]}
         if lang and label:
-            data = u'{"sitelinks":[{"site":"%s","title":"%s"}],"labels":[{"language":"%s","value":"%s"}]}' % (site, article, lang, label)
-        else:
-            data = u'{"sitelinks":[{"site":"%s","title":"%s"}]}' % (site, article)
+            data['labels'] = [{'language': lang, 'value': label}]
+        if claims:
+            data['claims'] = []
+            for P, Q in claims.iteritems():
+                Q = int(Q[1:])
+                data['claims'].append({
+                    'mainsnak': {
+                        'snaktype': 'value',
+                        'property': P,
+                        'datavalue': {
+                            'value': {
+                                'entity-type': 'item',
+                                'numeric-id': Q},
+                            'type': 'wikibase-entityid'}},
+                    'type': 'statement',
+                    'rank': 'normal'})
+        data = ujson.dumps(data)
 
         jsonr = self.httpPOST("wbeditentity", [('new', 'item'),
                                     ('data', data.encode('utf-8')),
