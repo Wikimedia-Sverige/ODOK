@@ -102,6 +102,14 @@ ul{
     clear:right;
     padding:5px;
 }
+.edit{
+    width: 5%;
+    max-height:48px;
+    max-width:48px;
+    float:left;
+    clear:left;
+    padding:.5em;
+}
 footer{
     position:absolute;
     bottom:0;
