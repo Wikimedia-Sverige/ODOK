@@ -380,7 +380,7 @@ def updatesToDatabase(odok, wiki, quick=False):
     mapping = {u'namn':'title', u'skulptör':'artist', u'årtal':'year',
                u'material':'material', u'plats':'address', u'header':'district',
                u'lat':'lat', u'lon':'lon', u'bild':'image', u'typ':'type'}
-    # non-trivial mappings u'namn_link':'wiki_article'
+    # non-trivial mappings u'namn_link':'wiki'
     for w in wiki:
         if not w['id']: continue
         o = odok[w['id']]
@@ -420,7 +420,7 @@ def updatesToDatabase(odok, wiki, quick=False):
                 else: linked_artists[a] = [w['id'],]
 
         # article_links must be checked manually since link may be depictive rather than of the actual object.
-        if (u'namn_link' in w.keys() and w['namn_link']) and not o[u'wiki_article']:  # postponed might not have u'namn_link'
+        if (u'namn_link' in w.keys() and w['namn_link']) and not o[u'wiki']:  # postponed might not have u'namn_link'
             keys=w['namn_link']
             print u'Potential title link for "%s" ("%s" on wiki)' %(o['title'], w['namn'])
             for r in range(0,len(keys)):
@@ -434,7 +434,7 @@ def updatesToDatabase(odok, wiki, quick=False):
                     # NEW START
                     wdInfo = wpApi.getPageInfo(keys[int(inChoice)], debug=True)[keys[int(inChoice)]]
                     if 'wikidata' in wdInfo.keys() and wdInfo['wikidata']:  # if exists and not empty
-                        changes[u'wiki_article'] = wdInfo['wikidata']
+                        changes[u'wiki'] = wdInfo['wikidata']
                     break
         # add changes
         if changes:

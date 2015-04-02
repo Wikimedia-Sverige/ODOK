@@ -3,7 +3,9 @@
 #
 # Quick script for updating the geoJson file used (at some future point) on the homepage
 #
-import codecs, ujson, datetime
+import codecs
+import ujson
+import datetime
 import odok as odokConnect
 import dconfig as config
 
@@ -19,19 +21,14 @@ def allGeoJson(filename="../site/AllFeatures.geo.json", source=None, full=True, 
     features = dbApi.getGeoJson(full=full, source=source, debug=debug)
 
     print u'processing %d features' % len(features)
-    newFeatures = []
-    for feature in features:
-        if feature['properties']['same_as']:
-            continue
-        newFeatures.append(feature)
 
-
-    outJson = {"type": "FeatureCollection",
-	       "features": newFeatures,
-           "head": {
-                "status": "1",
-                "hits": len(features),
-                "timestamp": datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+    outJson = {
+        "type": "FeatureCollection",
+        "features": features,
+        "head": {
+            "status": "1",
+            "hits": len(features),
+            "timestamp": datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
             }
         }
     out.write(ujson.dumps(outJson))  # , ensure_ascii=False))

@@ -146,10 +146,16 @@ class OdokApi(wikiApi.WikiApi):
 
         return members
 
-    def getGeoJson(self, members=None, full=False, source=None, offset=0, inside=False, debug=False):
+    def getGeoJson(self, members=None, full=False, source=None, offset=0, inside=False, removed=False, same_as=False, debug=False):
         '''
         Returns list of all objects matching one of the provided ids
         :param members: (optional) A list to which to add the results (internal use)
+        :param full: (optional) Whether to get the full geojson profile
+        :param source: (optional) Limits the objects to only those from a named source
+        :param offset: (optional) Sets offset to get later results (internal use)
+        :param inside: (optional) Whether to include objects tagged as inside
+        :param remove: (optional) Whether to include objects tagged as removed
+        :param same_as: (optional) Whether to include objects tagged as having a same_as
         :return: list odok objects (dicts)
         '''
         # if no initial list supplied
@@ -164,6 +170,10 @@ class OdokApi(wikiApi.WikiApi):
             query += [('source', str(source))]
         if not inside:
             query += [('is_inside', 'false')]
+        if not removed:
+            query += [('is_removed', 'false')]
+        if not same_as:
+            query += [('has_same', 'false')]
 
         # Single run
         # action=get&limit=100&format=geojson&geojson=full&offset=0
@@ -183,7 +193,7 @@ class OdokApi(wikiApi.WikiApi):
 
         if 'continue' in jsonr['head'].keys():
             offset = jsonr['head']['continue']
-            members = self.getGeoJson(members=members, full=full, offset=offset, debug=debug)
+            members = self.getGeoJson(members=members, full=full, source=source, offset=offset, inside=inside, removed=removed, same_as=same_as, debug=debug)
 
         return members
 
@@ -234,7 +244,7 @@ class OdokSQL():
             'aka': 'aka_table'}
         # whitelist of editable parameters (per table)
         self.parameters = {
-            'main': [u'name', u'title', u'artist', u'descr', u'year', u'year_cmt', u'type', u'material', u'inside', u'address', u'county', u'muni', u'district', u'lat', u'lon', u'image', u'wiki_article', u'commons_cat', u'official_url', u'same_as', u'free', u'owner', u'cmt'],
+            'main': [u'name', u'title', u'artist', u'descr', u'year', u'year_cmt', u'type', u'material', u'inside', u'address', u'county', u'muni', u'district', u'lat', u'lon', u'removed', u'image', u'wiki', u'list', u'commons_cat', u'official_url', u'same_as', u'free', u'owner', u'cmt'],
             'artist': [u'first_name', u'last_name', u'wiki', u'birth_date', u'death_date', u'birth_year', u'death_year', u'creator', u'cmt'],
             'source': [u'name', u'wiki', u'real_id', u'url', u'cmt'],
             'artist_links': [u'object', u'artist'],

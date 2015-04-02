@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS `muni_table`;
 DROP TABLE IF EXISTS `county_table`;
 DROP TABLE IF EXISTS `source_table`;
 DROP TABLE IF EXISTS `artist_table`;
-DROP TABLE IF EXISTS `UGC_table`;
+DROP TABLE IF EXISTS `ugc_table`;
 
 CREATE TABLE  `muni_table` (
   `id`          smallint(4)     NOT NULL,                   #Municipal code
@@ -41,17 +41,6 @@ CREATE TABLE  `source_table` (
   #`updates`    bit(1)          NOT NULL DEFAULT 0,         # Did they request updated data? t/f = 1/0
   PRIMARY KEY   `id` (`id`),
   INDEX         `name` (`name`)
-)ENGINE=INNODB DEFAULT CHARSET=utf8;
-
-CREATE TABLE  `aka_table` (
-  `id`          int             NOT NULL AUTO_INCREMENT,    # Unique id for the aka
-  `title`       varchar(255)    NOT NULL,                   # The alternative title
-  `main_id`     varchar(25)     NOT NULL REFERENCES source_table(id),   # id for the object
-  PRIMARY KEY   `id` (`id`),
-  INDEX         `title` (`title`),
-  INDEX         `main_id` (`main_id`),
-  #Because mysql does not support inline referenes
-  FOREIGN KEY (main_id)      REFERENCES main_table(id)
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `artist_table` (
@@ -90,13 +79,15 @@ CREATE TABLE  `main_table` (
   `district`    varchar(255)    NOT NULL DEFAULT '',        # district of city or town in a rural municipality
   `lat`         double          DEFAULT NULL,               # WGS84 latitude (decimal format)
   `lon`         double          DEFAULT NULL,               # WGS84 longitud (decimal format)
+  `removed`     bit(1)          NOT NULL DEFAULT 0,         # Flag indicating whether the artwork has since been removed/destroyed t/f =1/0
   `image`       varchar(255)    NOT NULL DEFAULT '',        # Image name on Wikimedia Commons
   `source`      varchar(25)     NOT NULL REFERENCES source_table(id),   # Source of information (organisation)
   `ugc`         bit(1)          NOT NULL DEFAULT 0,         # Flag indicating whether information has been modified t/f =1/0
   `changed`     timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, # last changed
   `created`     timestamp,                                  # timstamp for entry into database (gets its value through the created_trigger)
-  `wiki_article` varchar(255)   NOT NULL DEFAULT '',        # Wikidata id for the article about the artwork
-  `commons_cat`  varchar(255)   NOT NULL DEFAULT '',        # Object specific category on Wikimedia Commons
+  `wiki`        varchar(255)    NOT NULL DEFAULT '',        # Wikidata id for the article about the artwork
+  `list`        varchar(255)    NOT NULL DEFAULT '',        # Wikidata id for the Wikipedia list containing a mention of the artwork
+  `commons_cat` varchar(255)    NOT NULL DEFAULT '',        # Object specific category on Wikimedia Commons
   `official_url` varchar(255)   NOT NULL DEFAULT '',        # Official page about the object (on source web page)
   `same_as`     varchar(25)     DEFAULT NULL REFERENCES main_table(id), # If this is a duplicate of an exisitnig object (e.g. object provided by two sources)
   `free`        enum('','pd','cc','unfree') NOT NULL DEFAULT '',        # If the object is free (copyrightwise). '' if unknown
@@ -114,6 +105,7 @@ CREATE TABLE  `main_table` (
   INDEX         `coord` (`lat`, `lon`),
   INDEX         `free` (`free`),
   INDEX         `owner`(`owner`),
+  INDEX         `list`(`list`),
   #Because mysql does not support inline referenes
   FOREIGN KEY (county)  REFERENCES county_table(id),
   FOREIGN KEY (muni)    REFERENCES muni_table(id),
@@ -170,13 +162,24 @@ CREATE TABLE  `artist_links` (
   FOREIGN KEY (artist)  REFERENCES artist_table(id)
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-CREATE TABLE  `UGC_table` (
+CREATE TABLE  `ugc_table` (
   `num`         int             NOT NULL AUTO_INCREMENT,    # Unique id for the UGC object (without UGC/)
-  `listpage`    varchar(255)    NOT NULL,                   # The list where the object was first identified
+  `list`        varchar(255)    NOT NULL,                   # Wikidata id for the Wikipedia list containing a mention of the artwork
   `same_as`     varchar(25)     DEFAULT NULL,               # Id for superceding id. NULL for active, empty for deleted without replacement
   `changed`     timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, # Last changed
   PRIMARY KEY   `num` (`num`),
-  INDEX         `listpage` (`listpage`),
+  INDEX         `list` (`list`),
   INDEX         `same_as` (`same_as`),
   INDEX         `changed` (`changed`)
+)ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `aka_table` (
+  `id`          int             NOT NULL AUTO_INCREMENT,    # Unique id for the aka
+  `title`       varchar(255)    NOT NULL,                   # The alternative title
+  `main_id`     varchar(25)     NOT NULL REFERENCES main_table(id),   # id for the object
+  PRIMARY KEY   `id` (`id`),
+  INDEX         `title` (`title`),
+  INDEX         `main_id` (`main_id`),
+  #Because mysql does not support inline referenes
+  FOREIGN KEY (main_id)      REFERENCES main_table(id)
 )ENGINE=INNODB DEFAULT CHARSET=utf8;

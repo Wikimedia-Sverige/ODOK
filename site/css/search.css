@@ -90,6 +90,11 @@
     width: 5%;
     float: right;
 }
+.resultcard img.edit {
+    padding-left: .5em;
+    width: 5%;
+    float: right;
+}
 
 .activeCard {
     border-color: #990000;
@@ -99,6 +104,7 @@
 .rcballoon {
     max-width: 40%;
 }
+
 /* Image size inside balloon */
 .rcballoon img.thumb {
     padding-right: .5em;
@@ -106,6 +112,11 @@
     float: left;
 }
 .rcballoon img.nopic {
+    padding-left: .5em;
+    width: 5%;
+    float: right;
+}
+.rcballoon img.edit {
     padding-left: .5em;
     width: 5%;
     float: right;

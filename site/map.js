@@ -137,6 +137,13 @@ function makePopup(feature) {
     var desc = "";
 
     // code originally from updateFeatures.py
+    // list-link
+    if (properties.descriptions.list) {
+        desc += '<a href="https://www.wikidata.org/wiki/Special:GoToLinkedPage/svwiki/' + properties.descriptions.list + '" target="_blank">';
+        desc += '<img src="images/edit.svg" title="Uppdatera informationen om verket på Wikipedia" alt="Uppdatera informationen om verket på Wikipedia" class="edit"/>';
+        desc += '</a>';
+    }
+
     // image
     if (properties.image) {
         var showImage = '';
@@ -197,11 +204,11 @@ function makePopup(feature) {
         desc += ' - ' + properties.spatial.address;
     }
     desc += '</li></ul>';
-    if (properties.image || properties.descriptions.wiki || properties.descriptions.descr) {
+
+    // description
+    if (properties.image || properties.descriptions.wikidata || properties.descriptions.descr) {
         desc += '<br clear="both"/>';
     }
-    // description
-    var jqxhr;
     if (properties.descriptions.wikidata) {
         desc += properties.descriptions.ingress;
         desc += '  <a href="https://www.wikidata.org/wiki/Special:GoToLinkedPage/svwiki/' + properties.descriptions.wikidata + '" target="_blank">';

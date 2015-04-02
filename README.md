@@ -23,4 +23,5 @@ For more information see:
 * The images in site/images are modified from:
   * search.svg [Magnifyinglass.svg](https://commons.wikimedia.org/wiki/File:Magnifyinglass.svg) by MGalloway (WMF)
   * noImage.svg [LockImage_icon.svg](https://commons.wikimedia.org/wiki/File:LockImage_icon.svg) by MGalloway (WMF)
+  * edit.svg [Edit icon.svg](https://commons.wikimedia.org/wiki/File:Edit_icon.svg) by MGalloway (WMF)
   * default.svg / selected.svg / noCoord.svg [marker.svg](https://github.com/Leaflet/Leaflet/blob/master/src/images/marker.svg) by the Leaflet team

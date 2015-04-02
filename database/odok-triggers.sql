@@ -53,7 +53,7 @@ DELIMITER |
 CREATE TRIGGER `audit_trigger` BEFORE UPDATE ON main_table
     FOR EACH ROW BEGIN
     DECLARE tmp_date TIMESTAMP DEFAULT NULL;
-    IF (OLD.ugc=0) AND (
+    IF (OLD.ugc=0) AND (NEW.source != 'UGC') AND (
         #list of parmeters whose changes trigger an audit (gets complicated if content can be null)
         OLD.title != NEW.title OR
         OLD.artist != NEW.artist OR

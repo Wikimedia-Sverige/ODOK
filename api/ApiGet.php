@@ -1,17 +1,17 @@
 <?php
     /*
      * Performs a standard SQL query on the database.
-     * In addition to the ordinary constraints this module listens for the 
+     * In addition to the ordinary constraints this module listens for the
      * following parameters:
      *    limit: max number of results returned (must be in range 1-100, defaults to 10)
      *    offset: which result to start showing (used in combination with limit)
      *    view: the view used [strict, enhanced, normal].
      *    show: the parameters to show
      *
-     * To do: 
+     * To do:
      *    Numerical constraints e.g. year > X, coords inside box
      */
-     
+
     class ApiGet{
         /* Swith between different views. Defaults to "normal" */
         function setView($view){
@@ -37,12 +37,12 @@
             }
             return Array($target_table, $warning);
         }
-        
+
         private function setSelect($show){
-            $allowed = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt', 
-                             'type', 'material', 'inside', 'address', 'county', 'muni', 'district', 
-                             'lat', 'lon', 'image', 'source', 'ugc', 'changed', 'created', 
-                             'wiki_article', 'commons_cat', 'official_url', 'same_as', 
+            $allowed = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt',
+                             'type', 'material', 'inside', 'address', 'county', 'muni', 'district',
+                             'lat', 'lon', 'removed', 'image', 'source', 'ugc', 'changed', 'created',
+                             'wiki', 'list', 'commons_cat', 'official_url', 'same_as',
                              'free', 'cmt', 'owner');
             if(isset($show)){
                 $shows = explode('|', $show);
@@ -61,8 +61,8 @@
                 return Array($select, $warning);
             }
         }
-        
-        
+
+
         function run($constraints){
             #set limit
             list ($limit, $w) = ApiBase::setLimit($_GET['limit']);
@@ -79,7 +79,7 @@
             #load constraints
             #isset($_GET['muni']) ? $constraints['muni'] = $_GET['muni'] : null;
             #isset($_GET['county']) ? $constraints['county'] = $_GET['county'] : null;
-            
+
             #construct query
             $query = '
                 SELECT SQL_CALC_FOUND_ROWS '.$select.'

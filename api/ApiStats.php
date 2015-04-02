@@ -1,18 +1,18 @@
 <?php
     /*
      * Gives statistics about the database.
-     * In addition to the ordinary constraints this module listens for the 
+     * In addition to the ordinary constraints this module listens for the
      * following parameters:
-     *   table: specifies which table (without _table) to look at. 
+     *   table: specifies which table (without _table) to look at.
      *          "all" shows all
-     *   column: (pipe-separated) columns which must not be empty. 
+     *   column: (pipe-separated) columns which must not be empty.
      *          "coords" tests both lat and lon at the same time.
-     *   split: ('muni' or 'county') showes the result broken down by 
+     *   split: ('muni' or 'county') showes the result broken down by
      *          municipality or county
-     * 
+     *
      * constraints may also be specified. current allowed ones are:
      *  muni, county
-     * 
+     *
      * TO DO:
      * add more constraints
      * give names for muni and county - these last two could be done centrally
@@ -20,10 +20,10 @@
      */
     class ApiStats{
         #individual stats modules
-        
+
         #TABLE: this will give you the number of entries in a given table.
         private function countTable($target, $constraints){
-            $allowedTables = Array('main', 'artist', 'audit', 'county', 'muni', 'source');
+            $allowedTables = Array('main', 'artist', 'audit', 'county', 'muni', 'source', 'ugc', 'aka');
             if ($target == 'all')
                 $tables = $allowedTables;
             else
@@ -40,23 +40,23 @@
             }
             return $rows;
         }
-        
+
         private function countSingleTable($target, $constraints){
             $query = '
                     SELECT COUNT(*) AS `'.mysql_real_escape_string($target).'`
                     FROM `'.mysql_real_escape_string($target).'_table`
                 ';
             if (($target == 'main') or ($target == 'audit'))
-                $query = isset($constraints) ? ApiBase::addConstraints($query.'Where ', $constraints) : $query;         
+                $query = isset($constraints) ? ApiBase::addConstraints($query.'Where ', $constraints) : $query;
             try{
                 $response = ApiBase::doQuery($query);
             }catch (Exception $e) {throw $e;}
-            return $response[0];    
+            return $response[0];
         }
-        
+
         #COLUMN: Shows the number of items in the main table where the given column is non-zero
         private function countColumn($column, $constraints){
-            $allowedcols = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt', 'type', 'material', 'inside', 'address', 'county', 'muni', 'district', 'lat', 'lon', 'image', 'source', 'ugc', 'changed', 'created', 'wiki_article', 'commons_cat', 'official_url', 'same_as', 'free', 'cmt', 'owner'); #etc.
+            $allowedcols = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt', 'type', 'material', 'inside', 'address', 'county', 'muni', 'district', 'lat', 'lon', 'removed', 'image', 'source', 'ugc', 'changed', 'created', 'wiki', 'list', 'commons_cat', 'official_url', 'same_as', 'free', 'cmt', 'owner'); #etc.
             if ($column == 'all')
                 $cols = $allowedcols;
             else
@@ -72,9 +72,9 @@
                     break;
                 }
             }
-            return $rows;   
+            return $rows;
         }
-        
+
         private function countSingleColumn($column, $constraints){
             $query = '
                 SELECT COUNT(*) AS `'.mysql_real_escape_string($column).'`
@@ -88,7 +88,7 @@
             }catch (Exception $e) {throw $e;}
             return $response[0];
         }
-        
+
         #SPLIT: Showes the result broken down by municipality, county or source
         private function splitSelector($split, $table, $column, $constraints, $warning){
             if (isset($split)){
@@ -119,7 +119,7 @@
             }
             return Array($response, $warning);
         }
-        
+
         private function splitBy($sp_table, $table, $column, $constraints){
             $num_label_sql = isset($column) ? mysql_real_escape_string($column) : $table;
             $sp_table_sql = mysql_real_escape_string($sp_table).'_table';
@@ -134,7 +134,7 @@
             $query = isset($constraints) ? ApiBase::addConstraints($query.'AND ', $constraints) : $query;
             $query .= 'GROUP BY `'.$label_sql.'`
                 ORDER BY `'.$label_sql.'` ASC
-                ';  
+                ';
             try{
                 $response = ApiBase::doQuery($query);
             }catch (Exception $e) {throw $e;}
@@ -153,7 +153,7 @@
             $table = isset($_GET['table']) ? strtolower($_GET['table']) : null;
             $column = isset($_GET['column']) ? strtolower($_GET['column']) : null;
             $split = isset($_GET['split']) ? strtolower($_GET['split']) : null;
-            
+
             #choose function based on given parameters
             try{
                 if (isset($table) and isset($column)){

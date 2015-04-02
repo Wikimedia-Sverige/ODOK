@@ -1,16 +1,16 @@
 <?php
     /*
      * Some functions that will not be of interest to the average user
-     * 
+     *
      *   *diff: produces a list of changes in main_table wrt. audit
      *   *objectlessArtist: produces a list of artists that have no objects
      *   *yearlessArtist: produces a list of artists that have no death_year
-     *                    and where birth_year is also missing or occured more 
+     *                    and where birth_year is also missing or occured more
      *                    than 100years ago where
      *   *artistlessObject: produces a list of objects that have no linked artists
      *   *info: Displays all known info for a given object as identified by it's id and table
      */
-     
+
     class ApiAdmin{
         #assist function for getChanges
         private function colAsmPrefix($col){
@@ -19,9 +19,9 @@
         private function colAsaPrefix($col){
             return $col.'` AS a_'.$col;
         }
-        
-        /* 
-         * Goes through all entries (for the current constraint) with ugc=1 
+
+        /*
+         * Goes through all entries (for the current constraint) with ugc=1
          * and returns a list of the changes that have been made wrt.
          * the original (audit).
          */
@@ -31,7 +31,7 @@
             #prepare sql statement
             $mainCols = '`main_table`.`'.implode(', `main_table`.`', array_map('self::colAsmPrefix', $cols));
             $auditCols = '`audit_table`.`'.implode(', `audit_table`.`', array_map('self::colAsaPrefix', $cols));
-            
+
             $query = '
                 SELECT SQL_CALC_FOUND_ROWS '.$mainCols.', '.$auditCols.'
                 FROM `main_table`, `audit_table`
@@ -67,7 +67,7 @@
                 return Array($body, $hits);
             }
         }
-        
+
         #displays all known info about a given object
         private function getInfo($table, $id){
             $query = '
@@ -79,9 +79,9 @@
             try{
                 $response = ApiBase::doQuery($query);
             }catch (Exception $e){throw $e;}
-            return ApiBase::sanitizeBit1($response[0]); 
+            return ApiBase::sanitizeBit1($response[0]);
         }
-        
+
         #returns a list of artists withouth any linked objects
         private function getArtistlessObject($limit, $offset){
             $query = '
@@ -99,7 +99,7 @@
                 $body[] = Array('hit' => $r);
             return Array($body, $hits);
         }
-        
+
         #returns a list of objects without any artists
         private function getObjectlessArtist($limit, $offset){
             $query = '
@@ -117,7 +117,7 @@
                 $body[] = Array('hit' => $r);
             return Array($body, $hits);
         }
-        
+
         #returns a list of artists (name and id) without any linked objects
         #convert date to year for comparisson
         private function getYearlessArtist($limit, $offset){
@@ -142,7 +142,7 @@
                 $body[] = Array('hit' => $r);
             return Array($body, $hits);
         }
-        
+
         function run($constraints){
             #set limit
             list ($limit, $w) = ApiBase::setLimit($_GET['limit']);
@@ -150,7 +150,7 @@
             #set offset
             list ($offset, $w) = ApiBase::setOffset($_GET['offset']);
             $warning .= isset($w) ? $w : '';
-            
+
             try{
                 switch (strtolower($_GET['function'])) {
                     case 'diff':
@@ -180,7 +180,7 @@
                                 'Function "info" must be used together with a "table" and "id" parameter.',
                             $warning
                             );
-                        }               
+                        }
                         break;
                     default:
                         return ApiBase::makeErrorResult(
