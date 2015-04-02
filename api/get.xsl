@@ -10,7 +10,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
         <xsl:otherwise>
             <xsl:call-template name="Display_Fail"/>
         </xsl:otherwise>
-    </xsl:choose>   
+    </xsl:choose>
 </xsl:template>
 
 <!-- **************Display_Success****************************************** -->
@@ -40,12 +40,14 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
         <th>Municipality</th>
         <th>District</th>
         <th>Coord (lat, lon)</th>
+        <th>Removed</th>
         <th>Image (link)</th>
         <th>Source</th>
         <th>UGC</th>
         <th>Changed</th>
         <th>Created</th>
         <th>Article (link)</th>
+        <th>List (link)</th>
         <th>Commons category (link)</th>
         <th>Official url</th>
         <th>Same_as</th>
@@ -72,6 +74,11 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
               <td><xsl:value-of select="muni"/></td>
               <td><xsl:value-of select="district"/></td>
               <td><small>(<xsl:value-of select="lat"/>, <xsl:value-of select="lon"/>)</small></td>
+              <td><xsl:call-template name="Display_Bool">
+                      <xsl:with-param name="bool">
+                          <xsl:value-of select="removed"/>
+                      </xsl:with-param>
+                  </xsl:call-template></td>
               <td><xsl:call-template name="Display_Image-link"/></td>
               <td><xsl:value-of select="source"/></td>
               <td><xsl:call-template name="Display_Bool">
@@ -81,7 +88,16 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
                   </xsl:call-template></td>
               <td><xsl:value-of select="changed"/></td>
               <td><xsl:value-of select="created"/></td>
-              <td><xsl:call-template name="Display_Wikidata-link"/></td>
+              <td><xsl:call-template name="Display_Wikidata-link">
+                      <xsl:with-param name="wdID">
+                          <xsl:value-of select="wiki"/>
+                      </xsl:with-param>
+                  </xsl:call-template></td>
+              <td><xsl:call-template name="Display_Wikidata-link">
+                      <xsl:with-param name="wdID">
+                          <xsl:value-of select="list"/>
+                      </xsl:with-param>
+                  </xsl:call-template></td>
               <td><xsl:call-template name="Display_Cat-link"/></td>
               <td><xsl:value-of select="official_url"/></td>
               <td><xsl:value-of select="same_as"/></td>
@@ -111,22 +127,23 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <!-- **************Sub-Templates****************************************** -->
 <xsl:template name="Display_Cat-link">
     <a><xsl:attribute name="href">
-        http://commons.wikimedia.org/wiki/Category:<xsl:value-of select="commons_cat"/></xsl:attribute> 
-        <xsl:value-of select="commons_cat"/> 
+        http://commons.wikimedia.org/wiki/Category:<xsl:value-of select="commons_cat"/></xsl:attribute>
+        <xsl:value-of select="commons_cat"/>
     </a>
-</xsl:template>  
+</xsl:template>
 <xsl:template name="Display_Image-link">
     <a><xsl:attribute name="href">
-        http://commons.wikimedia.org/wiki/File:<xsl:value-of select="image"/></xsl:attribute> 
-        <xsl:value-of select="image"/> 
+        http://commons.wikimedia.org/wiki/File:<xsl:value-of select="image"/></xsl:attribute>
+        <xsl:value-of select="image"/>
     </a>
 </xsl:template>
 <xsl:template name="Display_Wikidata-link">
+    <xsl:param name="wdID" />
     <a><xsl:attribute name="href">
-        https://www.wikidata.org/wiki/<xsl:value-of select="wiki_article"/></xsl:attribute> 
-        <xsl:value-of select="wiki_article"/> 
+        https://www.wikidata.org/wiki/Special:GoToLinkedPage/svwiki/<xsl:value-of select="$wdID"/>/></xsl:attribute>
+        <xsl:value-of select="$wdID"/>
     </a>
-</xsl:template>  
+</xsl:template>
 <xsl:template name="Display_Bool">
     <xsl:param name="bool" />
     <xsl:choose>
@@ -137,6 +154,6 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
             &#10008;
         </xsl:otherwise>
     </xsl:choose>
-</xsl:template> 
+</xsl:template>
 
 </xsl:stylesheet>

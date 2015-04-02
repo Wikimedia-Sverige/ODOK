@@ -50,8 +50,8 @@
             if (!empty($row['title']))
                 $text .=$row['title'];
             $text .="\n| artikel      = ";
-            if (!empty($row['wiki_article']))
-                $text .= ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false);
+            if (!empty($row['wiki']))
+                $text .= ApiBase::getArticleFromWikidata($row['wiki'], $getUrl=false);
             $text .="\n| konstnär     = ";
             $artistName = self::outputArtist($row);
             if (!empty($artistName))
@@ -82,6 +82,10 @@
             if (!empty($row['inside'])){
                 if($row['inside']==1)
                     $text .= "ja";
+            }
+            if (!empty($row['removed'])){
+                if($row['removed']==1)
+                    $text .="\n| tidigare     = ja";
             }
             $text .="\n| län          = ";
             if (!empty($row['county']))

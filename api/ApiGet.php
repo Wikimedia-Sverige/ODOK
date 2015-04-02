@@ -41,8 +41,8 @@
         private function setSelect($show){
             $allowed = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt', 
                              'type', 'material', 'inside', 'address', 'county', 'muni', 'district', 
-                             'lat', 'lon', 'image', 'source', 'ugc', 'changed', 'created', 
-                             'wiki_article', 'commons_cat', 'official_url', 'same_as', 
+                             'lat', 'lon', 'removed', 'image', 'source', 'ugc', 'changed', 'created', 
+                             'wiki', 'list', 'commons_cat', 'official_url', 'same_as', 
                              'free', 'cmt', 'owner');
             if(isset($show)){
                 $shows = explode('|', $show);

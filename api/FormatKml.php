@@ -73,7 +73,11 @@
                 $xml->writeAttribute('id',htmlspecialchars( $placemarkId ));
                     if (!empty($row['title'])){
                         $xml->startElement('title');
-                            $xml->text(htmlspecialchars( $row['title'] ));
+                            if ($row['removed']==1){
+                                $xml->text(htmlspecialchars( $row['title'] . ' (borttagen)' ));
+                            }else{
+                                $xml->text(htmlspecialchars( $row['title'] ));
+                            }
                         $xml->endElement();
                     }
                     $xml->startElement('description');
@@ -128,10 +132,10 @@
                         if (!empty($row['address']))
                             $desc .= ' - '.htmlspecialchars($row['address']);
                         #Description
-                        if (!empty($row['wiki_article'])){
+                        if (!empty($row['wiki'])){
                             #get descrition from wikipage
-                            $desc .= '</li><br/><li>'.ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false));
-                            $desc .= '  <a href="'.ApiBase::getArticleFromWikidata($row['wiki_article']).'" target="_blank">';
+                            $desc .= '</li><br/><li>'.ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki'], $getUrl=false));
+                            $desc .= '  <a href="'.ApiBase::getArticleFromWikidata($row['wiki']).'" target="_blank">';
                             $desc .= htmlspecialchars('Läs mer om konstverket på Wikipedia');
                             $desc .= '</a>.';
                         }

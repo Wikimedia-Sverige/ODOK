@@ -41,13 +41,14 @@
                 $prop=Array();
                 
                 #Spatial info
-                array_push($handled, 'inside','address','county','muni','district');
+                array_push($handled, 'inside','address','county','muni','district', 'removed');
                 $spatial = Array(
                                  'inside' => $row['inside'],
                                  'address' => $row['address'],
                                  'county' => 'SE-'. $row['county'],
                                  'muni' =>  $row['muni'],
-                                 'district' => $row['district']
+                                 'district' => $row['district'],
+                                 'removed' => $row['removed'],
                                  );
                 $prop['spatial'] = $spatial;
                 
@@ -63,11 +64,12 @@
                 }
                 
                 #descriptions
-                array_push($handled, 'descr', 'wiki_article');
+                array_push($handled, 'descr', 'wiki', 'list');
                 $desc_text = Array(
                                  'descr' => $row['descr'],
-                                 'wikidata' => !empty($row['wiki_article']) ? $row['wiki_article'] : null,
-                                 'ingress' => !empty($row['wiki_article']) ? ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki_article'], $getUrl=false)) : null
+                                 'wikidata' => !empty($row['wiki']) ? $row['wiki'] : null,
+                                 'ingress' => !empty($row['wiki']) ? ApiBase::getArticleIntro(ApiBase::getArticleFromWikidata($row['wiki'], $getUrl=false)) : null,
+                                 'list' => !empty($row['list']) ? $row['list'] : null,
                                  );
                 $prop['descriptions'] = $desc_text;
                 
@@ -130,8 +132,6 @@
                         continue;
                     }elseif ($key == 'county'){
                         $prop[$key] = 'SE-'.$value;
-                    }elseif ($key == 'wiki_article'){
-                        $prop['wiki'] = $value;
                     }else {
                         $prop[$key] = $value;
                     }

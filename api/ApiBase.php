@@ -75,7 +75,7 @@
         }
         #display bitwise operators [bit(1) in sql] as numbers
         function sanitizeBit1($array){
-            $bitParams = Array('ugc', 'inside', 'real_id');
+            $bitParams = Array('ugc', 'inside', 'real_id', 'removed');
             foreach ($bitParams as $bp){
                 if (in_array($bp, array_keys($array)))
                     $array[$bp] = ord($array[$bp]);
@@ -84,7 +84,7 @@
         }
         #mod to the above for the admin/diff output
         function sanitizeBit1diff($array){ 
-            $bitParams = Array('ugc', 'inside', 'real_id');
+            $bitParams = Array('ugc', 'inside', 'real_id', 'removed');
             foreach ($bitParams as $bp){
                 if (in_array('m_'.$bp, array_keys($array))){
                     $array['m_'.$bp] = ord($array['m_'.$bp]);
@@ -130,8 +130,9 @@
                     case 'artist':
                     case 'title':
                     case 'address':
-                    case 'wiki':
+                    case 'has_wiki':
                     case 'same':
+                    case 'removed':
                         #these are already in mysql format
                         $query .= $value.'
                 AND '.$prefix;
@@ -162,6 +163,8 @@
                 AND ';
                         break;
                     case 'ugc':
+                    case 'inside':
+                    case 'removed':
                         $query .= '`'.mysql_real_escape_string($column).'` != "0"
                 AND ';
                         break;
@@ -236,10 +239,10 @@
             $allowed = Array('id', 'title', 'artist', 'year', 'type', 'address', 
                              'county', 'muni', 'county_name', 'muni_name', 
                              'district', 'bbox', 'BBOX', 'source', 'changed',
-                             'created', 'wiki_article', 'commons_cat',
+                             'created', 'wiki', 'list', 'commons_cat',
                              'official_url', 'free', 'owner', 'has_cmt',
                              'is_inside', 'has_ugc', 'has_image', 'has_coords',
-                             'has_wiki', 'has_same');
+                             'has_wiki', 'has_same', 'is_removed');
             $maxValues = 50;
             try{
                 ApiBase::largeParam();
@@ -276,6 +279,7 @@
                             $params[$keyparts[0]] = self::namedParam($keyparts[0], $value);
                             break;
                         case 'is_inside':
+                        case 'is_removed':
                         case 'has_ugc':
                         case 'has_coords':
                         case 'has_cmt':
@@ -285,7 +289,11 @@
                             $val = self::boolParam($key, $value);
                             if (!empty($val)){
                                 $keyparts = explode('_', $key);
-                                $params[$keyparts[1]] = $val;
+                                if ($keyparts[1] == 'wiki') {
+                                    $params['has_wiki'] = $val; # since 'wiki' is already claimed
+                                }else{
+                                    $params[$keyparts[1]] = $val;
+                                }
                             }
                             break;
                         case 'artist':
@@ -416,9 +424,9 @@
                         break;
                     case 'wiki':
                         if ($value=='false')
-                            return '`wiki_article` = ""';
+                            return '`wiki` = ""';
                         else
-                            return '`wiki_article` != ""';
+                            return '`wiki` != ""';
                         break;
                     case 'same':
                         if ($value=='false')
@@ -479,7 +487,7 @@
             else
                 $idQuery = '= "'.mysql_real_escape_string($id).'"';
             $query = 'SELECT CONCAT_WS(" ", first_name, last_name) AS name, wiki FROM `artist_table` WHERE id IN';
-            $query .='   (SELECT artist FROM `artist_links` WHERE artist_links.object '.$idQuery.')';
+            $query .= '   (SELECT artist FROM `artist_links` WHERE artist_links.object '.$idQuery.')';
             return self::doQuery($query);
         }
         
@@ -502,7 +510,7 @@
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-            curl_setopt($ch,CURLOPT_USERAGENT,'Odok-database');
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Odok-database');
             $data = curl_exec($ch);
             curl_close($ch);
             return $data;

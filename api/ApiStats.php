@@ -23,7 +23,7 @@
         
         #TABLE: this will give you the number of entries in a given table.
         private function countTable($target, $constraints){
-            $allowedTables = Array('main', 'artist', 'audit', 'county', 'muni', 'source');
+            $allowedTables = Array('main', 'artist', 'audit', 'county', 'muni', 'source', 'UGC', 'aka');
             if ($target == 'all')
                 $tables = $allowedTables;
             else
@@ -56,7 +56,7 @@
         
         #COLUMN: Shows the number of items in the main table where the given column is non-zero
         private function countColumn($column, $constraints){
-            $allowedcols = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt', 'type', 'material', 'inside', 'address', 'county', 'muni', 'district', 'lat', 'lon', 'image', 'source', 'ugc', 'changed', 'created', 'wiki_article', 'commons_cat', 'official_url', 'same_as', 'free', 'cmt', 'owner'); #etc.
+            $allowedcols = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt', 'type', 'material', 'inside', 'address', 'county', 'muni', 'district', 'lat', 'lon', 'removed', 'image', 'source', 'ugc', 'changed', 'created', 'wiki', 'list', 'commons_cat', 'official_url', 'same_as', 'free', 'cmt', 'owner'); #etc.
             if ($column == 'all')
                 $cols = $allowedcols;
             else
