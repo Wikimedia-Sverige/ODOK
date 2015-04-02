@@ -9,7 +9,10 @@ To do:
     Deal with section links (these do not have real wikidata entries)
 '''
 
-import dateutil.parser, codecs, datetime, ujson
+import dateutil.parser
+import codecs
+import datetime
+import ujson
 import common as common
 import WikiApi as wikiApi
 import odok as odokConnect
@@ -122,9 +125,12 @@ def run(verbose=False, days=100):
         not_changed = {}
         for k, v in changes.iteritems():
             not_changed[k] = {}
-            if u'cmt' in v.keys(): not_changed[k][u'cmt'] = changes[k].pop(u'cmt')                  # check changes, problem with multiple footnotes and some made with templates
-            if u'free' in v.keys(): not_changed[k][u'free'] = changes[k].pop(u'free')               # need to establish wiki_policy+need to enable synk db->wiki as this is set by updateCopyright
-            #if u'image' in v.keys(): not_changed[k][u'image'] = changes[k].pop(u'image')           # temping out due to BUS
+            if u'cmt' in v.keys():  # check changes, problem with multiple footnotes and some made with templates
+                not_changed[k][u'cmt'] = changes[k].pop(u'cmt')
+            if u'free' in v.keys():  # need to establish wiki_policy+need to enable synk db->wiki as this is set by updateCopyright
+                not_changed[k][u'free'] = changes[k].pop(u'free')
+            # if u'image' in v.keys(): # temping out due to BUS
+            #    not_changed[k][u'image'] = changes[k].pop(u'image')
 
             if not_changed[k] == {}:
                 del not_changed[k]
@@ -156,7 +162,8 @@ def run(verbose=False, days=100):
 
     # TOBUILD db.makeDump() #change create a dump (ideally one which is incremental)
     print 'Done, woho!'
-# ----------------
+
+
 def commitToDatabase(odokWriter, changes, verbose=False):
     '''
     Commit the changes to the database after having checked formating of paramters is correct
@@ -197,6 +204,7 @@ def commitToDatabase(odokWriter, changes, verbose=False):
                 log += 'SQL update for %s had the problem: %s\n' % (key, problem)
     # done
     return log
+
 
 def listToObjects(objects, pagename, list_wd, contents):
     '''
@@ -241,15 +249,44 @@ def listToObjects(objects, pagename, list_wd, contents):
             row, table, dummy = common.findUnit(table, u'{{Offentligkonstlista', u'}}', brackets={u'{{': u'}}'})
             if not row:
                 break
-            params = {u'id':'', u'id-länk':'', u'titel':'', u'aka':'', u'artikel':'',
-                      u'konstnär':'', u'konstnär2':'', u'konstnär3':'', u'konstnär4':'', u'konstnär5':'',
-                      u'årtal':'', u'beskrivning':'', u'typ':'', u'material':'',
-                      u'fri':'', u'plats':'', u'inomhus':'', u'län':'',
-                      u'kommun':'', u'stadsdel':'', u'lat':'', u'lon':'',
-                      u'bild':'', u'commonscat':'', u'fotnot':'', u'fotnot-namn':'',
-                      u'döljKommun':False, u'döljStadsdel':False, u'visaId':False,
-                      u'fotnot2':'', u'fotnot2-namn':'', u'fotnot3':'', u'fotnot3-namn':'',
-                      u'page':pagename, u'list': list_wd, 'clash':None, 'header':headerDict}
+            params = {
+                u'id': '',
+                u'id-länk': '',
+                u'titel': '',
+                u'aka': '',
+                u'artikel': '',
+                u'konstnär': '',
+                u'konstnär2': '',
+                u'konstnär3': '',
+                u'konstnär4': '',
+                u'konstnär5': '',
+                u'årtal': '',
+                u'beskrivning': '',
+                u'typ': '',
+                u'material': '',
+                u'fri': '',
+                u'plats': '',
+                u'inomhus': '',
+                u'län': '',
+                u'kommun': '',
+                u'stadsdel': '',
+                u'lat': '',
+                u'lon': '',
+                u'bild': '',
+                u'commonscat': '',
+                u'fotnot': '',
+                u'fotnot-namn': '',
+                u'döljKommun': False,
+                u'döljStadsdel': False,
+                u'visaId': False,
+                u'fotnot2': '',
+                u'fotnot2-namn': '',
+                u'fotnot3': '',
+                u'fotnot3-namn': '',
+                u'page': pagename,
+                u'list': list_wd,
+                'clash': None,
+                'header': headerDict}
 
             while(True):
                 part, row, dummy = common.findUnit(row, u'|', None, brackets={u'[[': u']]', u'{{': u'}}'})
@@ -285,7 +322,7 @@ def convertTimestamp(timestamp):
     timestamp = timestamp.replace(tzinfo=None)  # hack since datetime cannot add timezone (and mw always returns UTC)
     return timestamp
 
-# ----------
+
 def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
     '''
     compares a listobj to equiv obj in database
@@ -381,7 +418,7 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
     # Deal with artists (does not deal with order of artists being changed):
     artist_param = [u'konstnär', u'konstnär2', u'konstnär3', u'konstnär4', u'konstnär5']
     wikiObj[u'artists'] = ''
-    artists_links ={}
+    artists_links = {}
     for a in artist_param:
         if wikiObj[a]:
             (w_text, w_links) = unwiki(wikiObj[a])
@@ -444,11 +481,12 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
                       u'lon': u'lon',
                       u'fotnot': u'cmt'}
 
-    for k,v in trivial_params.iteritems():
+    for k, v in trivial_params.iteritems():
         (w_text, w_links) = unwiki(wikiObj[k])
         if not (w_text == odokObj[v]):
             diff[v] = {'new': w_text, 'old': odokObj[v]}
-            if verbose: print u'%s:"%s"    <--->   %s:"%s"' % (k, w_text, v, odokObj[v])
+            if verbose:
+                print u'%s:"%s"    <--->   %s:"%s"' % (k, w_text, v, odokObj[v])
 
     ## Needing separate treatment
     # comparing artist_links: u'artist_links':u'artist_links'
@@ -497,7 +535,6 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
         # remove these for now
         del(diff['aka'])
 
-
     ## Post-processing
     # fotnot-namn without fotnot - needs to look-up fotnot for o:cmt
     if wikiObj[u'fotnot-namn'] and not wikiObj[u'fotnot']:
@@ -509,7 +546,6 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
     if 'free' in diff.keys() and diff['free']['new'] == '':
         if diff['free']['old'] == 'unfree':
             diff.pop('free')
-
 
     # Years which are not plain numbers cannot be sent to db
     if 'year' in diff.keys():
