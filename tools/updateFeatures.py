@@ -19,15 +19,9 @@ def allGeoJson(filename="../site/AllFeatures.geo.json", source=None, full=True, 
     features = dbApi.getGeoJson(full=full, source=source, debug=debug)
 
     print u'processing %d features' % len(features)
-    newFeatures = []
-    for feature in features:
-        if feature['properties']['same_as']:
-            continue
-        newFeatures.append(feature)
-
 
     outJson = {"type": "FeatureCollection",
-	       "features": newFeatures,
+           "features": features,
            "head": {
                 "status": "1",
                 "hits": len(features),
