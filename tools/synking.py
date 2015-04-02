@@ -17,18 +17,21 @@ import dconfig as config
 import dataDicts as dataDict
 import UGC_synk as UGCsynk
 
+
 def run(verbose=False, days=100):
     '''
     update database based on all list changes
     INCOMPLETE
     '''
     # wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.wp_local_password, site=config.wp_local, separator='wiki')
+    # wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.wp_local_password, site=config.wd_local, separator='wiki')
     # dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_test)
     # dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_test, db=config.db, user=config.db_read, passwd=config.db_test_read_password)
     # dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_test, db=config.db, user=config.db_edit, passwd=config.db_test_edit_password)
 
     # open connections
     wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site)
+    wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site)
     dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_site)
     dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_server, db=config.db, user=config.db_read, passwd=config.db_read_password)
     dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
@@ -57,8 +60,17 @@ def run(verbose=False, days=100):
         print u'Found no changed pages.'
         exit(1)
 
+    # check if all list pages have a wikidataID, if not then create one
+    claims = {'P31': 'Q13406463', 'P360': 'Q557141'}  # list of public art
+    pageInfos = wpApi.getPageInfo(checkList)
+    for pagename, pageinfo in pageInfos.iteritems():
+        if 'wikidata' not in pageinfo.keys() or pageinfo['wikidata'] == '':
+            newId = wdApi.makeEntity(pagename, site='svwiki', lang='sv',
+                                     label=pagename, claims=claims)
+            pageInfos[pagename]['wikidata'] = newId
+
     # deal with new UGC items
-    (log, newUGC) = UGCsynk.run(checkList, wpApi, dbWriteSQL)
+    (log, newUGC) = UGCsynk.run(checkList, pageInfos, wpApi, dbWriteSQL)
     flog.write(u'\n---------- New UGC items (%r): --------\n' % newUGC)
     if log:
         flog.write('%s\n' % log)
@@ -70,7 +82,8 @@ def run(verbose=False, days=100):
     print u'%r pages to parse...' % len(checkPages)
     wiki_objects = {}  # dict containing all rows/objects with an id
     for pagename, contents in checkPages.iteritems():
-        log = listToObjects(wiki_objects, pagename, contents)  # adds all rows/objects with an id to the dict. Also deals with any case of same obj existing in multiple lists
+        # add all rows/objects with an id to the dict and deal with any case of same obj existing in multiple lists
+        log = listToObjects(wiki_objects, pagename, pageInfos[pagename]['wikidata'], contents)
         if log:
             flog.write('%s' % log)
 
@@ -191,7 +204,7 @@ def commitToDatabase(odokWriter, changes, verbose=False):
     # done
     return log
 
-def listToObjects(objects, pagename, contents):
+def listToObjects(objects, pagename, list_wd, contents):
     '''
     parses a wikilist into relevant objects
     If object with same id already exists then a clash parameter is added
@@ -203,29 +216,47 @@ def listToObjects(objects, pagename, contents):
         log = u'The page %s is missing or invalid\n' % pagename
         return log
 
+    # the following should be treated as booleans
+    boolParams = [u'döljKommun', u'döljStadsdel', u'tidigare', u'visaId']
+
     while(True):
         table, contents, lead_in = common.findUnit(contents, u'{{Offentligkonstlista-huvud', u'|}')
         if not table:
             break
         header = table[:table.find('\n')]
         table = table[len(header):]
+
         # read in header parameters
-        headerDict = {u'län': None, u'kommun': None, u'stadsdel': None}
+        headerDict = {u'län': None, u'kommun': None, u'stadsdel': None,
+                      u'tidigare': None, u'visaId': None}
         parts = header.split('|')
         for p in parts:
             if '=' in p:
                 pp = p.split('=')
-                headerDict[pp[0].strip()] = pp[1].strip(' }')
+                for i in range(0, len(pp)):
+                    pp[i] = pp[i].strip(' \n\t}')
+                if pp[0] in headerDict.keys():
+                    if pp[0] in boolParams:
+                        headerDict[pp[0]] = True
+                    else:
+                        headerDict[pp[0]] = pp[1]
+                else:
+                    log += u'Unrecognised header parameter: %s = %s (%s)\n' % (pp[0], pp[1], pagename)
+
         while(True):
             row, table, dummy = common.findUnit(table, u'{{Offentligkonstlista', u'}}', brackets={u'{{': u'}}'})
             if not row:
                 break
-            params = {u'id':'', u'id-länk':'', u'titel':'', u'aka':'', u'artikel':'', u'konstnär':'', u'konstnär2':'', u'konstnär3':'', u'konstnär4':'', u'konstnär5':'', u'årtal':'', u'beskrivning':'',
-                      u'typ':'', u'material':'', u'fri':'', u'plats':'', u'inomhus':'', u'län':'', u'kommun':'', u'stadsdel':'', u'lat':'',
-                      u'lon':'', u'bild':'', u'commonscat':'', u'fotnot':'', u'fotnot-namn':'', u'döljKommun':False, u'döljStadsdel':False, u'visaId':False,
+            params = {u'id':'', u'id-länk':'', u'titel':'', u'aka':'', u'artikel':'',
+                      u'konstnär':'', u'konstnär2':'', u'konstnär3':'', u'konstnär4':'', u'konstnär5':'',
+                      u'årtal':'', u'beskrivning':'', u'typ':'', u'material':'',
+                      u'fri':'', u'plats':'', u'inomhus':'', u'län':'',
+                      u'kommun':'', u'stadsdel':'', u'lat':'', u'lon':'',
+                      u'bild':'', u'commonscat':'', u'fotnot':'', u'fotnot-namn':'',
+                      u'döljKommun':False, u'döljStadsdel':False, u'visaId':False,
                       u'fotnot2':'', u'fotnot2-namn':'', u'fotnot3':'', u'fotnot3-namn':'',
-                      u'page':pagename, 'clash':None, 'header':headerDict}
-            boolParams = [u'döljKommun', u'döljStadsdel']  # the following should be treated as booleans
+                      u'page':pagename, u'list': list_wd, 'clash':None, 'header':headerDict}
+
             while(True):
                 part, row, dummy = common.findUnit(row, u'|', None, brackets={u'[[': u']]', u'{{': u'}}'})
                 if not part:
@@ -282,10 +313,10 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
     # wikiObj.keys() = [u'typ', u'artikel', u'titel', 'clash', u'inomhus', u'material', u'döljStadsdel', u'län', u'konstnär2',
     #                   u'konstnär3', u'konstnär4', u'konstnär5', u'döljKommun', u'lat', u'plats', u'fotnot', u'id', u'kommun',
     #                   u'bild', u'stadsdel', u'commonscat', u'fri', u'konstnär', u'lon', u'beskrivning', u'årtal', u'id-länk',
-    #                   u'fotnot-namn', u'aka', u'page']
+    #                   u'fotnot-namn', u'aka', u'page', u'lista', u'header']
     # odokObj.keys() = [u'changed', u'official_url', u'ugc', u'image', u'county', u'year', u'owner', u'commons_cat', u'id',
-    #                   u'wiki_article', u'descr', u'title', u'lon', u'source', u'same_as', u'type', u'muni', u'material', u'free',
-    #                   u'district', u'address', u'lat', u'year_cmt', u'artist', u'inside', u'created', u'cmt']
+    #                   u'wiki', u'list', u'descr', u'title', u'lon', u'source', u'same_as', u'type', u'muni', u'material', u'free',
+    #                   u'district', u'address', u'lat', u'year_cmt', u'artist', u'inside', u'created', u'cmt', u'removed']
 
     log = ''
     if wikiObj['clash']:
@@ -305,8 +336,14 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
         for a in akas:
             odokObj[u'aka'].append(a['aka'])
         odokObj[u'aka'] = ';'.join(odokObj[u'aka'])
-    if odokObj[u'wiki_article']:
-        odokObj[u'wiki_article'] = odokObj[u'wiki_article'].upper()
+    if odokObj[u'wiki']:
+        odokObj[u'wiki'] = odokObj[u'wiki'].upper()
+
+    # the following is inherited from the header
+    if wikiObj[u'header'][u'tidigare']:
+        wikiObj[u'tidigare'] = 1
+    else:
+        wikiObj[u'tidigare'] = 0
 
     # the following may be inherited from the header
     if wikiObj[u'döljKommun']:
@@ -390,10 +427,28 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
     ## Main-process
     diff = {}
     # easy to compare {wiki:odok}
-    trivial_params = {u'typ':u'type', u'material':u'material', u'id-länk':u'official_url', u'fri':u'free', u'inomhus':u'inside', u'artists':u'artist', u'årtal':u'year',
-                      u'commonscat':u'commons_cat', u'beskrivning':u'descr', u'bild':u'image', u'titel':u'title', u'aka':u'aka', u'artikel':u'wiki_article',
-                      u'plats':u'address', u'län':u'county', u'kommun':u'muni', u'stadsdel':u'district', u'lat':u'lat', u'lon':u'lon', u'fotnot':u'cmt'
-                      }
+    trivial_params = {u'typ': u'type',
+                      u'material': u'material',
+                      u'id-länk': u'official_url',
+                      u'fri': u'free',
+                      u'inomhus': u'inside',
+                      u'artists': u'artist',
+                      u'årtal': u'year',
+                      u'commonscat': u'commons_cat',
+                      u'beskrivning': u'descr',
+                      u'bild': u'image',
+                      u'titel': u'title',
+                      u'aka': u'aka',
+                      u'artikel': u'wiki',
+                      u'list': u'list',
+                      u'plats': u'address',
+                      u'län': u'county',
+                      u'kommun': u'muni',
+                      u'stadsdel': u'district',
+                      u'tidigare': u'removed',
+                      u'lat': u'lat',
+                      u'lon': u'lon',
+                      u'fotnot': u'cmt'}
 
     for k,v in trivial_params.iteritems():
         (w_text, w_links) = unwiki(wikiObj[k])
@@ -496,9 +551,9 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
 
     # Unstripped refrences
     for k in diff.keys():
-        if k in (u'official_url', u'inside'):
+        if k in (u'official_url', u'inside', u'removed'):  # not strings or ok to have http
             continue
-        if diff[k]['new'] and 'http:' in diff[k]['new']:
+        if diff[k]['new'] and 'http' in diff[k]['new']:
             val = diff.pop(k)
             log += u'new value for %s seems to include a url: %s --> %s\n' % (k, val['old'], val['new'])
 
