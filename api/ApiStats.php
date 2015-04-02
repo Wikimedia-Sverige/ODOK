@@ -23,7 +23,7 @@
 
         #TABLE: this will give you the number of entries in a given table.
         private function countTable($target, $constraints){
-            $allowedTables = Array('main', 'artist', 'audit', 'county', 'muni', 'source', 'UGC', 'aka');
+            $allowedTables = Array('main', 'artist', 'audit', 'county', 'muni', 'source', 'ugc', 'aka');
             if ($target == 'all')
                 $tables = $allowedTables;
             else

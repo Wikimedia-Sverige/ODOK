@@ -55,7 +55,7 @@ def UGConPage(wikidata, contents, dbWriteSQL):
 def getNewId(wikidata, odokWriter):
     # This should ideally be worked into odok.py and be made SQL safe
     queries = []
-    queries.append(u'INSERT INTO UGC_table (list) VALUES ("%s"); ' % wikidata)
+    queries.append(u'INSERT INTO ugc_table (list) VALUES ("%s"); ' % wikidata)
     queries.append(u'SET @last_UGC_id = CONCAT("UGC/", LAST_INSERT_ID()); ')
     queries.append(u'INSERT INTO main_table (id, muni, county, source, descr, year_cmt, cmt, inside) VALUES (@last_UGC_id,"0","00","UGC", "", "", "", 0); ')
     queries.append(u'SELECT @last_UGC_id;')

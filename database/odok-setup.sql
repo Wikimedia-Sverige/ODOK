@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS `muni_table`;
 DROP TABLE IF EXISTS `county_table`;
 DROP TABLE IF EXISTS `source_table`;
 DROP TABLE IF EXISTS `artist_table`;
-DROP TABLE IF EXISTS `UGC_table`;
+DROP TABLE IF EXISTS `ugc_table`;
 
 CREATE TABLE  `muni_table` (
   `id`          smallint(4)     NOT NULL,                   #Municipal code
@@ -162,7 +162,7 @@ CREATE TABLE  `artist_links` (
   FOREIGN KEY (artist)  REFERENCES artist_table(id)
 )ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-CREATE TABLE  `UGC_table` (
+CREATE TABLE  `ugc_table` (
   `num`         int             NOT NULL AUTO_INCREMENT,    # Unique id for the UGC object (without UGC/)
   `list`        varchar(255)    NOT NULL,                   # Wikidata id for the Wikipedia list containing a mention of the artwork
   `same_as`     varchar(25)     DEFAULT NULL,               # Id for superceding id. NULL for active, empty for deleted without replacement
