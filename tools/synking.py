@@ -23,12 +23,6 @@ def run(verbose=False, days=100):
     update database based on all list changes
     INCOMPLETE
     '''
-    # wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.wp_local_password, site=config.wp_local, separator='wiki')
-    # wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.wp_local_password, site=config.wd_local, separator='wiki')
-    # dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_test)
-    # dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_test, db=config.db, user=config.db_read, passwd=config.db_test_read_password)
-    # dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_test, db=config.db, user=config.db_edit, passwd=config.db_test_edit_password)
-
     # open connections
     wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site)
     wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site)
