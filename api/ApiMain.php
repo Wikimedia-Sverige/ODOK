@@ -2,12 +2,12 @@
     /*
      * Entry point for api
      *
-     * To do: 
+     * To do:
      * help function/default if no params defined
      * move constraint treatment here
      */
     $helpurl='https://se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/Teknisk_dokumentation/Api';
-    
+
     class ApiMain{
         function search(){
             # Database info (including username+pass) in external file
@@ -18,7 +18,7 @@
             } else {
                 die( 'Couldn\'t find config file ');
             }
-            
+
             include('Format.php');       #formats the output
             include('ApiBase.php');      #functions used by multiple modules
             include('ApiGet.php');       #standard sql query stuff
@@ -26,7 +26,7 @@
             include('ApiAdmin.php');     #various functions that the average user wouldn't care about
             #include('ApiHelp.php');     #help file/documentation
             global $helpurl;
-            
+
             /*
              * Trying to connect to mysql server and database
              * Output Temporary error if unable to.
@@ -47,7 +47,7 @@
                 null);
                 $errors=1;
             }
-            
+
             /*
              * Set up jsonp compatibility
              */
@@ -61,15 +61,15 @@
                     $errors=1;
                 }
             }
-                
-        
+
+
             /*
              * If no errors were found during connection
              * let's proceed with our queries
              */
             if(!$errors){
                 mysql_query("SET CHARACTER SET utf8");
-                
+
                 #deal with general constraints
                 try{
                     $constraints = ApiBase::readConstraints();
@@ -97,7 +97,7 @@
                     $constraints['coords'] = ApiBase::requireCoords();
                 }
             }
-            if(!$errors){   
+            if(!$errors){
                 #switch by action; return results array
                 switch (strtolower($_GET['action'])) {
                     case 'get':
@@ -110,7 +110,7 @@
                         $results = ApiStats::run($constraints);
                         break;
                     case 'admin':
-                        /* 
+                        /*
                          * should generate a file with changes (since a certain date) and/or
                          * list all entries (with changes) from a given source which has ugc=1.
                          * Possibly use this to create an rss feed?
@@ -119,7 +119,7 @@
                         break;
                     case 'help':
                         header( 'Location: '.$helpurl ) ;
-                        break;  
+                        break;
                     default:
                         $results = ApiBase::makeErrorResult(
                                     '601',
@@ -127,14 +127,14 @@
                                         'Sorry but "'.$_GET['action'].'" is not a valid action for this api.',
                                     $warning
                                     );
-                        break;  
+                        break;
                 }
             }
-            
+
             /* Switch between output formats */
             if(isset($_GET['format'])){
                 switch (strtolower($_GET['format'])) {
-                    case 'xml' : 
+                    case 'xml' :
                         Format::outputXml($results);
                         break;
                     case 'json' :
@@ -170,7 +170,7 @@
                     Format::outputDefault($results);
                 }
             }
-            
+
             mysql_close();
         }
     }

@@ -1,12 +1,12 @@
 <?php
     /*
      * General functions used by various classes (but unrelated to formating)
-     * 
+     *
      * Standardised output arrays:
      *     makeErrorResult/makeSuccessResult/makeSuccessResultHead:
      *         returns a correctly formated array for furhter
      *         treatment by the Format class
-     * 
+     *
      * Query related functions:
      *     doQuery:
      *         performs a query returning the rows or throwing an exception
@@ -14,19 +14,19 @@
      *         adds array of (pipe-separated) constraints to a query
      *     notEmpty:
      *         adds (pipe separated) column-not-empty constraints to a query
-     * 
+     *
      * Constraint/Parameter related functions:
-     *     readConstraints: 
+     *     readConstraints:
      *         reads in a list of general constraints and classiifes them by type
-     *     available types (functions) are 
+     *     available types (functions) are
      *         bboxParam, rangedParam, namedParam, boolParam, softParam
-     * 
+     *
      * Interactions with other tables
      *     getAdminNames:
      *         returns a list with id-name for eiter muni or county
      *     getArtistInfo:
      *         returns a list of artists for a given id
-     * 
+     *
      * General functions
      *     getImageFromCommons:
      *         returns the thumbnail url for a comons image
@@ -42,7 +42,7 @@
             #global $helpurl;
             $results['head'] = Array(
                             'status' => '0',
-                            'error_number'  => $error_num, 
+                            'error_number'  => $error_num,
                             'error_message' => $error_msg.' For documentation please consult action=help.'
                     );
             if (!empty($warning))
@@ -83,7 +83,7 @@
             return $array;
         }
         #mod to the above for the admin/diff output
-        function sanitizeBit1diff($array){ 
+        function sanitizeBit1diff($array){
             $bitParams = Array('ugc', 'inside', 'real_id', 'removed');
             foreach ($bitParams as $bp){
                 if (in_array('m_'.$bp, array_keys($array))){
@@ -93,7 +93,7 @@
             }
             return $array;
         }
-        
+
         /*
          * Query related functions
          */
@@ -111,7 +111,7 @@
                 return $rows;
             }
         }
-        
+
         #adds constraints to a query (also deals with the output of readConstraints() )
         #prefix allows to specify which table
         function addConstraints($query, $constraints, $prefix = ''){
@@ -171,16 +171,16 @@
                     case 'coords':
                         $query .= '`lat` IS NOT NULL AND `lon` IS NOT NULL
                 AND ';
-                        break;                                  
+                        break;
                     default:
-                        $query .= '`'.mysql_real_escape_string($column).'` != "" 
+                        $query .= '`'.mysql_real_escape_string($column).'` != ""
                 AND ';
                 }
             }
             $query = substr($query, 0, -strlen('AND '));    #killing the last AND
             return $query;
         }
-        
+
         /* Read in limit (must be in range 1-100, defaults to 10)*/
         function setLimit($lim){
             $max_limit = 100;
@@ -197,7 +197,7 @@
             }elseif ($limit<$min_limit){
                 $warning = 'Minimum limit is '.$min_limit.'; your limit was changed from "'.$limit.'" to '.$min_limit.'. ';
                 $limit = $min_limit;
-            } 
+            }
             return Array($limit, $warning);
         }
         /* Read in offset (must be >=0, defaults to 0)*/
@@ -211,7 +211,7 @@
             }elseif ($offset<$min_off){
                 $warning = 'Minimum offset is '.$min_off.'; your offset was changed from "'.$offset.'" to '.$min_off.'. ';
                 $offset = $min_off;
-            } 
+            }
             return Array($offset, $warning);
         }
         /* Test if any of the parameters is to large for $_GET to handle */
@@ -227,7 +227,7 @@
             }
         }
         #reads in paramters to deal with constraints
-        /* NOTE: 
+        /* NOTE:
          *    if someone adds two params with same name then only the last one is considered
          *    This also applies to muni/county with muni_name/county_name as they fill the same parameter
          * TO DO:
@@ -236,8 +236,8 @@
         function readConstraints(){
             #define list of allowed generic constraints
             #Should material be added (if so it's soft)? Left out for now due to municipal concerns
-            $allowed = Array('id', 'title', 'artist', 'year', 'type', 'address', 
-                             'county', 'muni', 'county_name', 'muni_name', 
+            $allowed = Array('id', 'title', 'artist', 'year', 'type', 'address',
+                             'county', 'muni', 'county_name', 'muni_name',
                              'district', 'bbox', 'BBOX', 'source', 'changed',
                              'created', 'wiki', 'list', 'commons_cat',
                              'official_url', 'free', 'owner', 'has_cmt',
@@ -436,8 +436,8 @@
                         break;
                     case 'coords':
                         if ($value=='false')
-                            return '(`lat` IS NULL OR `lon` IS NULL)'; #bracket to contain the or 
-                        else                
+                            return '(`lat` IS NULL OR `lon` IS NULL)'; #bracket to contain the or
+                        else
                             return '`lat` IS NOT NULL AND `lon` IS NOT NULL';
                         break;
                     default:
@@ -445,7 +445,7 @@
                         #these should have bit(1) parameters
                         if ($value=='false')
                             return '`'.mysql_real_escape_string($key).'` = "0"';
-                        else                
+                        else
                             return '`'.mysql_real_escape_string($key).'` = "1"';
                 }
             }
@@ -457,7 +457,7 @@
         /*
          * End of parameter/constraint code
          */
-         
+
         /*
          * Interactions with other tables
          */
@@ -490,8 +490,8 @@
             $query .= '   (SELECT artist FROM `artist_links` WHERE artist_links.object '.$idQuery.')';
             return self::doQuery($query);
         }
-        
-        /* 
+
+        /*
          * Given the filename on Commons this returns the url of the
          * thumbnail of the given size
          */
@@ -595,7 +595,7 @@
             return !strncmp($haystack, $needle, strlen($needle));
         }
     }
-    
+
     class CharacterLimitException extends Exception { } //max 512 characters in a parameter or else $_GET fails (external limit)
     class ValueLimitException extends Exception { } //max 50 values in a parameter
 ?>
