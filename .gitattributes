@@ -1,0 +1,3 @@
+tools/* linguist-vendored=false
+site/leaflet/* linguist-vendored
+site/external/* linguist-vendored
