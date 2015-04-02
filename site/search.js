@@ -3,8 +3,8 @@ var rObjs = [];
 var map;
 var markers; // this is actually the featureGroup
 var allMarkers = [];
-var toManyResults=100;
-var thumb_width=100;
+var toManyResults = 100;
+var thumb_width = 100;
 var specialIcon;
 var normalIcon;
 var messages = {
@@ -16,7 +16,9 @@ var messages = {
     "on_wiki": "Läs om det på Wikipedia",
     "osmSE_attrib": "Kartdata © {OSM_link}-bidragsgivare, kartrendering av {OSM_Sweden}",
     "year_warning": "Tillkomstår måste vara ett årtal",
-    "year_negative_range": "Från måste vara större än Till i spannet för tillkomstår"
+    "year_negative_range": "Från måste vara större än Till i spannet för tillkomstår",
+    "removed": "borttagen",
+    "edit": "Redigera denna information på Wikipedia"
 };
 
 function executeSearch(a, t, m, c, i, yf, yt) {
@@ -192,6 +194,9 @@ function populateSearchResult(rObjs) {
     else {
         content += '<b>' + messages.no_title + '</b>';
     }
+    if (ro.removed) {
+        content += ' (' + messages.removed + ')';
+    }
     if(ro.artist) {
         content += '<p>' + ro.artist;
     }
@@ -227,8 +232,13 @@ function populateSearchResult(rObjs) {
     if(place) {
             bc.append('<p>' + place);
     }
-    if(ro.wiki_article) {
-        bc.append('<p><a href="https://www.wikidata.org/wiki/Special:GoToLinkedPage/svwiki/' + ro.wiki_article + '" target="_blank">' + messages.on_wiki + '</a></p>');
+    if(ro.wiki) {
+        bc.append('<p><a href="https://www.wikidata.org/wiki/Special:GoToLinkedPage/svwiki/' + ro.wiki + '" target="_blank">' + messages.on_wiki + '</a></p>');
+    }
+    if (ro.list) {
+        editImg = '<img src="images/edit.svg" title="' + messages.edit + '" alt="' + messages.edit + '" class="edit"/>';
+        editLnk = 'https://www.wikidata.org/wiki/Special:GoToLinkedPage/svwiki/' + ro.list;
+        bc.append('<a href="' + editLnk + '" target="_blank">' + editImg + '</a>');
     }
 
     $('#rc_' + index).balloon({
