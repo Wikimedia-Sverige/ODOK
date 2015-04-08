@@ -6,7 +6,7 @@
      * help function/default if no params defined
      * move constraint treatment here
      */
-    $helpurl='https://se.wikimedia.org/wiki/Projekt:%C3%96ppen_databas_f%C3%B6r_offentlig_konst/Teknisk_dokumentation/Api';
+    $helpurl='https://se.wikimedia.org/wiki/Offentligkonst.se/Teknisk_dokumentation/Api';
 
     class ApiMain{
         function search(){
@@ -24,6 +24,7 @@
             include('ApiGet.php');       #standard sql query stuff
             include('ApiStats.php');     #stats about the database
             include('ApiAdmin.php');     #various functions that the average user wouldn't care about
+            include('ApiArtist.php');    #hook into the artist_table
             #include('ApiHelp.php');     #help file/documentation
             global $helpurl;
 
@@ -102,6 +103,9 @@
                 switch (strtolower($_GET['action'])) {
                     case 'get':
                         $results = ApiGet::run($constraints);
+                        break;
+                    case 'artist':
+                        $results = ApiArtist::run($constraints);
                         break;
                     case 'statistics':
                         /*
