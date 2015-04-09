@@ -45,14 +45,17 @@
         }
 
         #given a list of artists this returns all of their associated works
-        private function getWorks($artist){
+        private function getWorks($artist, $warning){
+            # set group_concat_max_len explicitly so that we are always testing agains the same limit
+            ApiBase::doQuery('SET SESSION group_concat_max_len = '.ApiBase::group_concat_max_len);
             $query = '
-                SELECT GROUP_CONCAT(al.`object` SEPARATOR '|') AS objects, al.`artist` as artist
+                SELECT al.`artist` as artist, GROUP_CONCAT(al.`object` SEPARATOR "|") AS objects
                 FROM `artist_links` al
                 INNER JOIN `artist_table` at ON at.`id` = al.`artist`
-                WHERE at.`id` in in (
+                WHERE at.`id` in (
                 "'.implode('", "',array_map('mysql_real_escape_string', $artist)).'"
-                );';
+                )
+                GROUP BY artist;';
 
             #do query
             try{
@@ -66,11 +69,19 @@
                 );
             }
 
-            $works = array();
+            #check that results were not truncated, since this is a silent fail
+            try{
+                ApiBase::groupConcatTest($response, 'objects', 'works');
+            }catch (CharacterLimitException $e) {
+                $w = $e->getMessage();
+            }
+
+            # put together new array of works
+            $works = Array();
             foreach ($response as $r)
                 $works[$r['artist']] = explode('|', $r['objects']);
 
-            return $works;
+            return Array($works, $w);
 
         }
 
@@ -82,10 +93,12 @@
             #either look up on artwork_id or one of the others
             $prefix = null;
             $w = null;
-            $other = array('wiki', 'id', 'year');
+            $other = Array('wiki', 'id');
+            # first_name, last_name, birth_year, death_year
+            # name (combo of first and last), lifespan (birth-death)
             if (isset($_GET['artwork'])){
                 $prefix = 'at';
-                if (in_array($other , array_keys($_GET))){
+                if (count(array_intersect($other, array_keys($_GET))) > 0){  # if any of $other were provided
                     $w = 'The artwork parameter cannot be combined with any other selectors, these are therefore disregarded. ';
                 }
             }
@@ -143,19 +156,25 @@
             # look up works for each artist
             $works = null;
             if ($getWorks) {
-                $artists =array();
+                $artists = Array();
                 foreach ($response as $r)
                     array_push($artists, $r['id']);
-                $works = self::getWorks();
+                list ($works, $w) = self::getWorks($artists, $warning);
+                $warning = isset($w) ? $warning.$w : $warning;
             }
 
             #collect results
-            $artists =array();
+            $body = Array();
             foreach ($response as $r) {
                 if ($getWorks) {
-                    $r['works'] = isset($works[$r['id']]) ?$works[$r['id']] : array();
+                    $r['works'] = Array();
+                    if (isset($works[$r['id']])){
+                        foreach ($works[$r['id']] as $work) {
+                            array_push($r['works'], Array('work' => $work)); # so that xml plays nice
+                        }
+                    }
                 }
-                $body[] = Array('hit' => ApiBase::sanitizeBit1($r));
+                array_push($body, Array('hit' => ApiBase::sanitizeBit1($r))); # so that xml plays nice
             }
             #Did we get all?
             $hits = $hits[0]['FOUND_ROWS()'];

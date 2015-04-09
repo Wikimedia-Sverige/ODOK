@@ -35,6 +35,9 @@
      */
 
     class ApiBase{
+        const maxChar = 512; # max bytes allowed per url parameter
+        const group_concat_max_len = 2500; # max characters allowed per group_concat response
+
         /*
          * Produce standardised output arrays
          */
@@ -216,7 +219,7 @@
         }
         /* Test if any of the parameters is to large for $_GET to handle */
         function largeParam(){
-            $maxChar = 512;
+            $maxChar = self::maxChar;
             $queries = explode('&', $_SERVER['QUERY_STRING']);
             foreach ($queries as $q) {
                 $v = explode('=',$q);
@@ -226,6 +229,16 @@
                 }
             }
         }
+        /* Test if any group_concat values hit the max char limit */
+        function groupConcatTest($response, $column, $type){
+            $maxChar = self::group_concat_max_len;
+            foreach ($response as $r) {
+                if (strlen($r[$column])>=$maxChar){
+                    throw new CharacterLimitException('The "'.$type.'" value may have been truncated, as such results may be missing or incorrect. Consider raising the limit from '.$maxChar.' characters.');
+                }
+            }
+        }
+
         #reads in paramters to deal with constraints
         /* NOTE:
          *    if someone adds two params with same name then only the last one is considered
