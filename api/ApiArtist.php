@@ -17,17 +17,31 @@
 
         # set which parameters to include in output
         private function setSelect($show, $prefix = NULL){
+            $getWorks = true; # default behaviour
             if (isset($prefix)){
                 $prefix = $prefix.'.';
             } else {
                 $prefix = '';
             }
+
+            # 'works' is dealt with separately
             $allowed = Array('id', 'first_name', 'last_name', 'wiki',
                              'changed', 'birth_date', 'death_date',
-                             'birth_year', 'death_year', 'creator',
-                             'cmt');  # 'works' would be usefull but would have to be disconnected from sql
+                             'birth_year', 'death_year', 'creator');
             if(isset($show)){
                 $shows = explode('|', $show);
+
+                # handle works
+                $i = array_search('works', $shows);
+                if ($i){
+                    # remove from list and renumber entries
+                    array_splice($shows, $i, 1);
+                    $getWorks = true;
+                } else {
+                    $getWorks = false;
+                }
+
+                # handle rest
                 $i=0;
                 foreach($shows as $s){
                     if (!in_array($s, $allowed)){
@@ -37,10 +51,10 @@
                     $i++;
                 }
                 $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map('mysql_real_escape_string', $shows)).'`';
-                return Array($select, $warning);
+                return Array($select, $getWorks, $warning);
             }else{
                 $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map('mysql_real_escape_string', $allowed)).'`';
-                return Array($select, $warning);
+                return Array($select, $getWorks, $warning);
             }
         }
 
@@ -89,7 +103,6 @@
         # constraints comes from ApiBase::readConstraints
         # and identifies id, wiki and year
         function run($constraints){
-            $getWorks = true;  #for now
             #either look up on artwork_id or one of the others
             $prefix = null;
             $w = null;
@@ -110,7 +123,7 @@
             list ($offset, $w) = ApiBase::setOffset($_GET['offset']);
             $warning = isset($w) ? $warning.$w : $warning;
             #load list of parameters to select
-            list ($select, $w) = self::setSelect($_GET['show'], $prefix);
+            list ($select, $getWorks, $w) = self::setSelect($_GET['show'], $prefix);
             $warning = isset($w) ? $warning.$w : $warning;
 
             #Needs support for
