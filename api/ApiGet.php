@@ -100,8 +100,9 @@
                 $warning
                 );
             }
+            $body = Array();
             foreach ($response as $r)
-                $body[] = Array('hit' => ApiBase::sanitizeBit1($r));
+                array_push($body, Array('hit' => ApiBase::sanitizeBit1($r))); # so that xml plays nice
             #Did we get all?
             $hits = $hits[0]['FOUND_ROWS()'];
             $head = Array(
