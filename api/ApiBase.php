@@ -19,7 +19,7 @@
      *     readConstraints:
      *         reads in a list of general constraints and classiifes them by type
      *     available types (functions) are
-     *         bboxParam, rangedParam, namedParam, boolParam, softParam, lifespanParam
+     *         bboxParam, rangedParam, namedParam, boolParam, softParam, multiRangedParam
      *
      * Interactions with other tables
      *     getAdminNames:
@@ -141,6 +141,7 @@
                     case 'death_year':
                     case 'dead':
                     case 'lifespan':
+                    case 'name':
                         #these are already in mysql format
                         $query .= $value.'
                 AND '.$prefix;
@@ -263,7 +264,7 @@
                 'is_inside', 'has_ugc', 'has_image', 'has_coords',
                 'has_wiki', 'has_same', 'is_removed');
             $artistConstraints = Array(
-                'id', 'wiki', 'first_name', 'last_name',
+                'id', 'wiki', 'first_name', 'last_name', 'name',
                 'birth_year', 'death_year', 'is_dead', 'lifespan');
             $allowed = array_merge($getConstraints, $artistConstraints);
             $maxValues = 50;
@@ -292,7 +293,7 @@
                             $params[$key] = self::bboxParam($key, $value);
                             break;
                         case 'lifespan':
-                            $params[$key] = self::lifespanParam($key, $value);
+                            $params[$key] = self::multiRangedParam('birth_year', 'death_year', $value);
                             break;
                         case 'year':
                         case 'created':
@@ -330,6 +331,9 @@
                         case 'address':
                         case 'first_name':
                             $params[$key] = self::softParam($key, $value);
+                            break;
+                        case 'name':
+                            $params[$key] = self::softParam(Array('first_name', 'last_name'), $value);
                             break;
                         default:
                             $params[$key] = $value;
@@ -401,26 +405,26 @@
             }
         }
         /* This is ranged but over two separate keys */
-        private function lifespanParam($key, $value){
+        private function multiRangedParam($key1, $key2, $value){
             if (substr_count($value, '|') != 1){
                 $errors = true;
-                throw new Exception('The "'.$key.'" parameter was formatted illegally (must be a piped range). ');
+                throw new Exception('The "'.$key1.'-'.$key2.'" parameter was formatted illegally (must be a piped range). ');
             };
             if (!$errors){
                 $vArray = explode('|', $value);
                 try {
-                    $birth = $vArray[0] != '' ? self::rangedParam('birth_year', $vArray[0].'|'): null;
-                    $death = $vArray[1] != '' ? self::rangedParam('death_year', '|'.$vArray[1]): null;
+                    $start = $vArray[0] != '' ? self::rangedParam($key1, $vArray[0].'|'): null;
+                    $stop = $vArray[1] != '' ? self::rangedParam($key2, '|'.$vArray[1]): null;
                 }
                 catch (Exception $e){
                     throw $e;
                 }
-                if (!is_null($birth) AND !is_null($death))
-                    return $birth.' AND '.$death;
-                elseif (!is_null($birth) OR !is_null($death))
-                    return $birth.$death;
+                if (!is_null($start) AND !is_null($stop))
+                    return $start.' AND '.$stop;
+                elseif (!is_null($start) OR !is_null($stop))
+                    return $start.$stop;
                 else
-                    throw new Exception('The "'.$key.'" parameter was formatted illegally (both values were empty). ');
+                    throw new Exception('The "'.$key1.'-'.$key2.'" parameter was formatted illegally (both values were empty). ');
             }
         }
 
@@ -456,10 +460,16 @@
             $vArray = explode('|', $value);
             if(count($vArray)>1){
                 $errors = true;
+                if (is_array($key))
+                    $key = implode('-', $key);
                 throw new Exception('The "'.$key.'" parameter was formatted illegally (only accepts one value). ');
             }
-            if (!$errors)
-                return '`'.mysql_real_escape_string($key).'` LIKE "%'.mysql_real_escape_string($value).'%" ';
+            if (!$errors){
+                if (!is_array($key))
+                    return '`'.mysql_real_escape_string($key).'` LIKE "%'.mysql_real_escape_string($value).'%" ';
+                else
+                    return 'CONCAT(`'.implode('`, " ", `', array_map('mysql_real_escape_string', $key)).'`) LIKE "%'.mysql_real_escape_string($value).'%" ';
+            }
         }
         #a boolean parameter (true/false needed since 0 isn't passed properly)
         private function boolParam($key, $value){

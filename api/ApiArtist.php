@@ -106,13 +106,12 @@
             #either look up on artwork_id or one of the others
             $prefix = null;
             $w = null;
-            $other = Array(
-                'wiki', 'id', 'first_name', 'last_name',
+            $otherSelectors = Array(
+                'wiki', 'id', 'first_name', 'last_name', 'name',
                 'birth_year', 'death_year', 'is_dead', 'lifespan');
-            # name (combo of first and last)
             if (isset($_GET['artwork'])){
                 $prefix = 'at';
-                if (count(array_intersect($other, array_keys($_GET))) > 0){  # if any of $other were provided
+                if (count(array_intersect($otherSelectors, array_keys($_GET))) > 0){  # if any of $otherSelectors were provided
                     $w = 'The artwork parameter cannot be combined with any other selectors, these are therefore disregarded. ';
                 }
             }
