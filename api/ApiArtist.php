@@ -106,9 +106,10 @@
             #either look up on artwork_id or one of the others
             $prefix = null;
             $w = null;
-            $other = Array('wiki', 'id');
-            # first_name, last_name, birth_year, death_year
-            # name (combo of first and last), lifespan (birth-death)
+            $other = Array(
+                'wiki', 'id', 'first_name', 'last_name',
+                'birth_year', 'death_year', 'is_dead', 'lifespan');
+            # name (combo of first and last)
             if (isset($_GET['artwork'])){
                 $prefix = 'at';
                 if (count(array_intersect($other, array_keys($_GET))) > 0){  # if any of $other were provided

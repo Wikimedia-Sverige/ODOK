@@ -19,7 +19,7 @@
      *     readConstraints:
      *         reads in a list of general constraints and classiifes them by type
      *     available types (functions) are
-     *         bboxParam, rangedParam, namedParam, boolParam, softParam
+     *         bboxParam, rangedParam, namedParam, boolParam, softParam, lifespanParam
      *
      * Interactions with other tables
      *     getAdminNames:
@@ -136,6 +136,11 @@
                     case 'has_wiki':
                     case 'same':
                     case 'removed':
+                    case 'first_name':
+                    case 'birth_year':
+                    case 'death_year':
+                    case 'dead':
+                    case 'lifespan':
                         #these are already in mysql format
                         $query .= $value.'
                 AND '.$prefix;
@@ -249,13 +254,18 @@
         function readConstraints(){
             #define list of allowed generic constraints
             #Should material be added (if so it's soft)? Left out for now due to municipal concerns
-            $allowed = Array('id', 'title', 'artist', 'year', 'type', 'address',
-                             'county', 'muni', 'county_name', 'muni_name',
-                             'district', 'bbox', 'BBOX', 'source', 'changed',
-                             'created', 'wiki', 'list', 'commons_cat',
-                             'official_url', 'free', 'owner', 'has_cmt',
-                             'is_inside', 'has_ugc', 'has_image', 'has_coords',
-                             'has_wiki', 'has_same', 'is_removed');
+            $getConstraints = Array(
+                'id', 'title', 'artist', 'year', 'type', 'address',
+                'county', 'muni', 'county_name', 'muni_name',
+                'district', 'bbox', 'BBOX', 'source', 'changed',
+                'created', 'wiki', 'list', 'commons_cat',
+                'official_url', 'free', 'owner', 'has_cmt',
+                'is_inside', 'has_ugc', 'has_image', 'has_coords',
+                'has_wiki', 'has_same', 'is_removed');
+            $artistConstraints = Array(
+                'id', 'wiki', 'first_name', 'last_name',
+                'birth_year', 'death_year', 'is_dead', 'lifespan');
+            $allowed = array_merge($getConstraints, $artistConstraints);
             $maxValues = 50;
             try{
                 ApiBase::largeParam();
@@ -281,9 +291,14 @@
                         case 'bbox':
                             $params[$key] = self::bboxParam($key, $value);
                             break;
+                        case 'lifespan':
+                            $params[$key] = self::lifespanParam($key, $value);
+                            break;
                         case 'year':
                         case 'created':
                         case 'changed':
+                        case 'birth_year':
+                        case 'death_year':
                             $params[$key] = self::rangedParam($key, $value);
                             break;
                         case 'muni_name':
@@ -299,6 +314,7 @@
                         case 'has_image':
                         case 'has_wiki':
                         case 'has_same':
+                        case 'is_dead':
                             $val = self::boolParam($key, $value);
                             if (!empty($val)){
                                 $keyparts = explode('_', $key);
@@ -312,6 +328,7 @@
                         case 'artist':
                         case 'title':
                         case 'address':
+                        case 'first_name':
                             $params[$key] = self::softParam($key, $value);
                             break;
                         default:
@@ -383,6 +400,30 @@
                     throw new Exception('The "'.$key.'" parameter was formatted illegally (too many values). ');
             }
         }
+        /* This is ranged but over two separate keys */
+        private function lifespanParam($key, $value){
+            if (substr_count($value, '|') != 1){
+                $errors = true;
+                throw new Exception('The "'.$key.'" parameter was formatted illegally (must be a piped range). ');
+            };
+            if (!$errors){
+                $vArray = explode('|', $value);
+                try {
+                    $birth = $vArray[0] != '' ? self::rangedParam('birth_year', $vArray[0].'|'): null;
+                    $death = $vArray[1] != '' ? self::rangedParam('death_year', '|'.$vArray[1]): null;
+                }
+                catch (Exception $e){
+                    throw $e;
+                }
+                if (!is_null($birth) AND !is_null($death))
+                    return $birth.' AND '.$death;
+                elseif (!is_null($birth) OR !is_null($death))
+                    return $birth.$death;
+                else
+                    throw new Exception('The "'.$key.'" parameter was formatted illegally (both values were empty). ');
+            }
+        }
+
         #creates a mapconstraint based on bbox=bl_lon|bl_lat|tr_lon|tr_lat
         #bl = bottom left, tr = top right, note that coords must be given wit "." as decimal
         private function bboxParam($key, $value){
@@ -430,16 +471,11 @@
                 switch ($key){
                     case 'cmt':
                     case 'image':
+                    case 'wiki':
                         if ($value=='false')
                             return '`'.mysql_real_escape_string($key).'` = ""';
                         else
                             return '`'.mysql_real_escape_string($key).'` != ""';
-                        break;
-                    case 'wiki':
-                        if ($value=='false')
-                            return '`wiki` = ""';
-                        else
-                            return '`wiki` != ""';
                         break;
                     case 'same':
                         if ($value=='false')
@@ -453,8 +489,14 @@
                         else
                             return '`lat` IS NOT NULL AND `lon` IS NOT NULL';
                         break;
+                    case 'dead':
+                        if ($value=='false')
+                            return '`death_year` IS NULL';
+                        else
+                            return '`death_year` IS NOT NULL';
+                        break;
                     default:
-                        # 'ugc', 'inside':
+                        # 'ugc', 'inside', 'removed':
                         #these should have bit(1) parameters
                         if ($value=='false')
                             return '`'.mysql_real_escape_string($key).'` = "0"';
