@@ -666,6 +666,10 @@
         }
     }
 
-    class CharacterLimitException extends Exception { } //max 512 characters in a parameter or else $_GET fails (external limit)
-    class ValueLimitException extends Exception { } //max 50 values in a parameter
+    //max characters in a parameter or else $_GET fails (external limit)
+    //max characters being returned by group_concat
+    class CharacterLimitException extends Exception { }
+
+    //max 50 values in a parameter
+    class ValueLimitException extends Exception { }
 ?>
