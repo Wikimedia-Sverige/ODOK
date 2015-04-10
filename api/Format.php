@@ -132,6 +132,8 @@
         function outputXsl($results){
             if (strtolower($_GET['action']) == 'get')
                 self::outputXml($results, 'get.xsl');
+            elseif (strtolower($_GET['action']) == 'artist')
+                self::outputXml($results, 'artist.xsl');
             elseif ((strtolower($_GET['action']) == 'admin') and (strtolower($_GET['function']) == 'diff'))
                 self::outputXml($results, 'diff.xsl');
             elseif ((strtolower($_GET['action']) == 'admin') and (strtolower($_GET['function']) == 'info'))
