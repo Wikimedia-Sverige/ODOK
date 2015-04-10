@@ -6,6 +6,7 @@ Code for Offentligkonst.se / ÖDOK (Öppen Databas för Offentlig Konst).
 The project consists of a database, an open API, a webpage to display the database contents on a leaflet map along with a separate page for search. Also various tools for mainitaining these.
 
 For more information see:
+
 * https://se.wikimedia.org/wiki/Offentligkonst.se
 * http://www.offentligkonst.se
 
