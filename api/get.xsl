@@ -140,7 +140,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:template name="Display_Wikidata-link">
     <xsl:param name="wdID" />
     <a><xsl:attribute name="href">
-        https://www.wikidata.org/wiki/Special:GoToLinkedPage/svwiki/<xsl:value-of select="$wdID"/>/></xsl:attribute>
+        https://www.wikidata.org/wiki/Special:GoToLinkedPage/svwiki/<xsl:value-of select="$wdID"/></xsl:attribute>
         <xsl:value-of select="$wdID"/>
     </a>
 </xsl:template>
