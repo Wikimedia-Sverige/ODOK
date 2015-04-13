@@ -260,6 +260,10 @@ def listToObjects(objects, pagename, list_wd, contents):
                 u'konstnär3': '',
                 u'konstnär4': '',
                 u'konstnär5': '',
+                u'konstnär6': '',
+                u'konstnär7': '',
+                u'konstnär8': '',
+                u'konstnär9': '',
                 u'årtal': '',
                 u'beskrivning': '',
                 u'typ': '',
@@ -342,9 +346,10 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
             * odok:u'year_cmt'
     '''
     # wikiObj.keys() = [u'typ', u'artikel', u'titel', 'clash', u'inomhus', u'material', u'döljStadsdel', u'län', u'konstnär2',
-    #                   u'konstnär3', u'konstnär4', u'konstnär5', u'döljKommun', u'lat', u'plats', u'fotnot', u'id', u'kommun',
+    #                   u'konstnär3', u'konstnär4', u'konstnär5', u'konstnär6', u'konstnär7', u'konstnär8', u'konstnär9',
+    #                   u'döljKommun', u'lat', u'plats', u'fotnot', u'fotnot2', u'fotnot3', u'id', u'kommun',
     #                   u'bild', u'stadsdel', u'commonscat', u'fri', u'konstnär', u'lon', u'beskrivning', u'årtal', u'id-länk',
-    #                   u'fotnot-namn', u'aka', u'page', u'lista', u'header']
+    #                   u'fotnot-namn', u'fotnot2-namn', u'fotnot3-namn', u'aka', u'page', u'lista', u'header']
     # odokObj.keys() = [u'changed', u'official_url', u'ugc', u'image', u'county', u'year', u'owner', u'commons_cat', u'id',
     #                   u'wiki', u'list', u'descr', u'title', u'lon', u'source', u'same_as', u'type', u'muni', u'material', u'free',
     #                   u'district', u'address', u'lat', u'year_cmt', u'artist', u'inside', u'created', u'cmt', u'removed']
@@ -416,7 +421,9 @@ def compareToDB(wikiObj, odokObj, wpApi, dbReadSQL, verbose=False):
         wikiObj[u'årtal'] = None
 
     # Deal with artists (does not deal with order of artists being changed):
-    artist_param = [u'konstnär', u'konstnär2', u'konstnär3', u'konstnär4', u'konstnär5']
+    artist_param = [u'konstnär', u'konstnär2', u'konstnär3',
+                    u'konstnär4', u'konstnär5', u'konstnär6',
+                    u'konstnär7', u'konstnär8', u'konstnär9']
     wikiObj[u'artists'] = ''
     artists_links = {}
     for a in artist_param:
