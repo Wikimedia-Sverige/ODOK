@@ -94,6 +94,7 @@ header.navbox nav a.search{
 }
 ul{
     list-style:disc outside none;
+    padding-left: 0;
 }
 .thumb{
     max-height:100px;
