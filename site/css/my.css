@@ -93,7 +93,7 @@ header.navbox nav a.search{
     background:url(../images/search.svg) top left no-repeat
 }
 ul{
-    list-style:disc outside none;
+    list-style:none outside none;
     padding-left: 0;
 }
 .thumb{
