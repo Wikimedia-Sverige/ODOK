@@ -134,6 +134,7 @@
                     case 'title':
                     case 'address':
                     case 'has_wiki':
+                    case 'has_list':
                     case 'same':
                     case 'removed':
                     case 'first_name':
@@ -262,7 +263,7 @@
                 'created', 'wiki', 'list', 'commons_cat',
                 'official_url', 'free', 'owner', 'has_cmt',
                 'is_inside', 'has_ugc', 'has_image', 'has_coords',
-                'has_wiki', 'has_same', 'is_removed');
+                'has_wiki', 'has_list', 'has_same', 'is_removed');
             $artistConstraints = Array(
                 'id', 'wiki', 'first_name', 'last_name', 'name',
                 'birth_year', 'death_year', 'is_dead', 'lifespan');
@@ -314,6 +315,7 @@
                         case 'has_cmt':
                         case 'has_image':
                         case 'has_wiki':
+                        case 'has_list':
                         case 'has_same':
                         case 'is_dead':
                             $val = self::boolParam($key, $value);
@@ -321,6 +323,8 @@
                                 $keyparts = explode('_', $key);
                                 if ($keyparts[1] == 'wiki') {
                                     $params['has_wiki'] = $val; # since 'wiki' is already claimed
+                                }elseif($keyparts[1] == 'list') {
+                                    $params['has_list'] = $val; # since 'list' is already claimed
                                 }else{
                                     $params[$keyparts[1]] = $val;
                                 }
@@ -482,6 +486,7 @@
                     case 'cmt':
                     case 'image':
                     case 'wiki':
+                    case 'list':
                         if ($value=='false')
                             return '`'.mysql_real_escape_string($key).'` = ""';
                         else
