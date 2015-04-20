@@ -22,7 +22,7 @@ information is returned. You can read more about these under
 Note that if the same parameter is added twice then only the latter is
 considerer. Where allowed multiple values for the same parameters are
 separated by the pipe "|" symbol.
-    
+
 ![note](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Pictogram_voting_comment.svg/18px-Pictogram_voting_comment.svg.png)
 Note that you can add a maximum of 50 values per parameter per search.
 
@@ -118,7 +118,7 @@ Most of these are self explanatory. Note however the following:
 -   `free`: this only takes the values 'pd','cc','unfree' and ''.
 
 ![note](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Pictogram_voting_comment.svg/18px-Pictogram_voting_comment.svg.png)
-You cannot use both the `muni` parameter and the `muni_name` parameter 
+You cannot use both the `muni` parameter and the `muni_name` parameter
 as doing so will not give the expected result. The same is true for the
 `county/county_name` parameters.
 
@@ -142,7 +142,7 @@ These are parameters that take only the values "`true`" or "`false`".
 These parameters are:
 
 -   (general) `is_inside`, `is_removed`, `has_ugc`, `has_image`,
-    `has_coords`, `has_wiki` (i.e. has wiki), `has_cmt` and `has_same`
+    `has_coords`, `has_wiki`, `has_list`, `has_cmt` and `has_same`
     (i.e. has `same_as`);
 -   (artist) `is_dead`.
 
