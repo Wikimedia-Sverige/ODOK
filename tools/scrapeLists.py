@@ -101,7 +101,7 @@ def getOdokHits(dbApi, queries, dDict, verbose=False):
     @ output: None if successful. Otherwise errormessage
     '''
     hits = dbApi.getQuery(queries)
-    if not hits:
+    if hits is None:
         return 'error in getOdokHits()'
     for hit in hits:
         idNo = hit['id']
