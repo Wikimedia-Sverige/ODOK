@@ -888,7 +888,7 @@ class WikiDataApi(WikiApi):
             if 'missing' in v.keys():  # entity is missing
                 page['missing'] = True
             else:
-                if site in v['sitelinks'].keys():
+                if 'sitelinks' in v.keys() and site in v['sitelinks'].keys():
                     page['title'] = v['sitelinks'][site]['title']
                     page['url'] = v['sitelinks'][site]['url']
                 else:
