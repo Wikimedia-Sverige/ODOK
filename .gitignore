@@ -6,3 +6,5 @@ config.php
 testing.php
 odok-setup\[noMuniorCounty\].sql
 /site/OpenLayers-2.8/
+/nbproject/private/
+/nbproject/
