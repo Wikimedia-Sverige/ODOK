@@ -14,7 +14,7 @@
         run(queries={'muni':'<muniNo>'}, listFile=u'scrapetmp1.txt')
  ?Does anythin have to be done manually at this point?
  To convert simply output using
-        outputAll(u'scrapetmp.txt',county, muni)
+        outputAll(u'scrapetmp.txt', u'COUNTY', u'MUNI')
  == Comparison of scraped results to database objects ==
  4. Do the first quick update which adds only enhancing data
         runUpdates(u'scrapetmp.txt', queries={'muni':'<muniNo>'}, quick=True)
@@ -236,6 +236,7 @@ def run(testing=False, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp
     else:
         wikiHits=[]
         for page in pages:
+            page = page.replace('_',' ')
             contents = wpApi.getPage(page)[page]
             wikiHits += parseArtwork(contents, page)
             print u'wikiHits: %r' %len(wikiHits)
