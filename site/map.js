@@ -216,9 +216,13 @@ function makePopup(feature) {
         desc += '</a>.';
     }
     else if (properties.descriptions.descr) {
-        desc += properties.descriptions.descr;
+        desc += capitalizeFirstLetter(properties.descriptions.descr);
     }
 
     return desc;
 
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
