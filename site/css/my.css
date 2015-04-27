@@ -94,10 +94,10 @@ header.navbox nav a.search{
 }
 ul{
     list-style:none outside none;
-    padding-left: 20px;
+    padding-left:20px;
 }
-li:nth-child(2){
-    padding-bottom: 8px;
+.leaflet-popup-content li:nth-child(2){
+    padding-bottom:8px;
 }
 .thumb{
     max-height:100px;
