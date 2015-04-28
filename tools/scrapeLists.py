@@ -8,21 +8,21 @@
  1. Identify pages with relevant lists. store pagenames as list <pages>
  2. Identify municipalitynumber as <muniNo>
  3. Do initial scrape:
-        run(pages=pages, queries={'muni':muniNo,'has_same':'false'}, tmpFile=u'scrapetmp.txt')
+        run(pages=pages, queries={'muni': muniNo, 'has_same': 'false'}, tmpFile=u'scrapetmp.txt')
  3.1 Results are outputted into <scrapetmp.txt>
  3.2 For further scrapes use
-        run(queries={'muni':'<muniNo>'}, listFile=u'scrapetmp1.txt')
+        run(queries={'muni': '<muniNo>'}, listFile=u'scrapetmp1.txt')
  ?Does anythin have to be done manually at this point?
  To convert simply output using
         outputAll(u'scrapetmp.txt', u'COUNTY', u'MUNI')
  == Comparison of scraped results to database objects ==
  4. Do the first quick update which adds only enhancing data
-        runUpdates(u'scrapetmp.txt', queries={'muni':'<muniNo>'}, quick=True)
+        runUpdates(u'scrapetmp.txt', queries={'muni': '<muniNo>'}, quick=True)
         Manually ok article suggestions
         commitUpdatesFile('tmpUpdates.txt', testing=False)
  ?must original artistLinks be dealt with here?
  5. Do the longer manual update (can be done repetedly)
-        runUpdates(u'tmpPostponed.txt', queries={'muni':'<muniNo>'})   !Note that this loses and _link parameters in the postponed file
+        runUpdates(u'tmpPostponed.txt', queries={'muni': '<muniNo>'})   #Note that this loses and _link parameters in the postponed file
         commitUpdatesFile('tmpUpdates.txt', testing=False)
  6. Linked artists can be dealt with separately
         runArtistLinks(u'tmpArtistLinks.txt', verbose=False)
@@ -31,7 +31,7 @@
 
  Updates:
  Starting from the scraped file
- runUpdates(u'scrapetmp-Sthlm.txt', queries={'muni':'0180'}, quick=True)
+ runUpdates(u'scrapetmp-Sthlm.txt', queries={'muni': '0180'}, quick=True)
 '''
 import dconfig as dconfig
 import WikiApi as wikiApi
@@ -39,45 +39,53 @@ import odok as odokConnect
 import common as common
 import codecs
 
+
 def parseArtwork(contents, pagename):
     '''
     Given the contents of a wikipage this returns the artorks listed in it
     input: wikicode
     @ output: list of artwork-dict items
     '''
-    units=[]
+    units = []
     while(True):
         table, contents, lead_in = common.findUnit(contents, u'{{Skulpturlista-huvud}}', u'|}')
-        if not table: break
+        if not table:
+            break
         # try to isolate a header row
-        header=''
+        header = ''
         lead_rows = lead_in.strip(' \n').split('\n')
         if lead_rows[-1].startswith(u'=='):
             header = lead_rows[-1].strip(u' =')
         while(True):
-            unit, table, dummy = common.findUnit(table, u'{{Skulpturlista', u'}}', brackets={u'{{':u'}}'})
-            if not unit: break
-            params={}
-            u = {u'id':'', u'namn':'', u'skulptör':'', u'årtal':'', u'material':'', u'plats':'', u'koordinater':'', u'bild':'',
-                 u'namn_link':'', u'skulptör_link':'', u'plats_link':'',  u'lat':'',  u'lon':'',
-                 u'header':header,  u'page':pagename}
+            unit, table, dummy = common.findUnit(table, u'{{Skulpturlista', u'}}', brackets={u'{{': u'}}'})
+            if not unit:
+                break
+            u = {u'id': '', u'namn': '', u'skulptör': '', u'årtal': '',
+                 u'material': '', u'plats': '', u'koordinater': '',
+                 u'bild': '', u'namn_link': '', u'skulptör_link': '',
+                 u'plats_link': '',  u'lat': '',  u'lon': '',
+                 u'header': header,  u'page': pagename}
             while(True):
-                part, unit, dummy = common.findUnit(unit, u'|', u'\n', brackets={u'[[':u']]', u'{{':u'}}'})
-                if not part: break
+                part, unit, dummy = common.findUnit(unit, u'|', u'\n', brackets={u'[[': u']]', u'{{': u'}}'})
+                if not part:
+                    break
                 if u'=' in part:
-                    part = part.replace(u'<small>','').replace(u'</small>','')
-                    part=part.strip(' \n\t')
+                    part = part.replace(u'<small>', '').replace(u'</small>', '')
+                    part = part.strip(' \n\t')
                     # can't use split as coord uses second equality sign
                     pos = part.find(u'=')
-                    key=part[:pos].strip()
-                    value=part[pos+1:].strip()
+                    key = part[:pos].strip()
+                    value = part[pos+1:].strip()
                     if len(value) > 0:
-                        if (key) in u.keys(): u[key] = value
-                        else: print u'Unrecognised parameter: %s = %s' %(key, value)
+                        if (key) in u.keys():
+                            u[key] = value
+                        else:
+                            print u'Unrecognised parameter: %s = %s' % (key, value)
             units.append(u.copy())
             # end units
         # end tables
     return units
+
 
 def postProcessing(units, mild=False):
     '''
@@ -95,6 +103,7 @@ def postProcessing(units, mild=False):
         if u[u'namn']:
             u[u'namn'], u[u'namn_link'] = common.extractAllLinks(u[u'namn'])
 
+
 def getOdokHits(dbApi, queries, dDict, verbose=False):
     '''
     Given constrictions (as a dict) this returns the available ODOK results using the get method of the api
@@ -105,8 +114,9 @@ def getOdokHits(dbApi, queries, dDict, verbose=False):
         return 'error in getOdokHits()'
     for hit in hits:
         idNo = hit['id']
-        dDict[idNo]=hit
+        dDict[idNo] = hit
     return None
+
 
 def wash(surname):
     '''
@@ -114,17 +124,23 @@ def wash(surname):
     different spellings.
     There must be a library somewhere for this
     '''
+    # these must be done first
     surname = surname.lower()
-    surname = surname.replace(u'ch',u'k').replace(u'c',u'k')
-    surname = surname.replace(u'z',u's').replace(u'ß',u's').replace(u'ss',u's')
-    surname = surname.replace(u'é',u'e').replace(u'é',u'è')
-    surname = surname.replace(u'á',u'a').replace(u'à',u'a')
-    surname = surname.replace(u'ø',u'ö')
-    surname = surname.replace(u'aa',u'å')
-    surname = surname.replace(u'ü',u'y')
-    surname = surname.replace(u'q',u'k')
-    surname = surname.replace(u'u',u'v')
+    surname = surname.replace(u'ch', u'k')
+
+    # remaining replacements
+    replacements = {u'c': u'k', u'q': u'k',
+                    u'z': u's', u'ß': u's', u'ss': u's',
+                    u'é': u'e', u'è': u'e',
+                    u'ø': u'ö', u'oe': u'ö',
+                    u'ae': u'ä',
+                    u'aa': u'å',
+                    u'ü': u'y',
+                    u'u': u'v'}
+    for k, v in replacements.iteritems():
+        surname = surname.replace(k, v)
     return surname
+
 
 def findMatches(odok, wiki):
     '''
@@ -133,33 +149,46 @@ def findMatches(odok, wiki):
     TO DO: Expand to display several alternatives
     '''
     # remove any id's which have already been identified
-    matched_ids=[]
+    matched_ids = []
     for w in wiki:
         if w['id']:
             if w['id'] in matched_ids:
-                print u'id %s was matched to more than one wiki object!' %w['id']
+                print u'id %s was matched to more than one wiki object!' % w['id']
             else:
                 matched_ids.append(w['id'])
-    print u'%r out of %r already matched (out of a maximum of %r)' %(len(matched_ids), len(wiki), len(odok))
+    print u'%r out of %r already matched (out of a maximum of %r)' % (len(matched_ids), len(wiki), len(odok))
 
     # make lists of odok titles and artists
-    odok_titles={}; odok_artist={}; odok_surname={}
+    odok_titles = {}
+    odok_artist = {}
+    odok_surname = {}
     for key, o in odok.iteritems():
-        if key in matched_ids: continue
+        if key in matched_ids:
+            continue
         if o['title']:
-            if o['title'] in odok_titles.keys(): odok_titles[o['title']].append(key)
-            else: odok_titles[o['title']] = [key,]
+            if o['title'] in odok_titles.keys():
+                odok_titles[o['title']].append(key)
+            else:
+                odok_titles[o['title']] = [key, ]
         if o['artist']:
-            if o['artist'] in odok_artist.keys(): odok_artist[o['artist']].append(key)
-            else: odok_artist[o['artist']] = [key,]
+            if o['artist'] in odok_artist.keys():
+                odok_artist[o['artist']].append(key)
+            else:
+                odok_artist[o['artist']] = [key, ]
             surname = wash(o['artist'].split(' ')[-1])
-            if surname in odok_surname.keys(): odok_surname[surname].append(key)
-            else: odok_surname[surname] = [key,]
+            if surname in odok_surname.keys():
+                odok_surname[surname].append(key)
+            else:
+                odok_surname[surname] = [key, ]
 
     # remove any id's which have already been identified
     for w in wiki:
-        if w['id']: continue
-        wIdN = None; wIdA=None; wIdS=None; match=([], '')
+        if w['id']:
+            continue
+        wIdN = None
+        wIdA = None
+        wIdS = None
+        match = ([], '')
         if w['namn'] in odok_titles.keys():
             wIdN = odok_titles[w['namn']]
         if w[u'skulptör'] in odok_artist.keys():
@@ -168,8 +197,10 @@ def findMatches(odok, wiki):
             wIdS = odok_surname[wash(w[u'skulptör'].split(' ')[-1])]
         if wIdN and wIdA:  # match on both title and artist
             if len(wIdN) == 1:
-                if wIdN[0] in wIdA: match = ([wIdN[0]], 'double match')
-                else: match = ([wIdN[0]], 'title match but artist missmatch')
+                if wIdN[0] in wIdA:
+                    match = ([wIdN[0]], 'double match')
+                else:
+                    match = ([wIdN[0]], 'title match but artist missmatch')
             else:
                 for nId in wIdN:
                     if nId in wIdA:
@@ -185,19 +216,20 @@ def findMatches(odok, wiki):
             # replace do "nice search" with ss->s
         # explicitly ask for verification for each match
         if match[0]:
-            keys=match[0]
-            print u'%s: (%s)' %(match[1], ' | '.join(keys))
-            print u'W: "%s", "%s", (%s), "%s"' %(w[u'namn'], w[u'skulptör'], w[u'årtal'], w['plats'])
-            for r in range(0,len(keys)):
+            keys = match[0]
+            print u'%s: (%s)' % (match[1], ' | '.join(keys))
+            print u'W: "%s", "%s", (%s), "%s"' % (w[u'namn'], w[u'skulptör'], w[u'årtal'], w['plats'])
+            for r in range(0, len(keys)):
                 key = keys[r]
-                print u'%r: "%s", "%s", (%s), "%s"' %(r, odok[key]['title'], odok[key][u'artist'], odok[key][u'year'], odok[key][u'address'])
+                print u'%r: "%s", "%s", (%s), "%s"' % (r, odok[key]['title'], odok[key][u'artist'], odok[key][u'year'], odok[key][u'address'])
             while True:
-                inChoice=raw_input('Accept? [#/N]:')
+                inChoice = raw_input('Accept? [#/N]:')
                 if inChoice == 'N' or inChoice == 'n':
                     break
-                elif common.is_number(inChoice) and int(inChoice) in range(0,len(keys)):
+                elif common.is_number(inChoice) and int(inChoice) in range(0, len(keys)):
                     w['id'] = keys[int(inChoice)]
                     break
+
 
 def fileToHits(filename):
     '''
@@ -217,14 +249,15 @@ def fileToHits(filename):
                     if ';' in value:
                         value = value.split(';')
                     else:
-                        value = [value,]
-                unit[key]=value
+                        value = [value, ]
+                unit[key] = value
         wikiHits.append(unit.copy())
     return wikiHits
 
-def run(testing=False, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp.txt'):
+
+def run(testing=False, pages=[], queries={}, listFile=None, tmpFile=u'scrapetmp.txt'):
     '''
-    runs the scrape-and-match process. if testing=true then outputs to file instead
+    runs the scrape-and-match process. if testing==true then outputs to file instead
     '''
     wpApi = wikiApi.WikiApi.setUpApi(user=dconfig.w_username, password=dconfig.w_password, site=dconfig.wp_site)
     dbApi = odokConnect.OdokApi.setUpApi(user=dconfig.odok_user, site=dconfig.odok_site)
@@ -232,26 +265,27 @@ def run(testing=False, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp
         pages.append(u'Användardiskussion:André Costa (WMSE)/tmp')
         queries['muni'] = '0180'
     if listFile:
-        wikiHits=fileToHits(listFile)
+        wikiHits = fileToHits(listFile)
     else:
-        wikiHits=[]
+        wikiHits = []
         for page in pages:
-            page = page.replace('_',' ')
+            page = page.replace('_', ' ')
             contents = wpApi.getPage(page)[page]
             wikiHits += parseArtwork(contents, page)
-            print u'wikiHits: %r' %len(wikiHits)
+            print u'wikiHits: %r' % len(wikiHits)
         postProcessing(wikiHits, mild=True)
         # safety backup
-        f=codecs.open(u'%s1%s' %(tmpFile[:-4],tmpFile[-4:]),'w','utf8')
+        f = codecs.open(u'%s1%s' % (tmpFile[:-4], tmpFile[-4:]), 'w', 'utf8')
         for u in wikiHits:
-            for k,v in u.iteritems():
-                if isinstance(v,list):  # i.e. the non-empty  _link parameters
-                    f.write(u'%s:%s|' %(k,';'.join(v)))
-                else: f.write(u'%s:%s|' %(k,v))
+            for k, v in u.iteritems():
+                if isinstance(v, list):  # i.e. the non-empty  _link parameters
+                    f.write(u'%s:%s|' % (k, ';'.join(v)))
+                else:
+                    f.write(u'%s:%s|' % (k, v))
             f.write(u'\n')
         f.close()
     # fetch all objects matching a given constriction
-    odokHits={}
+    odokHits = {}
     odok_result = getOdokHits(dbApi, queries, odokHits)
     if odok_result:
         print odok_result
@@ -260,87 +294,110 @@ def run(testing=False, pages=[], queries ={}, listFile=None, tmpFile=u'scrapetmp
     findMatches(odokHits, wikiHits)
     # compare values (focus on stadsdel, plats, koord, material, bild, artist_link) be distrustful of name_link and beware of <ref>
     # add new values to ÖDOK
-    f=codecs.open(tmpFile,'w','utf8')
+    f = codecs.open(tmpFile, 'w', 'utf8')
     for u in wikiHits:
-        for k,v in u.iteritems():
-                if isinstance(v,list):  # i.e. the non-empty  _link parameters
-                    f.write(u'%s:%s|' %(k,';'.join(v)))
-                else: f.write(u'%s:%s|' %(k,v))
+        for k, v in u.iteritems():
+                if isinstance(v, list):  # i.e. the non-empty  _link parameters
+                    f.write(u'%s:%s|' % (k, ';'.join(v)))
+                else:
+                    f.write(u'%s:%s|' % (k, v))
         f.write(u'\n')
     f.close()
     print 'Done!'
 
+
 def outputMissing(listFile, county, muni, wikilist=u'scrapetmp-Sthlm.txt'):
     '''given the previous list file this outputs any unmatched entries'''
-    wiki=fileToHits(wikilist)
+    wiki = fileToHits(wikilist)
     missing = []
     for w in wiki:
         if not w['id']:
             missing.append(w.copy())
-    print 'Missing %r out of %r' %(len(missing), len(wiki))
-    f=codecs.open('%s-missing.%s' %(listFile[:-4],listFile[-3:]),'w','utf8')
-    f.write(u'{{Offentligkonstlista-huvud|län=%s|kommun=%s}}\n' %(county,muni))
+    print 'Missing %r out of %r' % (len(missing), len(wiki))
+    f = codecs.open('%s-missing.%s' % (listFile[:-4], listFile[-3:]), 'w', 'utf8')
+    f.write(u'{{Offentligkonstlista-huvud|län=%s|kommun=%s}}\n' % (county, muni))
     for m in missing:
-        f.write(u'%s\n' %wikiListFormat(m))
+        f.write(u'%s\n' % wikiListFormat(m))
     f.write(u'|}\n')
     f.close()
     print 'Done!'
+
 
 def outputAll(listFile, county, muni):
     '''given the previous list file this outputs any unmatched entries'''
-    wiki=fileToHits(listFile)
-    missing = []
-    f=codecs.open('%s-asList.%s' %(listFile[:-4],listFile[-3:]),'w','utf8')
-    f.write(u'{{Offentligkonstlista-huvud|län=%s|kommun=%s}}\n' %(county,muni))
+    wiki = fileToHits(listFile)
+    f = codecs.open('%s-asList.%s' % (listFile[:-4], listFile[-3:]), 'w', 'utf8')
+    f.write(u'{{Offentligkonstlista-huvud|län=%s|kommun=%s}}\n' % (county, muni))
     for w in wiki:
-        f.write(u'%s\n' %wikiListFormat(w))
+        f.write(u'%s\n' % wikiListFormat(w))
     f.write(u'|}\n')
     f.close()
     print 'Done!'
 
+
 def wikiListFormat(w):
     '''given a list entry this outputs a wikilist row'''
-    if w[u'id']: idNo=w[u'id']
-    else: idNo = ''
+    if w[u'id']:
+        idNo = w[u'id']
+    else:
+        idNo = ''
 
     if w[u'namn']:
         title = w[u'namn']
         if w[u'namn_link']:
-            title = u'%s: [[%s]]' %(title, ']]; [['.join(w[u'namn_link']))
-    else: title = ''
+            title = u'%s: [[%s]]' % (title, ']]; [['.join(w[u'namn_link']))
+    else:
+        title = ''
 
     if w[u'skulptör']:
         artist = w[u'skulptör']
         if w[u'skulptör_link']:
-            if len(w[u'skulptör_link'])==1:
-                if w[u'skulptör_link'][0] == w[u'skulptör']: artist = u'[[%s]]' %artist
-                else: artist = u'[[%s|%s]]' %(w[u'skulptör_link'][0], artist)
-            else: artist = u'%s: [[%s]]' %(artist, ']]; [['.join(w[u'skulptör_link']))
-    else: artist = ''
+            if len(w[u'skulptör_link']) == 1:
+                if w[u'skulptör_link'][0] == w[u'skulptör']:
+                    artist = u'[[%s]]' % artist
+                else:
+                    artist = u'[[%s|%s]]' % (w[u'skulptör_link'][0], artist)
+            else:
+                artist = u'%s: [[%s]]' % (artist, ']]; [['.join(w[u'skulptör_link']))
+    else:
+        artist = ''
 
-    if w[u'årtal']: year=w[u'årtal']
-    else: year = ''
+    if w[u'årtal']:
+        year = w[u'årtal']
+    else:
+        year = ''
 
-    if w[u'material']: material=w[u'material']
-    else: material = ''
+    if w[u'material']:
+        material = w[u'material']
+    else:
+        material = ''
 
     if w[u'plats']:
         plats = w[u'plats']
         if w[u'plats_link']:
-            plats = u'%s: [[%s]]' %(plats, ']]; [['.join(w[u'plats_link']))
-    else: plats = ''
+            plats = u'%s: [[%s]]' % (plats, ']]; [['.join(w[u'plats_link']))
+    else:
+        plats = ''
 
-    if w[u'header']: stadsdel=w[u'header']
-    else: stadsdel = ''
+    if w[u'header']:
+        stadsdel = w[u'header']
+    else:
+        stadsdel = ''
 
-    if w[u'lat']: lat=w[u'lat']
-    else: lat = ''
+    if w[u'lat']:
+        lat = w[u'lat']
+    else:
+        lat = ''
 
-    if w[u'lon']: lon=w[u'lon']
-    else: lon = ''
+    if w[u'lon']:
+        lon = w[u'lon']
+    else:
+        lon = ''
 
-    if w[u'bild']: bild=w[u'bild']
-    else: bild = ''
+    if w[u'bild']:
+        bild = w[u'bild']
+    else:
+        bild = ''
 
     txt = u'''{{Offentligkonstlista|döljKommun=
 | id           = %s
@@ -361,12 +418,12 @@ def wikiListFormat(w):
 | bild         = %s
 | commonscat   =
 | fotnot       = källa: [[%s]]
-}}''' %(idNo, title, artist, year, material, plats, stadsdel, lat, lon, bild, w['page'])
+}}''' % (idNo, title, artist, year, material, plats, stadsdel, lat, lon, bild, w['page'])
     return txt
 
-#==============================================================================
-# Comparison of matched results to database and import of additional data
 
+# ==============================================================================
+# Comparison of matched results to database and import of additional data
 def updatesToDatabase(odok, wiki, quick=False):
     '''
     given a wiki-entry which has been matched to an odok object
@@ -378,17 +435,18 @@ def updatesToDatabase(odok, wiki, quick=False):
     updated = {}
     postponed = {}
     linked_artists = {}
-    mapping = {u'namn':'title', u'skulptör':'artist', u'årtal':'year',
-               u'material':'material', u'plats':'address', u'header':'district',
-               u'lat':'lat', u'lon':'lon', u'bild':'image', u'typ':'type'}
-    # non-trivial mappings u'namn_link':'wiki'
+    mapping = {u'namn': 'title', u'skulptör': 'artist', u'årtal': 'year',
+               u'material': 'material', u'plats': 'address', u'header': 'district',
+               u'lat': 'lat', u'lon': 'lon', u'bild': 'image', u'typ': 'type'}
+    # non-trivial mappings u'namn_link': 'wiki'
     for w in wiki:
-        if not w['id']: continue
+        if not w['id']:
+            continue
         o = odok[w['id']]
         changes = {}
         skipped = {}
         for k, v in mapping.iteritems():
-            if not k in w.keys():  # for postponed file some fields might be missing
+            if k not in w.keys():  # for postponed file some fields might be missing
                 continue
             no_Tags, dummy = common.extractLink(w[k], kill_tags=True)
             if not no_Tags:  # skip if w[k] is empty (or only a tag)
@@ -400,11 +458,11 @@ def updatesToDatabase(odok, wiki, quick=False):
                     skipped[k] = w[k]
                 else:
                     # need to decide which to use
-                    print u'Diff for %s (%s): %s' %(w['id'], o['title'], v)
-                    print u' ödok: "%s"' %o[v]
-                    print u' wiki: "%s"' %w[k]
+                    print u'Diff for %s (%s): %s' % (w['id'], o['title'], v)
+                    print u' ödok: "%s"' % o[v]
+                    print u' wiki: "%s"' % w[k]
                     while True:
-                        inChoice=raw_input(u'Use wiki [Y(es)/N(o)/S(kip)]:')
+                        inChoice = raw_input(u'Use wiki [Y(es)/N(o)/S(kip)]:')
                         if inChoice.lower() == u'n' or inChoice.lower() == u'no':
                             break
                         elif inChoice.lower() == u'y' or inChoice.lower() == u'yes':
@@ -417,21 +475,22 @@ def updatesToDatabase(odok, wiki, quick=False):
         # register any artist_links so that these can be compared to existing links
         if u'skulptör_link' in w.keys() and w[u'skulptör_link']:  # postponed might not have u'skulptör_link'
             for a in w[u'skulptör_link']:
-                if a in linked_artists.keys(): linked_artists[a].append(w['id'])
-                else: linked_artists[a] = [w['id'],]
+                if a in linked_artists.keys():
+                    linked_artists[a].append(w['id'])
+                else:
+                    linked_artists[a] = [w['id'], ]
 
         # article_links must be checked manually since link may be depictive rather than of the actual object.
         if (u'namn_link' in w.keys() and w['namn_link']) and not o[u'wiki']:  # postponed might not have u'namn_link'
-            keys=w['namn_link']
-            print u'Potential title link for "%s" ("%s" on wiki)' %(o['title'], w['namn'])
-            for r in range(0,len(keys)):
-                key = keys[r]
-                print u'%r: "%s"' %(r, keys[r])
+            keys = w['namn_link']
+            print u'Potential title link for "%s" ("%s" on wiki)' % (o['title'], w['namn'])
+            for r in range(0, len(keys)):
+                print u'%r: "%s"' % (r, keys[r])
             while True:
-                inChoice=raw_input('Accept? [#/N]:')
+                inChoice = raw_input('Accept? [#/N]:')
                 if inChoice == 'N' or inChoice == 'n':
                     break
-                elif common.is_number(inChoice) and int(inChoice) in range(0,len(keys)):
+                elif common.is_number(inChoice) and int(inChoice) in range(0, len(keys)):
                     # NEW START
                     wdInfo = wpApi.getPageInfo(keys[int(inChoice)], debug=True)[keys[int(inChoice)]]
                     if 'wikidata' in wdInfo.keys() and wdInfo['wikidata']:  # if exists and not empty
@@ -444,22 +503,22 @@ def updatesToDatabase(odok, wiki, quick=False):
             postponed[w['id']] = skipped.copy()
     # end of wiki_object loop
 
-
     # Build new wikidata-module -
     # Build odok_write-module in the same spirit. Moving lots of writeToDatabase to that
     # om inte header, try page
     # plats_link?
     return (updated, postponed, linked_artists)
 
-def runUpdates(listFile, testing=True, queries ={}, quick=False):
+
+def runUpdates(listFile, testing=True, queries={}, quick=False):
     '''
     adds list data to odok
     listFile can be replaced by the postponed output
     add support for an updates_file: can read it in using fileToHits but must then break-out id
     '''
     dbApi = odokConnect.OdokApi.setUpApi(user=dconfig.odok_user, site=dconfig.odok_site)
-    wiki=fileToHits(listFile)
-    odok={}
+    wiki = fileToHits(listFile)
+    odok = {}
     odok_result = getOdokHits(dbApi, queries, odok)
     if odok_result:
         print odok_result
@@ -468,49 +527,54 @@ def runUpdates(listFile, testing=True, queries ={}, quick=False):
 
     # convert linked_artists to wikidata_id (and create if non exists)
     # compare this to odok artist_link for these id_s
-    ## Note that links  might point to different artists, links may be missing or links may be missing from some but not all objects
+
+    # Note that links  might point to different artists,
+    # links may be missing or links may be missing from some but not
+    # all objects
 
     #   odokWriter.uppdateMain(conn, cursor, key, changes)
     # for key, changes in updated.iteritems():
 
     # update database
     if testing:
-        f_tmp = codecs.open(u'tmpUpdates.txt','w','utf8')
+        f_tmp = codecs.open(u'tmpUpdates.txt', 'w', 'utf8')
         for key, changes in updated.iteritems():
-            f_tmp.write('id:%s' %key)
-            for k,v in changes.iteritems():
-                f_tmp.write(u'|%s:%s' %(k,v))
+            f_tmp.write('id:%s' % key)
+            for k, v in changes.iteritems():
+                f_tmp.write(u'|%s:%s' % (k, v))
             f_tmp.write(u'\n')
         f_tmp.close()
-        f_tmp = codecs.open(u'tmpArtistLinks.txt','w','utf8')
+        f_tmp = codecs.open(u'tmpArtistLinks.txt', 'w', 'utf8')
         for artist, ids in linked_artists.iteritems():
-            f_tmp.write(u'artist:%s|ids:%s\n' %(artist,';'.join(ids)))
+            f_tmp.write(u'artist:%s|ids:%s\n' % (artist, ';'.join(ids)))
         f_tmp.close()
     # else:
     #    commitUpdates(updated, testing=testing)
 
     # output postponed
-    f_post = codecs.open(u'tmpPostponed.txt','w','utf8')
+    f_post = codecs.open(u'tmpPostponed.txt', 'w', 'utf8')
     for key, changes in postponed.iteritems():
-        f_post.write('id:%s' %key)
-        for k,v in changes.iteritems():
-            f_post.write(u'|%s:%s' %(k,v))
+        f_post.write('id:%s' % key)
+        for k, v in changes.iteritems():
+            f_post.write(u'|%s:%s' % (k, v))
         f_post.write(u'\n')
     f_post.close()
+
 
 def commitUpdatesFile(filename, testing=True):
     '''
     takes the "updates" outputfile from runUpdates() and sends it to commitUpdates()
     '''
     wikiHits = fileToHits(filename)
-    updates={}
+    updates = {}
     for w in wikiHits:
-        idNo=w['id']
+        idNo = w['id']
         del w['id']
-        updates[idNo]=w.copy()
+        updates[idNo] = w.copy()
 
     commitUpdates(updates, testing=testing)
     print 'Done!'
+
 
 def commitUpdates(updates, testing=True):
     '''
@@ -527,8 +591,8 @@ def commitUpdates(updates, testing=True):
     odokOut.closeConnections()
     print 'Done!'
 
-# ===================Dealing with artist_links
 
+# ===================Dealing with artist_links
 def runArtistLinks(filename, verbose=False):
     '''
     takes the "artistLinks" outputfile from runUpdates() and analyses it
@@ -538,12 +602,12 @@ def runArtistLinks(filename, verbose=False):
     wikiHits = fileToHits(filename)
     artists = {}
     for w in wikiHits:
-        a=w['artist']
+        a = w['artist']
         ids = w['ids'].split(';')
-        artists[a]={'ids':ids}
+        artists[a] = {'ids': ids}
 
     # check which of these has a wikidata entry
-    wdList=[]
+    wdList = []
     dDict = wpApi.getPageInfo(artists.keys(), debug=verbose)
     for k, v in dDict.iteritems():
         if 'wikidata' in v.keys():
@@ -554,7 +618,7 @@ def runArtistLinks(filename, verbose=False):
 
     # Check for disambiguation pages and deal with pages without wikidata entries - REBUILT getWikidata/getPageInfo means this could be combined with previous
     pageList = dDict.keys()
-    pageInfo=wpApi.getPageInfo(pageList, debug=verbose)
+    pageInfo = wpApi.getPageInfo(pageList, debug=verbose)
     for k, v in pageInfo.iteritems():
         if 'missing' in v.keys():
             del artists[k]
@@ -576,11 +640,12 @@ def runArtistLinks(filename, verbose=False):
     # remaining are most easily dealt with manually as one should check that wikidata entity corresponds to artist (and not someone else with similar name)
 
     # tmp
-    f_tmp = codecs.open(u'tmpArtistLinks2.txt','w','utf8')
+    f_tmp = codecs.open(u'tmpArtistLinks2.txt', 'w', 'utf8')
     for k, v in artists.iteritems():
         if v['ids']:  # skip any that have been dealt with
-            f_tmp.write(u'artist:%s|wikidata:%s|ids:%s\n' %(k,v['wikidata'],';'.join(v['ids'])))
+            f_tmp.write(u'artist:%s|wikidata:%s|ids:%s\n' % (k, v['wikidata'], ';'.join(v['ids'])))
     f_tmp.close()
+
 
 def odokArtists(artistDict, wikidataList):
     '''
@@ -593,7 +658,7 @@ def odokArtists(artistDict, wikidataList):
 
     # match any that already existing
     matched = {}
-    for k,v in artistDict.iteritems():
+    for k, v in artistDict.iteritems():
         if v['wikidata'] in odokResults.keys():
             odokId = odokResults[v['wikidata']]['id']
             v['odokId'] = odokId
@@ -601,7 +666,7 @@ def odokArtists(artistDict, wikidataList):
 
     # remove any links which already exist in artist_links
     odokResults = odokConnection.findArtistLinks('artist', matched.keys())
-    for k,v in artistDict.iteritems():
+    for k, v in artistDict.iteritems():
         if 'odokId' in v.keys():
             odokId = str(v['odokId'])
             if odokId in odokResults.keys():
@@ -614,11 +679,11 @@ def odokArtists(artistDict, wikidataList):
     # add remaining matches to artist_links
     for k, vals in matched.iteritems():
         for v in vals:
-            odokConnection.insertIntoTable('artist_links', {'object':v, 'artist':int(k)})
+            odokConnection.insertIntoTable('artist_links', {'object': v, 'artist': int(k)})
     odokConnection.closeConnections()
 
     # now remove these from artist
-    for k,v in artistDict.iteritems():
+    for k, v in artistDict.iteritems():
         if 'odokId' in v.keys():
             odokObjs = matched[str(v['odokId'])]
             for o in odokObjs:
