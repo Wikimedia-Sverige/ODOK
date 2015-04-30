@@ -385,9 +385,14 @@ window.onload = function load() {
         shadowSize: [41, 41]
     });
 
-    // Trigger search
+    // Trigger search on button click or enter in text input
     $('#button_search').click(function(){
         triggerSearch();
+    });
+    $('.enterTriggered input').keypress(function(e){
+        if(e.which == 13) {
+            triggerSearch();
+        }
     });
 
     // Handle incoming hash
