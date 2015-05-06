@@ -99,6 +99,93 @@ class OdokApi(wikiApi.WikiApi):
 
         return members
 
+    def getAllLists(self, members=None, offset=None, debug=False):
+        '''
+        Returns list of all wikidata ids corresponding to known lists
+        :param members: (optional) A list to which to add the results (internal use)
+        :param offset: (optional) Offset within the current batch of results
+        :return: list of wikidata ids
+        '''
+        if members is None:
+            members = []
+
+        jsonr = self.httpGET("admin", [('function', 'lists'.encode('utf-8')),
+                                       ('limit', str(100))], debug=debug)
+
+        if debug:
+            print u'getAllLists(): \n'
+            print jsonr
+
+        # find errors
+        if not jsonr['head']['status'] == '1':
+            print self.failiure(jsonr)
+            return None
+
+        for hit in jsonr['body']:
+            members.append(hit['hit']['list'])
+
+        if 'continue' in jsonr['head'].keys():
+            offset = jsonr['head']['continue']
+            members = self.getAllLists(members, offset, debug=debug)
+
+        return members
+
+    def getListMembers(self, idList, members=None, offset=None, show=None, debug=False):
+        '''
+        Returns list of all objects matching one of the provided list ids
+        :param idList: A list of list ids to look for
+        :param members: (optional) A list to which to add the results (internal use)
+        :param offset: (optional) Offset within the current batch of results
+        :param show: (optional) A list of fields to return
+        :return: list odok objects (dicts)
+        '''
+        # print "Fetching pages with ids: " + '|'.join(idList)
+        # if no initial list supplied
+        if members is None:
+            members = []
+
+        # do an upper limit check and split into several requests if necessary
+        reqlimit = self.limitByBytes(idList, self.reqlimit)  # max reqlimit values per request but further limited by the bytelimit
+        idList = list(set(idList))  # remove dupes
+        if len(idList) > reqlimit:
+            i = 0
+            while (i+reqlimit < len(idList)):
+                reqlimit = self.limitByBytes(idList[i:], reqlimit)  # tests if reqlimit is small enough
+                self.getListMembers(idList[i:i+reqlimit], members, offset, show=show, debug=debug)
+                i += reqlimit
+            # less than reqlimit left
+            idList = idList[i:]
+            if len(idList) < 1:  # i.e. exactly divisible by reqlimit
+                return members
+
+        # Single run
+        query = [('limit', str(100)),
+                 ('list', '|'.join(idList).encode('utf-8'))]
+        if show:
+            query += [('show', '|'.join(show).encode('utf-8'))]
+        if offset:
+            query += [('offset', str(offset))]
+
+        jsonr = self.httpGET("get", query, debug=debug)
+
+        if debug:
+            print u'getListMembers(): idList=%s\n' % idList
+            print jsonr
+
+        # find errors
+        if not jsonr['head']['status'] == '1':
+            print self.failiure(jsonr)
+            return None
+
+        for hit in jsonr['body']:
+            members.append(hit['hit'])
+
+        if 'continue' in jsonr['head'].keys():
+            offset = jsonr['head']['continue']
+            members = self.getListMembers(idList, members, offset, show=show, debug=debug)
+
+        return members
+
     def getQuery(self, queries, members=None, debug=False):
         '''
         Returns list of all objects matching the provided query (blunt function which should be avoided if possible)
@@ -199,8 +286,8 @@ class OdokApi(wikiApi.WikiApi):
             members = self.getGeoJson(members=members, full=full, source=source, offset=offset, inside=inside, removed=removed, same_as=same_as, debug=debug)
 
         return members
-
 # End of OdokApi()
+
 
 class OdokSQL():
     '''
@@ -323,6 +410,7 @@ class OdokSQL():
         return odok
 # End of OdokSQL()
 
+
 class OdokWriter(OdokSQL):
     # TODO
     # some of OdokSQL.__init__ should probably be here instead to govern accessible fields
@@ -403,6 +491,7 @@ class OdokWriter(OdokSQL):
             except MySQLdb.Warning, e:
                 return e.message
         return None
+
 
 class OdokReader(OdokSQL):
     '''

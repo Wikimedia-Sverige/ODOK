@@ -82,6 +82,23 @@
             return ApiBase::sanitizeBit1($response[0]);
         }
 
+        #displays all known list ids
+        private function getLists(){
+            $query = '
+                SELECT SQL_CALC_FOUND_ROWS DISTINCT(`list`)
+                FROM `main_table`
+                WHERE `list` != ""
+                ';
+            #run query
+            try{
+                $response = ApiBase::doQuery($query);
+                $hits = ApiBase::doQuery('SELECT FOUND_ROWS()');
+            }catch (Exception $e){throw $e;}
+            foreach ($response as $r)
+                $body[] = Array('hit' => $r);
+            return Array($body, $hits);
+        }
+
         #returns a list of artists withouth any linked objects
         private function getArtistlessObject($limit, $offset){
             $query = '
@@ -153,8 +170,11 @@
 
             try{
                 switch (strtolower($_GET['function'])) {
-                    case 'diff':
+                    case strtolower('diff'):
                         list ($response, $hits) = self::getChanges($limit, $offset, $constraints);
+                        break;
+                    case strtolower('lists'):
+                        list ($response, $hits) = self::getLists();
                         break;
                     case strtolower('objectlessArtist'):
                         #list of artists that have no objects
