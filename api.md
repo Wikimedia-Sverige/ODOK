@@ -355,6 +355,8 @@ To use set the `function` parameter to one of:
 
 -   `info`: Displays all known info for a given object as identified by
     its id and table
+-   `lists`: Displays all known Wikipedia lists being referenced in the
+    database (referred to by Wikidata id)
 -   `diff`: produces a list of changes in main\_table wrt. audit\_table
     (listens for global constraints)
 -   `objectlessArtist`: produces a list of artists that have no objects
