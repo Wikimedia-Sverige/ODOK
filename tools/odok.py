@@ -146,7 +146,7 @@ class OdokApi(wikiApi.WikiApi):
 
         return members
 
-    def getGeoJson(self, members=None, full=False, source=None, offset=0, inside=False, removed=False, same_as=False, debug=False):
+    def getGeoJson(self, members=None, full=False, source=None, offset=0, inside=False, removed=False, same_as=False, has_list=True, debug=False):
         '''
         Returns list of all objects matching one of the provided ids
         :param members: (optional) A list to which to add the results (internal use)
@@ -156,6 +156,7 @@ class OdokApi(wikiApi.WikiApi):
         :param inside: (optional) Whether to include objects tagged as inside
         :param remove: (optional) Whether to include objects tagged as removed
         :param same_as: (optional) Whether to include objects tagged as having a same_as
+        :param has_list: (optional) Whether to require objects to have a non-empty list parameter
         :return: list odok objects (dicts)
         '''
         # if no initial list supplied
@@ -174,6 +175,8 @@ class OdokApi(wikiApi.WikiApi):
             query += [('is_removed', 'false')]
         if not same_as:
             query += [('has_same', 'false')]
+        if has_list:
+            query += [('has_list', 'true')]
 
         # Single run
         # action=get&limit=100&format=geojson&geojson=full&offset=0
