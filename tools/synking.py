@@ -21,7 +21,7 @@ import dataDicts as dataDict
 import UGC_synk as UGCsynk
 
 
-def run(verbose=False, days=100):
+def run(verbose=False, days=100, testing=False):
     '''
     update database based on all list changes
     INCOMPLETE
@@ -31,7 +31,7 @@ def run(verbose=False, days=100):
     wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site)
     dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_site)
     dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_server, db=config.db, user=config.db_read, passwd=config.db_read_password)
-    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password)
+    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password, testing=testing)
 
     # set up logging
     logfile = u'¤syncLog.log'
@@ -159,10 +159,104 @@ def run(verbose=False, days=100):
     flog.write(u'------SQL-log (read)-------------\n%s\n' % dbReadSQL.closeConnections())
     flog.write(u'------SQL-log (write)-------------\n%s\n' % dbWriteSQL.closeConnections())
     flog.write(u'------END of updates-------------\n\n')
-    flog.close()
+
+    # Identify any removed objects
+    log = removedObjects(dbApi, dbWriteSQL, pageInfos, wiki_objects)
+    if log:
+        flog.write(u'%s\n' % log)
+    if testing:
+        flog.write(u'%s\n' % dbWriteSQL.resetLog())
+
+    # Identify any removed lists
+    log = removedLists(dbApi, wpApi, dbWriteSQL, pageList, pageInfos)
+    if log:
+        flog.write(u'%s\n' % log)
+    if testing:
+        flog.write(u'%s\n' % dbWriteSQL.resetLog())
 
     # TOBUILD db.makeDump() #change create a dump (ideally one which is incremental)
+    flog.close()
     print 'Done, woho!'
+
+
+def removedObjects(dbApi, odokWriter, pageInfos, wiki_objects):
+    '''
+    Identify if any objects have been removed from the list and,
+    if so empty their list field in db.
+    TODO: explain params
+    '''
+    log = ''
+    # identify wikidata ids of modified pages
+    listIds = []
+    for k, v in pageInfos.iteritems():
+        listIds.append(v['wikidata'])
+
+    # get all members of these, according to db
+    listmembers = dbApi.getListMembers(listIds, show=[u'id', u'list'])
+
+    # identify any removed
+    removedList = []
+    for k in listmembers:
+        if k[u'id'] not in wiki_objects.keys():
+            removedList.append(k[u'id'])
+
+    # update in db
+    # UPDATE `main_table` SET `list` = '' where id in (removeList)
+    for key in removedList:
+        problem = odokWriter.updateTable(key, {'list': ''})
+        if problem:
+            log += 'SQL update for %s had the problem: %s\n' % (key, problem)
+    # done
+    print u'Removed %r objects from lists\n' % len(removedList)
+    return log
+
+
+def removedLists(dbApi, wpApi, odokWriter, pageList, oldPageInfos):
+    '''
+    Identify if any objects have been removed from the list and,
+    if so empty their list field in db.
+    :param pageList: all pages in main namespace with the right template
+    :param oldPageInfos: pageInfo but only for updated pages \
+                         (usefull for retrieving newly added wikidataIds)
+    '''
+    log = ''
+
+    # extract pagenames
+    checkList = []
+    for p in pageList:
+        checkList.append(p['title'])
+
+    # get wikidata id
+    pageInfos = wpApi.getPageInfo(checkList)
+    wpList = []
+    for pagename, pageinfo in pageInfos.iteritems():
+        if 'wikidata' not in pageinfo.keys() or pageinfo['wikidata'] == '':
+            # this may occur if wikidata lable was added during synk but this has yet to show up on-wiki
+            if pagename in oldPageInfos.keys():
+                wpList.append(oldPageInfos[pagename]['wikidata'])
+            else:
+                log += 'Deleted lists: No wikidata for list "%s", aborting!' % pagename
+                return log
+        else:
+            wpList.append(pageinfo['wikidata'])
+
+    # identify any removed
+    removedList = []
+    dbLists = dbApi.getAllLists()
+    for k in dbLists:
+        if k not in wpList:
+            removedList.append(k)
+
+    # update in db
+    # UPDATE `main_table` SET `list` = '' WHERE `list` IN removeList
+    if len(removedList) > 0:
+        problem = odokWriter.clearListEntries(removedList)
+        if problem:
+            log += 'SQL update for clearList had the problem: %s\n' % problem
+        print u'The following lists were deleted: %s\n' % ', '.join(removedList)
+
+    # done
+    return log
 
 
 def commitToDatabase(odokWriter, changes, verbose=False):

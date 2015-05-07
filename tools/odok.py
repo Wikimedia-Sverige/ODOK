@@ -351,7 +351,16 @@ class OdokSQL():
         self.cursor = None
         (self.conn, self.cursor) = self.connectDatabase(host=host, db=db, user=user, passwd=passwd)
 
-    def multiQuery(self, queries, testing=False):
+    def resetLog(self):
+        '''
+        returns current log content then resets the log
+        :return: string
+        '''
+        oldLog = self.log
+        self.log = u''
+        return oldLog
+
+    def multiQuery(self, queries):
         '''
         Multiple queries where executemany is not suitable and multiple executes are needed
         (e.g. when using LAST_INSERT_ID()) to avoid "Commands out of sync"
@@ -364,17 +373,20 @@ class OdokSQL():
             return None
 
         for q in queries:
-            results.append(self.query(query=q, params=None, testing=testing))
+            results.append(self.query(query=q, params=None))
         self.conn.commit()
         return results
 
-    def query(self, query, params, testing=False, expectReply=False):
+    def query(self, query, params, expectReply=False, commit=False):
         '''
         NEEDS to deal with no params (i.e. a commit)
         Sends a query to the databse and returns the result
         :param query: the SQL safe query
         :param params: the parameters to stick into the query
-        :param expectReply:if a reply from the execute statement is expected (e.g. from COUNT(*))
+        :param expectReply: if a reply from the execute statement is \
+                            expected (e.g. from COUNT(*))
+        :param commit: if a conn.commit step should be taken (potentially \
+                       useful when writing to db)
         :returns: list of rows
         '''
         if not params:
@@ -382,14 +394,20 @@ class OdokSQL():
         elif not isinstance(params, tuple):
             params = (params,)
 
-        if testing:
+        if self.testing:
             self.log = u'%s\n%s' % (self.log, query % self.conn.literal(params))
             if expectReply:
                 return (None, None)
             else:
                 return None
 
-        reply = self.cursor.execute(query, params)
+        # run query
+        try:
+            reply = self.cursor.execute(query, params)
+            if commit:
+                self.conn.commit()
+        except MySQLdb.Warning, e:
+            raise e.message
 
         # return results
         result = []
@@ -454,12 +472,39 @@ class OdokWriter(OdokSQL):
                 return e.message
         return None
 
+    def clearListEntries(self, wikidata):
+        '''
+        Removes all references to a given set of lists
+        :param wikidata: a list of wikidata ids to on-wiki lists
+        :return: None if successful
+        '''
+        if not isinstance(wikidata, list):
+            if (isinstance(wikidata, str) or isinstance(wikidata, unicode)):
+                wikidata = [wikidata, ]
+            else:
+                return '"clearListEntries()" requires a list of wikidata \
+                         entities or a single entity.'
+        if not len(wikidata) > 0:
+            return None
+
+        format_strings = ','.join(['%s'] * len(wikidata))
+        q = u"""UPDATE `main_table`
+                SET `list` = ''
+                WHERE `list` IN (%s);""" % format_strings
+
+        # run and return any error
+        try:
+            self.query(q, tuple(wikidata), commit=True)
+        except MySQLdb.Warning, e:
+            return e.message
+
     def insertIntoTable(self, table, values):
         '''
         Insert a single update to the database
         :param table: table to update
         :param values: list with {param:value}-set to be added,
-            must contain all keys in self.parameters[table], all others are ignored
+            must contain all keys in self.parameters[table],
+            all others are ignored
         :return: None if successful
         '''
         if table not in self.tables.keys():
@@ -478,7 +523,9 @@ class OdokWriter(OdokSQL):
                 for p in self.parameters[table]:
                     vals.append(v[p])
             else:
-                self.log += u'insertIntoTable: a required parameter is missing for table %s (given: %s; required: %s)\n' % (table, ','.join(v.keys()), ','.join(self.parameters[table]))
+                self.log += u'insertIntoTable: a required parameter is \
+                              missing for table %s (given: %s; required: \
+                              %s)\n' % (table, ','.join(v.keys()), ','.join(self.parameters[table]))
         query = query[:-1]
         # break this out into OdokSQL.commit(self, query, vals)
         if self.testing:
@@ -537,7 +584,7 @@ class OdokReader(OdokSQL):
 
     def getArtistByWiki(self, wikidata):
         '''
-        given a list of wikidata entities this checks id any are present
+        given a list of wikidata entities this checks if any are present
         in the artist_table
         :param wikidata: list of wikidataentities (or a single wikidata entity)
         :returns: dictionary of artist matching said entities with artistID as
