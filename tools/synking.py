@@ -150,32 +150,26 @@ def run(verbose=False, days=100, testing=False):
         log = commitToDatabase(dbWriteSQL, changes, verbose=verbose)
         if log:
             flog.write(u'%s\n' % log)
-        print 'Committed'
     else:
         flog.write('no changes to be done!\n')
-
-    # TOBUILD db.setSync(thisSync) #change lastSync to thisSync
     flog.write(u'Done! Changed %r entries\n' % len(changes))
-    flog.write(u'------SQL-log (read)-------------\n%s\n' % dbReadSQL.closeConnections())
-    flog.write(u'------SQL-log (write)-------------\n%s\n' % dbWriteSQL.closeConnections())
-    flog.write(u'------END of updates-------------\n\n')
 
     # Identify any removed objects
     log = removedObjects(dbApi, dbWriteSQL, pageInfos, wiki_objects)
     if log:
         flog.write(u'%s\n' % log)
-    if testing:
-        flog.write(u'%s\n' % dbWriteSQL.resetLog())
 
     # Identify any removed lists
     log = removedLists(dbApi, wpApi, dbWriteSQL, pageList, pageInfos)
     if log:
         flog.write(u'%s\n' % log)
-    if testing:
-        flog.write(u'%s\n' % dbWriteSQL.resetLog())
 
-    # TOBUILD db.makeDump() #change create a dump (ideally one which is incremental)
+    # TOBUILD db.setSync(thisSync) #change lastSync to thisSync
+    flog.write(u'------SQL-log (read)-------------\n%s\n' % dbReadSQL.closeConnections())
+    flog.write(u'------SQL-log (write)-------------\n%s\n' % dbWriteSQL.closeConnections())
+    flog.write(u'------END of updates-------------\n\n')
     flog.close()
+    # TOBUILD db.makeDump() #change create a dump (ideally one which is incremental)
     print 'Done, woho!'
 
 
