@@ -98,12 +98,12 @@ def fileWithWikidata(filename=u'Artists.csv', idcol=0, namecol=[4, 3], verbose=F
 def artistFromLog(filename='artist-dump.csv', idcol=0, namecol=3, verbose=False):
     wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site, verbose=verbose)
     wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site, verbose=verbose)
-    wdDict = wdApi.getArticles(aDict.keys())
     dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_server, db=config.db, user=config.db_read, passwd=config.db_read_password)
     outfile = filename[:-4]
 
     aDict = file_to_dict(filename=filename, idcol=idcol, namecol=namecol, verbose=verbose)
     # aDict is now wd:([ids], wd)
+    wdDict = wdApi.getArticles(aDict.keys())
 
     for k, v in wdDict.iteritems():
         a = aDict.pop(k)

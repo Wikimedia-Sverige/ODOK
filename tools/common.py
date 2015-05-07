@@ -4,8 +4,8 @@
 # Methods comonly shared by the tool scripts
 #
 import codecs
-import os
 import operator
+
 
 def openFile(filename):
     '''opens a given file (utf-8) and returns the lines'''
@@ -16,10 +16,12 @@ def openFile(filename):
     lines.pop()
     return lines
 
+
 def sortedDict(ddict):
     '''turns a dict into a sorted list'''
     sorted_ddict = sorted(ddict.iteritems(), key=operator.itemgetter(1), reverse=True)
     return sorted_ddict
+
 
 def is_number(s):
     try:
@@ -28,12 +30,14 @@ def is_number(s):
     except (ValueError, TypeError):
         return False
 
+
 def is_int(s):
     try:
         int(s)
         return True
     except (ValueError, TypeError):
         return False
+
 
 def extractName(entry):
     '''If field includes square brackets then this ignores any part of name field which lies outside
@@ -44,6 +48,7 @@ def extractName(entry):
         entry = entry[pos1+1:pos2]
     return entry.split(u';')
 
+
 def extractNameParts(name):
     '''Tries to separate a name into first and second name.'''
     # Algorithm. If one "," in names then asume lName, fName.
@@ -51,14 +56,15 @@ def extractNameParts(name):
     # Plain name returned if all else fails
     if u',' in name:
         parts = name.split(u',')
-        if len(parts)==2:
-            return u'%s;%s' %(parts[1].strip(),parts[0].strip())
+        if len(parts) == 2:
+            return u'%s;%s' % (parts[1].strip(), parts[0].strip())
     if u' ' in name:
         parts = name.split(u' ')
         lName = parts[-1].strip()
         fName = name[:-len(lName)].strip()
-        return u'%s;%s' %(fName,lName)
+        return u'%s;%s' % (fName, lName)
     return name
+
 
 def findUnit(contents, start, end, brackets=None):
     '''
@@ -77,42 +83,42 @@ def findUnit(contents, start, end, brackets=None):
     '''
     if start in contents:
         # If end is left blank
-        if end==None:
-            noEnd=True
+        if end is None:
+            noEnd = True
             end = start
         else:
-            noEnd=False
+            noEnd = False
 
         uStart = contents.find(start) + len(start)
-        uEnd = contents.find(end,uStart)
+        uEnd = contents.find(end, uStart)
         if uEnd < 0:  # process till end of string
             uEnd = None
         if brackets:
-            for bStart,bEnd in brackets.iteritems():
-                dummy=u'¤'*len(bEnd)
+            for bStart, bEnd in brackets.iteritems():
+                dummy = u'¤'*len(bEnd)
                 diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
-                if diff<0:
-                    print 'Negative bracket missmatch for: %s <--> %s' %(bStart,bEnd)
+                if diff < 0:
+                    print 'Negative bracket missmatch for: %s <--> %s' % (bStart, bEnd)
                     return None, None, None
                 # two cases either end is one of these brackets or not
                 if end in bEnd:  # end is part of endBracket
-                    i=0
-                    while(diff >0):
+                    i = 0
+                    while(diff > 0):
                         i += 1
-                        uEnd = contents.replace(bEnd,dummy,i).find(end,uStart)
+                        uEnd = contents.replace(bEnd, dummy, i).find(end, uStart)
                         if uEnd < 0:
-                            print 'Positive (final) bracket missmatch for: %s <--> %s' %(bStart,bEnd)
+                            print 'Positive (final) bracket missmatch for: %s <--> %s' % (bStart, bEnd)
                             return None, None, None
                         diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
                 else:  # end is different from endBracket (e.g. a '|')
-                    i=0
-                    while(diff >0):
+                    i = 0
+                    while(diff > 0):
                         i += 1
-                        uEnd = contents.find(end,uEnd+len(end))
+                        uEnd = contents.find(end, uEnd+len(end))
                         if uEnd < 0:
                             diff = contents[uStart:].count(bStart) - contents[uStart:].count(bEnd)
-                            if diff>0:
-                                print 'Positive (final) bracket missmatch for: %s <--> %s' %(bStart,bEnd)
+                            if diff > 0:
+                                print 'Positive (final) bracket missmatch for: %s <--> %s' % (bStart, bEnd)
                                 return None, None, None
                         else:
                             diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
@@ -128,7 +134,8 @@ def findUnit(contents, start, end, brackets=None):
             remainder = ''
         return (unit, remainder, lead_in)
     else:
-        return '','',''
+        return '', '', ''
+
 
 def extractLink(text, kill_tags=False):
     '''
@@ -148,17 +155,18 @@ def extractLink(text, kill_tags=False):
                 dummy, remainder, lead_in = findUnit(text, u'<', u'>')
             text = lead_in.strip()+' '+remainder.strip()
 
-    if not u'[[' in text: return (text.strip(), '')
+    if u'[[' not in text:
+        return (text.strip(), '')
     interior, dummy, dummy = findUnit(text, u'[[', u']]')
     wikilink = u'[['+interior+u']]'
     pos = text.find(wikilink)
     pre = text[:pos]
     post = text[pos+len(wikilink):]
-    center=''
-    link=''
+    center = ''
+    link = ''
 
     # determine which type of link we are dealing with see meta:Help:Links#Wikilinks for details
-    if not u'|' in interior:  # [[ab]] -> ('ab', 'ab')
+    if u'|' not in interior:  # [[ab]] -> ('ab', 'ab')
         center = interior
         link = interior.strip()
     else:
@@ -167,10 +175,10 @@ def extractLink(text, kill_tags=False):
         center = interior[pos+1:]
         if len(link) == 0:  # [[|ab]] -> ('ab', 'ab')
             link = center
-        elif len(center)>0:  # [[a|b]] -> ('b', 'a')
+        elif len(center) > 0:  # [[a|b]] -> ('b', 'a')
             pass
         else:
-            center=link
+            center = link
             if u':' in center:  # [[a:b|]] -> ('b', 'a:b')
                 center = center[center.find(u':')+1:]
             if u', ' in center:  # [[a, b|]] -> ('a', 'a, b')
@@ -178,22 +186,24 @@ def extractLink(text, kill_tags=False):
             if u'(' in center:  # [[a (b)|]] -> ('a', 'a (b)')
                 pos = center.find(u'(')
                 if u')' in center[pos:]:
-                    center=center[:pos]
+                    center = center[:pos]
                     if center.endswith(' '):  # the first space separating text and bracket is ignored
                         center = center[:-1]
     return ((pre+center+post).strip(), link.strip())
+
 
 def extractAllLinks(text, kill_tags=False):
     '''
     Given wikitext this checks for any wikilinks
     @output: (plain_text, list of link)
     '''
-    wikilinks=[]
+    wikilinks = []
     text, link = extractLink(text, kill_tags=kill_tags)
     while link:
         wikilinks.append(link)
         text, link = extractLink(text, kill_tags=kill_tags)
     return text, wikilinks
+
 
 def latLonFromCoord(coord):
     '''
@@ -206,11 +216,11 @@ def latLonFromCoord(coord):
         print 'incorrectly formated coordinate (prefix): %s' % coord
         return None
     p = coord.split('|')
-    
+
     if is_number(p[1]):  #
         try:
             if is_number(p[2].rstrip('}')):  #
-                if len(p) == 3: # {{coord|12.123|12.123}} implicitly N, E
+                if len(p) == 3:  # {{coord|12.123|12.123}} implicitly N, E
                     lat = float(p[1].strip())
                     lon = float(p[2].strip().rstrip('}'))
                     lat_sign = u'N'
@@ -229,22 +239,22 @@ def latLonFromCoord(coord):
                 lat, lat_sign = float(p[1].strip()), p[2].strip().rstrip('}')
                 lon, lon_sign = float(p[3].strip()), p[4].strip().rstrip('}')
             if lat_sign == u'N':
-                lat_sign=1
+                lat_sign = 1
             elif lat_sign == u'S':
-                lat_sign=-1
+                lat_sign = -1
             else:
                 print 'incorrectly formated coordinate (lat_sign): %s, %s' % (lat_sign, coord)
                 return None
             if lon_sign == u'E':
-                lon_sign=1
+                lon_sign = 1
             elif lon_sign == u'W':
-                lon_sign=-1
+                lon_sign = -1
             else:
                 print 'incorrectly formated coordinate (lon_sign): %s, %s' % (lon_sign, coord)
                 return None
             lat = lat_sign*lat
             lon = lon_sign*lon
-            return (lat,lon)
+            return (lat, lon)
         except IndexError:
             print 'incorrectly formated coordinate (?): %s' % coord
     else:
