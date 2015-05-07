@@ -182,15 +182,19 @@ class OdokApi(wikiApi.WikiApi):
 
         if 'continue' in jsonr['head'].keys():
             offset = jsonr['head']['continue']
-            members = self.getListMembers(idList, members, offset, show=show, debug=debug)
+            members = self.getListMembers(idList, members, offset,
+                                          show=show, debug=debug)
 
         return members
 
     def getQuery(self, queries, members=None, debug=False):
         '''
-        Returns list of all objects matching the provided query (blunt function which should be avoided if possible)
-        :param queries: A dictionary of parameter value pairs to limit the search by. These must be formated and limited correctly
-        :param members: (optional) A list to which to add the results (internal use)
+        Returns list of all objects matching the provided query (blunt
+        function which should be avoided if possible)
+        :param queries: A dictionary of parameter value pairs to limit
+            the search by. These must be formated and limited correctly
+        :param members: (optional) A list to which to add the results
+            (internal use)
         :return: list odok objects (dicts)
         '''
         # if no initial list supplied
@@ -283,7 +287,10 @@ class OdokApi(wikiApi.WikiApi):
 
         if 'continue' in jsonr['head'].keys():
             offset = jsonr['head']['continue']
-            members = self.getGeoJson(members=members, full=full, source=source, offset=offset, inside=inside, removed=removed, same_as=same_as, debug=debug)
+            members = self.getGeoJson(members=members, full=full,
+                                      source=source, offset=offset,
+                                      inside=inside, removed=removed,
+                                      same_as=same_as, debug=debug)
 
         return members
 # End of OdokApi()
@@ -293,7 +300,7 @@ class OdokSQL():
     '''
     Connection directly via SQL
     Use for editing database and for queries not (yet) supported by api
-    Largely what is in odokWriter - still would be nice to split reading and writing
+    Largely what was in odokWriter
     Maybe:
     file odok.py
     class OdokApi(wikiApi.WikiApi)
@@ -308,7 +315,8 @@ class OdokSQL():
         '''
         Connect to the mysql database, if it fails, go down in flames
         '''
-        conn = MySQLdb.connect(host=host, db=db, user=user, passwd=passwd, use_unicode=True, charset='utf8')
+        conn = MySQLdb.connect(host=host, db=db, user=user, passwd=passwd,
+                               use_unicode=True, charset='utf8')
         cursor = conn.cursor()
         return (conn, cursor)
 
@@ -325,7 +333,8 @@ class OdokSQL():
         Establish connection to database, set up logfile and determine testing
         '''
         self.log = u''
-        # whitelist of editable tables. Excludes muni/county as these are largely inert
+        # whitelist of editable tables
+        # Excludes muni/county as these are largely inert
         self.tables = {
             'main': 'main_table',
             'artist': 'artist_table',
@@ -334,8 +343,15 @@ class OdokSQL():
             'aka': 'aka_table'}
         # whitelist of editable parameters (per table)
         self.parameters = {
-            'main': [u'name', u'title', u'artist', u'descr', u'year', u'year_cmt', u'type', u'material', u'inside', u'address', u'county', u'muni', u'district', u'lat', u'lon', u'removed', u'image', u'wiki', u'list', u'commons_cat', u'official_url', u'same_as', u'free', u'owner', u'cmt'],
-            'artist': [u'first_name', u'last_name', u'wiki', u'birth_date', u'death_date', u'birth_year', u'death_year', u'creator', u'cmt'],
+            'main': [u'name', u'title', u'artist', u'descr', u'year',
+                     u'year_cmt', u'type', u'material', u'inside',
+                     u'address', u'county', u'muni', u'district', u'lat',
+                     u'lon', u'removed', u'image', u'wiki', u'list',
+                     u'commons_cat', u'official_url', u'same_as', u'free',
+                     u'owner', u'cmt'],
+            'artist': [u'first_name', u'last_name', u'wiki', u'birth_date',
+                       u'death_date', u'birth_year', u'death_year', u'creator',
+                       u'cmt'],
             'source': [u'name', u'wiki', u'real_id', u'url', u'cmt'],
             'artist_links': [u'object', u'artist'],
             'aka': [u'title', u'main_id']}
@@ -346,7 +362,7 @@ class OdokSQL():
             'source': [u'id'],
             'artist_links': [],
             'aka': [u'id']}
-        self.testing = testing  # outputs to logfile instead of writing to database
+        self.testing = testing  # output to logfile instead of writing to db
         self.conn = None
         self.cursor = None
         (self.conn, self.cursor) = self.connectDatabase(host=host, db=db, user=user, passwd=passwd)
@@ -362,8 +378,9 @@ class OdokSQL():
 
     def multiQuery(self, queries):
         '''
-        Multiple queries where executemany is not suitable and multiple executes are needed
-        (e.g. when using LAST_INSERT_ID()) to avoid "Commands out of sync"
+        Multiple queries where executemany is not suitable and multiple
+        executes are needed (e.g. when using LAST_INSERT_ID()) to avoid
+        "Commands out of sync"
         To do: Add support for params
         :param queries: List of SQL safe queries
         '''
@@ -395,7 +412,8 @@ class OdokSQL():
             params = (params,)
 
         if self.testing:
-            self.log = u'%s\n%s' % (self.log, query % self.conn.literal(params))
+            self.log = u'%s\n%s' % (self.log,
+                                    query % self.conn.literal(params))
             if expectReply:
                 return (None, None)
             else:
@@ -431,9 +449,11 @@ class OdokSQL():
 
 class OdokWriter(OdokSQL):
     # TODO
-    # some of OdokSQL.__init__ should probably be here instead to govern accessible fields
+    # some of OdokSQL.__init__ should probably be here instead to govern
+    #    accessible fields
     # make a general updater/adder followed by more specific add artist
-    #    etc. which requires a dict of a certain type and checks formating duplication etc.
+    #    etc. which requires a dict of a certain type and checks formating,
+    #    duplication etc.
     # make sure commit/respone handeling is done by the more general OdokSQL
 
     def updateTable(self, key, changes, table='main'):
@@ -460,17 +480,12 @@ class OdokWriter(OdokSQL):
             else:
                 self.log += u'%s is not a valid parameter for %s\n' % (k, table)
         query = u"""%s WHERE id = %%s; """ % query[:-1]
-        # break this out into OdokSQL.commit(self, query, vals)
-        if self.testing:
-            # note that this may give unicodeerror related to how literal works
-            self.log += query % self.conn.literal(tuple(vals)+(key,)) + u'\n'
-        else:
-            try:
-                self.cursor.execute(query, (tuple(vals)+(key,)))
-                self.conn.commit()
-            except MySQLdb.Warning, e:
-                return e.message
-        return None
+
+        # run and return any error
+        try:
+            self.query(query, tuple(vals)+(key,), commit=True)
+        except MySQLdb.Warning, e:
+            return e.message
 
     def clearListEntries(self, wikidata):
         '''
@@ -488,8 +503,8 @@ class OdokWriter(OdokSQL):
             return None
 
         format_strings = ','.join(['%s'] * len(wikidata))
-        q = u"""UPDATE `main_table`
-                SET `list` = ''
+        q = u"""UPDATE `main_table` 
+                SET `list` = '' 
                 WHERE `list` IN (%s);""" % format_strings
 
         # run and return any error
@@ -514,7 +529,8 @@ class OdokWriter(OdokSQL):
             self.log += u'insertIntoTable: no values given\n'
             return None
 
-        query = u"""INSERT INTO %s (%s) VALUES""" % (self.tables[table], ','.join(self.parameters[table]))
+        query = u"""INSERT INTO %s (%s) VALUES""" % (self.tables[table],
+                                                     ','.join(self.parameters[table]))
         row = u','.join(['%s']*len(self.parameters[table]))
         vals = []
         for v in values:
@@ -525,19 +541,16 @@ class OdokWriter(OdokSQL):
             else:
                 self.log += u'insertIntoTable: a required parameter is \
                               missing for table %s (given: %s; required: \
-                              %s)\n' % (table, ','.join(v.keys()), ','.join(self.parameters[table]))
+                              %s)\n' % (table,
+                                        ','.join(v.keys()),
+                                        ','.join(self.parameters[table]))
         query = query[:-1]
-        # break this out into OdokSQL.commit(self, query, vals)
-        if self.testing:
-            # not that this may give unicodeerror related to how literal works
-            self.log += query % self.conn.literal(tuple(vals)) + u'\n'
-        else:
-            try:
-                self.cursor.execute(query, (tuple(vals)))
-                self.conn.commit()
-            except MySQLdb.Warning, e:
-                return e.message
-        return None
+
+        # run and return any error
+        try:
+            self.query(query, tuple(vals), commit=True)
+        except MySQLdb.Warning, e:
+            return e.message
 
 
 class OdokReader(OdokSQL):
@@ -554,7 +567,9 @@ class OdokReader(OdokSQL):
         akas from aka_table
         SHOULD BE IN ApiGet
         '''
-        q = u"""SELECT `id`, `title`, `main_id` FROM `aka_table` WHERE `main_id` = %s;"""
+        q = u"""SELECT `id`, `title`, `main_id`
+                FROM `aka_table`
+                WHERE `main_id` = %s;"""
         rows = self.query(q, idNo)
         if len(rows) == 0:
             results = []
@@ -568,10 +583,14 @@ class OdokReader(OdokSQL):
         '''
         given one id in main_table find and return the corresponding artists
         from artist_table mapped via artist_links
-        SHOULD BE IN ApiArtist
+        SHOULD BE IN ApiArtist [now in api.php?action=artist&artwork=<id>]
         '''
-        q = u"""SELECT `id`, `first_name`, `last_name`, `wiki` FROM `artist_table` WHERE `id` IN
-                (SELECT a.`artist` FROM `artist_links` a WHERE a.`object` = %s);"""
+        q = u"""SELECT `id`, `first_name`, `last_name`, `wiki`
+                FROM `artist_table`
+                WHERE `id` IN
+                    (SELECT a.`artist`
+                     FROM `artist_links` a
+                     WHERE a.`object` = %s);"""
         rows = self.query(q, idNo)
         if len(rows) == 0:
             results = []
@@ -589,7 +608,7 @@ class OdokReader(OdokSQL):
         :param wikidata: list of wikidataentities (or a single wikidata entity)
         :returns: dictionary of artist matching said entities with artistID as
         keys {first_name, last_name, wiki, birth_date, death_date, birth_year, death_year}
-        SHOULD BE IN ApiArtist
+        SHOULD BE IN ApiArtist [now in api.php?action=artist&wiki=<id>]
         '''
         # if only one entity given
         if not isinstance(wikidata, list):
