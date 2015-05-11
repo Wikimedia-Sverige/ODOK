@@ -142,8 +142,8 @@ def run(verbose=False, days=100, testing=False):
             if changes[k] == {}:
                 del changes[k]
 
-        flog.write('changes to be done (%r): %s\n' % (ccounter, json.encode(changes)))
-        flog.write('changes not to be done (%r): %s\n' % (ncounter, json.encode(not_changed)))
+        flog.write('changes to be done (%r): %s\n' % (ccounter, json.dumps(changes)))
+        flog.write('changes not to be done (%r): %s\n' % (ncounter, json.dumps(not_changed)))
 
         # implement changes
         print 'Committing %r of these to SQL db' % ccounter  # testing
