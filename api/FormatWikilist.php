@@ -168,7 +168,7 @@
             if($results['head']['status'] == '0') #Fall back to xml if errors
                 Format::outputXml($results);
             else{
-                @header ("content-type: text/plain;charset=UTF-8");
+                @header ("content-type: text/plain; charset=UTF-8");
                 $muni_names = ApiBase::getMuniNames();
                 $county_names = ApiBase::getCountyNames();
                 $text = "";

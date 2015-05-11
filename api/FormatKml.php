@@ -6,7 +6,7 @@
     class FormatKml{
         private function initialise(){
             /* Setting XML header */
-            @header ("content-type: text/xml charset=UTF-8");
+            @header ("content-type: application/vnd.google-earth.kml+xml; charset=UTF-8");
             /* Initializing the XML Object */           
             $xml = new XmlWriter();
             $xml->openMemory();

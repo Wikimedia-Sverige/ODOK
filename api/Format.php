@@ -12,7 +12,7 @@
         
         function outputJsonp($results, $callback){
             /* Setting up JSONP headers */
-            @header ("content-type: application/javascript charset=utf-8");
+            @header ("content-type: application/javascript; charset=utf-8");
             
             /* Printing the wrapped JSON Object */
             echo $callback.'('.json_encode($results).');';
@@ -20,7 +20,7 @@
         
         function outputJson($results){
             /* Setting up JSON headers */
-            @header ("content-type: text/json charset=utf-8");
+            @header ("content-type: application/json; charset=utf-8");
             
             $compact=False;
             if (strtolower($_GET['json']) == 'compact'){
@@ -36,7 +36,7 @@
         
         function outputPhp($results){   
             /* Setting up PHP headers */
-            header ("content-type: text/php charset=utf-8");
+            header ("content-type: application/x-php; charset=utf-8");
     
             /* Printing the PHP serialized Object*/
             echo serialize($results);
@@ -44,7 +44,7 @@
                 
         function outputXml($results, $xsltPath){
             /* Setting XML header */
-            @header ("content-type: text/xml charset=UTF-8");
+            @header ("content-type: text/xml; charset=UTF-8");
             
             /* Initializing the XML Object */
             $xml = new XmlWriter();
