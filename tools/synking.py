@@ -12,7 +12,7 @@ To do:
 import dateutil.parser
 import codecs
 import datetime
-import ujson
+import json
 import common as common
 import WikiApi as wikiApi
 import odok as odokConnect
@@ -142,8 +142,8 @@ def run(verbose=False, days=100, testing=False):
             if changes[k] == {}:
                 del changes[k]
 
-        flog.write('changes to be done (%r): %s\n' % (ccounter, ujson.encode(changes)))
-        flog.write('changes not to be done (%r): %s\n' % (ncounter, ujson.encode(not_changed)))
+        flog.write('changes to be done (%r): %s\n' % (ccounter, json.encode(changes)))
+        flog.write('changes not to be done (%r): %s\n' % (ncounter, json.encode(not_changed)))
 
         # implement changes
         print 'Committing %r of these to SQL db' % ccounter  # testing

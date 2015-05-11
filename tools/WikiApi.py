@@ -4,7 +4,7 @@
  WikiApi
  Forked from PyCJWiki Version 1.31 (C) by Smallman12q <https://en.wikipedia.org/wiki/User_talk:Smallman12q/> GPL, see <http://www.gnu.org/licenses/>.
  Original source: <https://commons.wikimedia.org/w/index.php?title=User:Smallman12q/PyCJWiki&oldid=93284775/>
- Requires python2.7, ujson, and PyCurl
+ Requires python2.7, json, and PyCurl
 
  TODO
    Separate debug from verbose. There should be no non-error print statment which is not tied to either of these. Standardise verbose output.
@@ -20,7 +20,7 @@
 
 '''
 
-import pycurl, ujson, cStringIO, urllib
+import pycurl, json, cStringIO, urllib
 import time
 import traceback
 
@@ -113,7 +113,7 @@ class WikiApi(object):
         if debug:
             print self.responsebuffer.getvalue()
         try:
-            json = ujson.loads(self.responsebuffer.getvalue())
+            jsonr = json.loads(self.responsebuffer.getvalue())
         except ValueError:
             print self.headerbuffer.getvalue()
             exit(1)
@@ -122,7 +122,7 @@ class WikiApi(object):
             self.responsebuffer.truncate(0)
 
         self.headerbuffer.truncate(0)  # no need to keep more than the last
-        return json
+        return jsonr
 
     def httpGET(self, action, params, timeoutretry=0, form=None, debug=False):
         """
@@ -184,12 +184,12 @@ class WikiApi(object):
                     self.httpPOST(action, params, timeoutretry=(timeoutretry+1))
 
         # print self.responsebuffer.getvalue()
-        json = ujson.loads(self.responsebuffer.getvalue())
+        jsonr = json.loads(self.responsebuffer.getvalue())
 
         if self.clearresponsebufferafterresponse:
             self.responsebuffer.truncate(0)
 
-        return json
+        return jsonr
 
     def printResponseBuffer(self):
         print self.responsebuffer.getvalue()
@@ -934,7 +934,7 @@ class WikiDataApi(WikiApi):
                             'type': 'wikibase-entityid'}},
                     'type': 'statement',
                     'rank': 'normal'})
-        data = ujson.dumps(data)
+        data = json.dumps(data)
 
         jsonr = self.httpPOST("wbeditentity", [('new', 'item'),
                                     ('data', data.encode('utf-8')),
