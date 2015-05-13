@@ -13,7 +13,7 @@ $(document).ready(function() {
     });
 
     // set up map
-    //load basic Leaflet map
+    // load basic Leaflet map
     var bounds = [[55.2, 10.8], [69.1, 24.4]];
     var map = L.map('map', {'zoomControl':false}).fitBounds(bounds);
     map.addControl(
@@ -24,14 +24,14 @@ $(document).ready(function() {
     );
 
     var attribution = 'Ett projekt från <a href="//wikimedia.se/">Wikimedia Sverige</a> med stöd av <a href="http://www.vinnova.se">Vinnova</a>. | ';
-    //settings for MapQuest
+    // settings for MapQuest
     var mapQuest = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
         attribution: attribution + 'Kartdata © <a href="//openstreetmap.org/">OpenStreetMap</a>-bidragsgivare. kartrendering av <a href="//www.mapquest.com/">MapQuest</a>',
         maxZoom: 19,
         subdomains: ['otile1','otile2','otile3','otile4']
     });
 
-    //settings for OSM Sweden
+    // settings for OSM Sweden
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
@@ -39,13 +39,13 @@ $(document).ready(function() {
     }).addTo(map);
     map.addLayer(osmSE);
 
-    //settings for OSM
+    // settings for OSM
     var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: attribution + 'Kartdata © <a href="//openstreetmap.org">OpenStreetMap</a>-bidragsgivare',
         maxZoom: 19,
     });
 
-    //set-up markers
+    // set-up markers
     var noPicIcon = L.icon({
         iconUrl: 'images/withoutimageicon.png',
         iconSize: [32, 32],
@@ -76,7 +76,7 @@ $(document).ready(function() {
         console.log('Window resized to: ' + $(window).width());
     });
 
-    //geoJson, once it is loaded
+    // geoJson, once it is loaded
     jqxhrFeat.complete( function() {
         var odokLayer = L.geoJson(features, {
             onEachFeature: function (feature, layer) {
@@ -91,14 +91,14 @@ $(document).ready(function() {
             }
         });
 
-        //Clustering
+        // Clustering
         var markers = new L.MarkerClusterGroup({showCoverageOnHover: false});
         markers.addLayer(odokLayer);        // add it to the cluster group
         map.addLayer(markers);		        // add it to the map
         // commented out since it overrides the hash
-        //map.fitBounds(markers.getBounds()); //set view on the cluster extent
+        // map.fitBounds(markers.getBounds()); //set view on the cluster extent
 
-        //for layers control
+        // for layers control
         var baseMaps = {
             "MapQuest": mapQuest,
             "OSM": osm,
@@ -136,7 +136,7 @@ $(document).ready(function() {
     // Hash
     var hash = new L.Hash(map);
 
-    //Right-click gives coords (for improving data)
+    // Right-click gives coords (for improving data)
     var popup = L.popup();
     function onMapClick(e) {
         popup

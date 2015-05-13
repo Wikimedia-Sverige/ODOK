@@ -59,8 +59,8 @@ function executeSearch(a, t, m, c, i, yf, yt) {
     if(i){
         url += "&has_image=true";
     }
-    //test if yf and yt are indeed integers
-    //url needs to know if one or both are specified
+    // test if yf and yt are indeed integers
+    // url needs to know if one or both are specified
     if(yf){
         if(!isInteger(yf)){
             warnings = messages.year_warning;
@@ -85,13 +85,13 @@ function executeSearch(a, t, m, c, i, yf, yt) {
         url += "&year=|" + yt;
     }
 
-    //check warnings, if any then don't perform search
+    // check warnings, if any then don't perform search
     if(warnings){
         populateSearchResult({"head":{"warning":warnings},"body":""});
         return;
     }
 
-    //disable before ajax
+    // disable before ajax
     $('#button_search').prop("disabled", true);
     console.log( "url: " + url );
     var jqxhr = $.getJSON( url +
@@ -137,7 +137,7 @@ function populateSearchResult(rObjs) {
         $('#feedbackbox').append('<p>' + messages.to_many_results.replace('{toManyResults}',toManyResults) + '</p>');
     }
 
-    //show only if there are any messages
+    // show only if there are any messages
     if(!$('#feedbackbox').is(':empty')){
         $('#feedbackbox').show().delay(5000).fadeOut();
     }
@@ -145,7 +145,7 @@ function populateSearchResult(rObjs) {
         return;
     }
 
-    //map.addLayer(markers);
+    // map.addLayer(markers);
 
     // iterate all result objects
     $.each(body, function(index, ro) {
@@ -209,7 +209,7 @@ function populateSearchResult(rObjs) {
 
     newCard.append(content);
 
-//  console.log(newCard);
+    // console.log(newCard);
     $('#searchresults').append(newCard);
 
     var bc = $(document.createElement('div'));
@@ -255,7 +255,7 @@ function populateSearchResult(rObjs) {
 }
 
 function addMarker(id, lon, lat) {
-    //console.log("Addded a marker at longitude: " + lon + " latitude: " + lat);
+    // console.log("Addded a marker at longitude: " + lon + " latitude: " + lat);
     var llmark = L.marker(L.latLng(lat, lon), {icon: normalIcon}).on('click', onMarkerClick);
     allMarkers[id] = llmark;//._leaflet_id;
     markers.addLayer(llmark);
@@ -291,7 +291,7 @@ function highlightCard(id) {
 
 function highlightMarker(id) {
     for(var locid in allMarkers) {
-        //reset all markers
+        // reset all markers
         allMarkers[locid].setIcon(normalIcon);
     }
     if (id in allMarkers) {
@@ -356,7 +356,7 @@ window.onload = function load() {
             'zoomOutTitle':'Zooma ut'
         })
     );
-    //settings for tile Layer
+    // settings for tile Layer
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
@@ -369,7 +369,7 @@ window.onload = function load() {
     markers = L.featureGroup();
     map.addLayer(markers);
 
-    //set-up markers
+    // set-up markers
     specialIcon = L.icon({
         iconUrl: 'images/selected.svg',
         iconSize: [25, 41],
@@ -418,7 +418,7 @@ window.onload = function load() {
         $('#year_input_from').val(hashparts[5]);
         $('#year_input_til').val(hashparts[6]);
 
-        jqxhrMuni.done(function(){ //needs to wait for load
+        jqxhrMuni.done(function(){ // needs to wait for load
             $.each(hashparts, function( index, value ) {
                 if ($.inArray(value, ['', 'false', 'null']) < 0){
                     console.log('Triggered for hashpart: ' + value);
