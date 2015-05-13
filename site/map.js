@@ -59,6 +59,23 @@ $(document).ready(function() {
         popupAnchor: [0, -16]
     });
 
+    // reduce size of attribution text on small displays (also on resize)
+    if ($(window).width() < 500) {
+        $(".leaflet-control-attribution").css({"font-size": "9px"});
+        console.log('setting size to 9');
+    }
+    $(window).on('resize', function() {
+        if ($(window).width() >= 500) {
+            $(".leaflet-control-attribution").removeAttr("style");
+            console.log('resetting size');
+        }
+        else if ($(window).width() < 500) {
+            $(".leaflet-control-attribution").css({"font-size": "9px"});
+            console.log('setting size to 9');
+        }
+        console.log('Window resized to: ' + $(window).width());
+    });
+
     //geoJson, once it is loaded
     jqxhrFeat.complete( function() {
         var odokLayer = L.geoJson(features, {
