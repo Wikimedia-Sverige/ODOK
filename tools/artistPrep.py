@@ -80,7 +80,11 @@ def fileWithWikidata(filename=u'Artists.csv', idcol=0, namecol=[4, 3], verbose=F
         elif 'missing' not in info.keys():
             # If page exists but without a wikidata entry then create a
             # new wikidata entry and return that id (also deals with Bug 54882)
-            wdNew = wdApi.makeEntity(k, site=u'svwiki')
+            try:
+                wdNew = wdApi.makeEntity(k, site=u'svwiki')
+            except TypeError:
+                print 'error making wikidata entity for %s' % k
+                exit()
             if wdNew:
                 wd = wdNew
         if len(info) == 0:
