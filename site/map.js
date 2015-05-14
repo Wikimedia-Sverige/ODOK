@@ -145,10 +145,10 @@ $(document).ready(function() {
             .openOn(map);
     }
     map.on('contextmenu', onMapClick);
-    
+
     // center popup AND marker to the map + 23% of clientHeight
     // to position it under the leaflet-control-locate icon on small displays
-    if ($(window).width() <= 800){
+    if ($(window).width() <= 380){
         map.on('popupopen', function(e) {
         var px = map.project(e.popup._latlng); // find the pixel location on the map where the popup anchor is
         px.y -= e.popup._container.clientHeight/2+e.popup._container.clientHeight*0.23; // find the height of the popup container, divide by 2, subtract from the Y axis of marker location
@@ -162,7 +162,7 @@ function makePopup(feature) {
     // Based on https://stackoverflow.com/questions/10889954
     var properties = feature.properties;
     var desc = "";
-    
+
     // code originally from updateFeatures.py
     // list-link
     if (properties.descriptions.list) {
@@ -181,7 +181,7 @@ function makePopup(feature) {
             showImage = properties.image.replace(/\s/g, '_');
         }
         desc += '<a href="http://commons.wikimedia.org/wiki/File:' + showImage + '" target="_blank">';
-        desc += '<img src="https://commons.wikimedia.org/w/thumb.php?f=' + showImage + '&width=160" class="thumb" />';
+        desc += '<img src="https://commons.wikimedia.org/w/thumb.php?f=' + showImage + '&width=100" class="thumb" />';
         desc += '</a>';
 
         // info
@@ -242,8 +242,8 @@ function makePopup(feature) {
     else if (properties.descriptions.descr) {
         desc += capitalizeFirstLetter(properties.descriptions.descr);
     }
-    
-      if (properties.image || properties.descriptions.wikidata || properties.descriptions.descr) {
+
+    if (properties.image || properties.descriptions.wikidata || properties.descriptions.descr) {
         desc += '<br clear="both"/>';
     }
     desc += '</li></ul>';
