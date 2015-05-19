@@ -24,10 +24,11 @@ def run(start='2015-01-01', end=None):
 
     contribs, ministats = handleContributions(wpApi,
                                               pageList,
-                                              start='2015-01-01')
+                                              start=start,
+                                              end=end)
 
     f = codecs.open('contribs.json', 'w', 'utf8')
-    f.write(json.dumps(contribs))
+    f.write(json.dumps(contribs, indent=4))
     print json.dumps(ministats, indent=4)
 
 
@@ -64,11 +65,13 @@ def handleContributions(wpApi, pageList, start=None, end=None):
         if stats is None:
             continue
         anons_all += stats['users']['_anon']
+        tmp_anon = stats['users']['_anon'][:]  # clone
         del stats['users']['_anon']
         users_all += stats['users'].keys()
         ministats['users_contribs'] += sum(stats['users'].values())
         ministats['size_abs'] += stats['size']['absolute']
         ministats['size_rel'] += stats['size']['relative']
+        stats['users']['_anon'] = tmp_anon
     anons_all = list(set(anons_all))
     users_all = list(set(users_all))
     ministats['users'] = len(users_all)
