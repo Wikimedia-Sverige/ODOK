@@ -20,7 +20,10 @@
 
 '''
 
-import pycurl, json, cStringIO, urllib
+import pycurl
+import json
+import cStringIO
+import urllib
 import time
 import traceback
 
