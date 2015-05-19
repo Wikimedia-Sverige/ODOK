@@ -4,7 +4,9 @@
 # Methods comonly shared by the tool scripts
 #
 import codecs
-import operator
+import operator  # only for sortedDict()
+import sys  # only for raw_encoded_input()
+import locale  # only for raw_encoded_input()
 
 
 def openFile(filename):
@@ -19,7 +21,9 @@ def openFile(filename):
 
 def sortedDict(ddict):
     '''turns a dict into a sorted list'''
-    sorted_ddict = sorted(ddict.iteritems(), key=operator.itemgetter(1), reverse=True)
+    sorted_ddict = sorted(ddict.iteritems(),
+                          key=operator.itemgetter(1),
+                          reverse=True)
     return sorted_ddict
 
 
@@ -39,9 +43,45 @@ def is_int(s):
         return False
 
 
+def is_iso_date(s):
+    '''
+    Checks if a string is a valid YYYY-MM-DD date
+    NOTE: Does not validate if length of month is < 31
+    '''
+    if not isinstance(s, str) or isinstance(s, unicode):
+        return False
+    if not len(s) == len('YYYY-MM-DD'):
+        return False
+    if not s[4:5] == '-' and s[7:8] == '-':
+        return False
+    y, m, d = s[:4], s[5:7], s[8:]
+    if not is_int(y):
+        return False
+    if not (is_int(m) and int(m) in range(1, 12)):
+        return False
+    if not (is_int(d) and int(d) in range(1, 31)):
+        return False
+    return True
+
+
+def raw_encoded_input(txt):
+    '''query for input and deal with the encoding, whatever it is'''
+    return raw_input(txt).decode(sys.stdin.encoding or
+                                 locale.getpreferredencoding(True))
+
+
+def list_diff(a, b):
+    '''subtract list 2 from list 1'''
+    b = set(b)
+    return [aa for aa in a if aa not in b]
+
+
 def extractName(entry):
-    '''If field includes square brackets then this ignores any part of name field which lies outside
-       If field contains semicolons then treats these as separate objects'''
+    '''
+    If field includes square brackets then this ignores any part of
+        name field which lies outside
+    If field contains semicolons then treats these as separate objects
+    '''
     if u'[' in entry:
         pos1 = entry.find(u'[')
         pos2 = entry.find(u']')
@@ -68,13 +108,16 @@ def extractNameParts(name):
 
 def findUnit(contents, start, end, brackets=None):
     '''
-    Method for isolating an object in a string. Will not work with either start or end using the ¤ symbol
+    Method for isolating an object in a string. Will not work with
+    either start or end using the ¤ symbol
     @input:
         * content: the string to look at
         * start: the substring indicateing the start of the object
         * end: the substring indicating the end of the object
             if end is not found then the rest of the string is returned
-            if explicitly set to None then it is assumed that start-string also marks the end of an object. In this case the end-string is returned as part of the remainder
+            if explicitly set to None then it is assumed that start-string
+                also marks the end of an object. In this case the end-string
+                is returned as part of the remainder
         * brackets: a dict of brackets used which must match within the object
     @output:
         the-object, the-remainder-of-the-string, lead-in-to-object
@@ -141,7 +184,8 @@ def extractLink(text, kill_tags=False):
     '''
     Given wikitiext this checks for the first wikilink
     Limitations: Only identifies the first wikilink
-    kill_tags also strips out (but doesn't keep) and tags (i.e. <bla> something </bla>)
+    kill_tags also strips out (but doesn't keep) and tags
+    (i.e. <bla> something </bla>)
     @output: (plain_text, link)
     '''
     if kill_tags:
