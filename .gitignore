@@ -1,8 +1,6 @@
 *.txt
 *.ods
 *.log
-dconfig.py
-config.php
-testing.php
+dconfig*
+config*
 odok-setup\[noMuniorCounty\].sql
-/site/OpenLayers-2.8/
