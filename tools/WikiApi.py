@@ -573,67 +573,105 @@ class WikiApi(object):
 
         return dDict  # in case one was not supplied
 
-    def getContributors(self, article, dDict=None, debug=False):
+    def getContributions(self, article, dDict=None, start=None, end=None, debug=False):
         """
-        Given an article this returns the contributors to that page
+        Given an article this returns the contributions to that page
         :param article: a single pagename to look at
         :param dDict: (optional) a dict object into which output is placed
-        :return: dict of username:number of edits + _anon:list_of_anon_ips
+        :param start: (optional) a date from which to start enumerating
+        :param end: (optional) a date from which to start enumerating
+            start and end should be iso date strings of the form YYYY-MM-DD
+        :return: dict of
+            users:
+                _anon: list_of_anon_ips
+                username: number of edits
+            size:
+                absolute: sum of absolute change of bytes
+                relative: sum of relative change of bytes
+        :return: None on fail or no revisions
         """
         # if only one article given
         if not (isinstance(article, str) or isinstance(article, unicode)):
             print "getContributors() requires a single pagename."
             return None
 
-        # if no initial dict suplied
+        # if no initial dict supplied
         if dDict is None:
-            dDict = {'_anon': []}
+            dDict = {
+                'users': {
+                    '_anon': []
+                },
+                'size': {
+                    'absolute': 0,
+                    'relative': 0
+                }
+            }
 
-        # Single run
-        jsonr = self.httpPOST("query", [('prop', 'revisions'),
-                                    ('rvprop', 'user'),
-                                    ('rvlimit', '500'),
-                                    ('rawcontinue', ''),
-                                    ('titles', article.encode('utf-8'))])
+        # handle parameters
+        requestparams = [('prop', 'revisions'),
+                         ('rvprop', 'ids|user|size'),
+                         ('rvlimit', '500'),
+                         ('rvdir', 'newer'),
+                         ('rawcontinue', ''),
+                         ('titles', article.encode('utf-8'))]
+        if start is not None:
+            requestparams.append(('rvstart', '%sT00:00:00Z' % start))
+        if end is not None:
+            requestparams.append(('rvend', '%sT00:00:00Z' % end))
+
+        # First run
+        jsonr = self.httpPOST("query", requestparams)
         if debug:
-            print u"getContributors() : article= %s\n" % article
+            print u"getContributors() : article = %s\n" % article
             print jsonr
 
         pageid = jsonr['query']['pages'].keys()[0]
         if int(pageid) < 0:  # Either missing or invalid
             print "getContributors(): %s was not a valid page" % article
             return None
-        else:
-            for rev in jsonr['query']['pages'][pageid]['revisions']:
-                if 'anon' in rev.keys():
-                    dDict['_anon'].append(rev['user'])
-                else:
-                    if rev['user'] in dDict.keys():
-                        dDict[rev['user']] += 1
-                    else:
-                        dDict[rev['user']] = 1
 
-        # do remaining
+        # check if any revisions
+        if 'revisions' not in jsonr['query']['pages'][pageid].keys():
+            return None
+
+        # store all revisions
+        revs = []
+        revs += jsonr['query']['pages'][pageid]['revisions']
+
+        # get any remaining
         while 'query-continue' in jsonr:
-            jsonr = self.httpPOST("query", [('prop', 'revisions'),
-                                    ('rvprop', 'user'),
-                                    ('rvlimit', '500'),
-                                    ('rawcontinue', ''),
-                                    ('titles', article.encode('utf-8')),
-                                    ('rvcontinue', str(jsonr['query-continue']['revisions']['rvcontinue']))])
-
+            rvcontinue = str(jsonr['query-continue']['revisions']['rvcontinue'])
+            jsonr = self.httpPOST("query", requestparams + [('rvcontinue', rvcontinue)])
             # same pageid since only looking at one article
-            for rev in jsonr['query']['pages'][pageid]['revisions']:
-                if 'anon' in rev.keys():
-                    dDict['_anon'].append(rev['user'])
+            revs += jsonr['query']['pages'][pageid]['revisions']
+
+        # analyse revisions
+        prev_size = None
+        for rev in revs:
+            # handle user info
+            if 'anon' in rev.keys():
+                dDict['users']['_anon'].append(rev['user'])
+            else:
+                if rev['user'] in dDict['users'].keys():
+                    dDict['users'][rev['user']] += 1
                 else:
-                    if rev['user'] in dDict.keys():
-                        dDict[rev['user']] += 1
-                    else:
-                        dDict[rev['user']] = 1
+                    dDict['users'][rev['user']] = 1
+
+            # handle first revision
+            if prev_size is None:
+                if rev['parentid'] == 0:  # article created
+                    prev_size = 0
+                else:
+                    prev_size = rev['size']  # essentially don't count this one
+
+            # handle size info
+            size_diff = rev['size'] - prev_size
+            dDict['size']['relative'] += size_diff
+            dDict['size']['absolute'] += abs(size_diff)
+            prev_size = rev['size']
 
         # filter out non-unique anons
-        dDict['_anon'] = list(set(dDict['_anon']))
+        dDict['users']['_anon'] = list(set(dDict['users']['_anon']))
 
         return dDict
 
