@@ -129,8 +129,8 @@ def run(verbose=False, days=100, testing=False):
                 not_changed[k][u'cmt'] = changes[k].pop(u'cmt')
             if u'free' in v.keys():  # need to establish wiki_policy+need to enable synk db->wiki as this is set by updateCopyright
                 not_changed[k][u'free'] = changes[k].pop(u'free')
-            # if u'image' in v.keys():  # temporarilly added due to BUS
-            #    not_changed[k][u'image'] = changes[k].pop(u'image')
+            if u'image' in v.keys():  # temporarilly added due to BUS
+                not_changed[k][u'image'] = changes[k].pop(u'image')
 
             if not_changed[k] == {}:
                 del not_changed[k]
