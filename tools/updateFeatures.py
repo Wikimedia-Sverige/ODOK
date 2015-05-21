@@ -1,13 +1,14 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
-# Quick script for updating the geoJson file used (at some future point) on the homepage
+# Quick script for updating the geoJson file used by the main map
 #
 import codecs
 import json
 import datetime
 import odok as odokConnect
-import dconfig as config
+import common
+config = common.loadJsonConfig()
 
 
 def allGeoJson(filename="../site/AllFeatures.geo.json", source=None, full=True, debug=False):
@@ -16,7 +17,8 @@ def allGeoJson(filename="../site/AllFeatures.geo.json", source=None, full=True, 
     outputs a file with the data
     '''
     out = codecs.open(filename, 'w', 'utf8')
-    dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_site)
+    dbApi = odokConnect.OdokApi.setUpApi(user=config['odok_user'],
+                                         site=config['odok_site'])
 
     features = dbApi.getGeoJson(full=full, source=source, debug=debug)
 

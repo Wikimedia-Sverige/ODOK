@@ -1,6 +1,6 @@
 *.txt
 *.ods
 *.log
-dconfig*
-config*
+config.*
+!config.example*
 odok-setup\[noMuniorCounty\].sql

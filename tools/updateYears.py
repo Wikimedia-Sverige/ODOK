@@ -5,11 +5,11 @@ Tool for scraping artistYears from sv.wiki articles and updating these
 in the ÖDOK database
 once possible use Property:P569 and Property:P570 on wikidata instead/as well
 '''
-import dconfig as config
 import odok as odokConnect
 import WikiApi as wikiApi
-import common as common
+import common
 import codecs
+config = common.loadJsonConfig()
 
 
 def getArtists(dbWriteSQL):
@@ -153,9 +153,17 @@ def run(testing=False):
     '''
     runs the whole process. if testing=True then outputs to file instead
     '''
-    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password, testing=testing)
-    wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site)
-    wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site)
+    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config['db_server'],
+                                              db=config['db'],
+                                              user=config['db_edit'],
+                                              passwd=config['db_edit_password'],
+                                              testing=testing)
+    wpApi = wikiApi.WikiApi.setUpApi(user=config['w_username'],
+                                     password=config['w_password'],
+                                     site=config['wp_site'])
+    wdApi = wikiApi.WikiDataApi.setUpApi(user=config['w_username'],
+                                         password=config['w_password'],
+                                         site=config['wd_site'])
 
     artists = getArtists(dbWriteSQL)
     getArticles(wdApi, artists, verbose=False)

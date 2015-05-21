@@ -1,0 +1,15 @@
+{
+    "@meta": "Example settings file for ÖDOK tools. Fill in, save as config.json but DONT'T COMMIT",
+    "db_server": "URL to odok database server",
+    "db": "odok database name",
+    "db_edit": "account with INSERT, UPDATE rights",
+    "db_edit_password": "",
+    "db_read": "account with SELECT rights",
+    "db_read_password": "",
+    "odok_site": "URL to site api",
+    "odok_user": "identifier for odok api",
+    "wp_site": "URL to wikipedia site",
+    "wd_site": "URL to wikidata site",
+    "w_username": "wikimedia username",
+    "w_password": ""
+}

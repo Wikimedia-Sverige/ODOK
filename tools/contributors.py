@@ -10,14 +10,14 @@ import codecs
 import json
 import common
 import WikiApi as wikiApi
-import dconfig as config
+config = common.loadJsonConfig()
 
 
 def run(start='2015-01-01', end=None):
     # connect to api
-    wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username,
-                                     password=config.w_password,
-                                     site=config.wp_site)
+    wpApi = wikiApi.WikiApi.setUpApi(user=config['w_username'],
+                                     password=config['w_password'],
+                                     site=config['wp_site'])
 
     # find changed pages
     pageList = wpApi.getEmbeddedin(u'Mall:Offentligkonstlista', 0)

@@ -13,12 +13,12 @@ import dateutil.parser
 import codecs
 import datetime
 import json
-import common as common
+import common
 import WikiApi as wikiApi
 import odok as odokConnect
-import dconfig as config
 import dataDicts as dataDict
 import UGC_synk as UGCsynk
+config = common.loadJsonConfig()
 
 
 def run(verbose=False, days=100, testing=False):
@@ -27,11 +27,23 @@ def run(verbose=False, days=100, testing=False):
     INCOMPLETE
     '''
     # open connections
-    wpApi = wikiApi.WikiApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wp_site)
-    wdApi = wikiApi.WikiDataApi.setUpApi(user=config.w_username, password=config.w_password, site=config.wd_site)
-    dbApi = odokConnect.OdokApi.setUpApi(user=config.odok_user, site=config.odok_site)
-    dbReadSQL = odokConnect.OdokReader.setUp(host=config.db_server, db=config.db, user=config.db_read, passwd=config.db_read_password)
-    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password, testing=testing)
+    wpApi = wikiApi.WikiApi.setUpApi(user=config['w_username'],
+                                     password=config['w_password'],
+                                     site=config['wp_site'])
+    wdApi = wikiApi.WikiDataApi.setUpApi(user=config['w_username'],
+                                         password=config['w_password'],
+                                         site=config['wd_site'])
+    dbApi = odokConnect.OdokApi.setUpApi(user=config['odok_user'],
+                                         site=config['odok_site'])
+    dbReadSQL = odokConnect.OdokReader.setUp(host=config['db_server'],
+                                             db=config['db'],
+                                             user=config['db_read'],
+                                             passwd=config['db_read_password'])
+    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config['db_server'],
+                                              db=config['db'],
+                                              user=config['db_edit'],
+                                              passwd=config['db_edit_password'],
+                                              testing=testing)
 
     # set up logging
     logfile = u'¤syncLog.log'

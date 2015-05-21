@@ -7,6 +7,30 @@ import codecs
 import operator  # only for sortedDict()
 import sys  # only for raw_encoded_input()
 import locale  # only for raw_encoded_input()
+import json  # for loadJsonConfig
+
+
+def loadJsonConfig(filename='config.json'):
+    '''
+    Load and return json config file as a dict.
+    Looks in local directory first.
+    If file isn't there then looks in user directory.
+    If file is in neither location then error is raised
+    '''
+    try:
+        f = open(filename, 'r')
+        config = json.load(f)
+        f.close()
+    except IOError, e:
+        if e.errno == 2:  # file not found
+            import os
+            path = os.getenv("HOME")
+            f = open('%s/%s' % (path, filename), 'r')
+            config = json.load(f)
+            f.close()
+        else:
+            raise
+    return config
 
 
 def openFile(filename):

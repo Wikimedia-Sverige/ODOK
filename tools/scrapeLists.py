@@ -33,11 +33,11 @@
  Starting from the scraped file
  runUpdates(u'scrapetmp-Sthlm.txt', queries={'muni': '0180'}, quick=True)
 '''
-import dconfig as dconfig
 import WikiApi as wikiApi
 import odok as odokConnect
-import common as common
+import common
 import codecs
+config = common.loadJsonConfig()
 
 
 def parseArtwork(contents, pagename):
@@ -259,8 +259,11 @@ def run(testing=False, pages=[], queries={}, listFile=None, tmpFile=u'scrapetmp.
     '''
     runs the scrape-and-match process. if testing==true then outputs to file instead
     '''
-    wpApi = wikiApi.WikiApi.setUpApi(user=dconfig.w_username, password=dconfig.w_password, site=dconfig.wp_site)
-    dbApi = odokConnect.OdokApi.setUpApi(user=dconfig.odok_user, site=dconfig.odok_site)
+    wpApi = wikiApi.WikiApi.setUpApi(user=config['w_username'],
+                                     password=config['w_password'],
+                                     site=config['wp_site'])
+    dbApi = odokConnect.OdokApi.setUpApi(user=config['odok_user'],
+                                         site=config['odok_site'])
     if testing:
         pages.append(u'Användardiskussion:André Costa (WMSE)/tmp')
         queries['muni'] = '0180'
@@ -431,7 +434,9 @@ def updatesToDatabase(odok, wiki, quick=False):
     object and prepares an update statement.
     setting quick to true puts any updates requiring decision making into the postponed output
     '''
-    wpApi = wikiApi.WikiApi.setUpApi(user=dconfig.w_username, password=dconfig.w_password, site=dconfig.wp_site)
+    wpApi = wikiApi.WikiApi.setUpApi(user=config['w_username'],
+                                     password=config['w_password'],
+                                     site=config['wp_site'])
     updated = {}
     postponed = {}
     linked_artists = {}
@@ -516,7 +521,8 @@ def runUpdates(listFile, testing=True, queries={}, quick=False):
     listFile can be replaced by the postponed output
     add support for an updates_file: can read it in using fileToHits but must then break-out id
     '''
-    dbApi = odokConnect.OdokApi.setUpApi(user=dconfig.odok_user, site=dconfig.odok_site)
+    dbApi = odokConnect.OdokApi.setUpApi(user=config['odok_user'],
+                                         site=config['odok_site'])
     wiki = fileToHits(listFile)
     odok = {}
     odok_result = getOdokHits(dbApi, queries, odok)
@@ -597,7 +603,9 @@ def runArtistLinks(filename, verbose=False):
     '''
     takes the "artistLinks" outputfile from runUpdates() and analyses it
     '''
-    wpApi = wikiApi.WikiApi.setUpApi(user=dconfig.w_username, password=dconfig.w_password, site=dconfig.wp_site)
+    wpApi = wikiApi.WikiApi.setUpApi(user=config['w_username'],
+                                     password=config['w_password'],
+                                     site=config['wp_site'])
 
     wikiHits = fileToHits(filename)
     artists = {}

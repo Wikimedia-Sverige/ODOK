@@ -8,7 +8,8 @@ ToDO:
     update unfree object once it becomes free (relies on multi-artistfix)
 '''
 import odok as odokConnect
-import dconfig as config
+import common
+config = common.loadJsonConfig()
 
 # Number of years since birth before considering the work to be free (if year of death is unknown)
 YEARS_AFTER_BIRTH = 150
@@ -146,7 +147,11 @@ def showMultipleArtists(dbWriteSQL, testing):
 
 
 def run(testing=False):
-    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config.db_server, db=config.db, user=config.db_edit, passwd=config.db_edit_password, testing=testing)
+    dbWriteSQL = odokConnect.OdokWriter.setUp(host=config['db_server'],
+                                              db=config['db'],
+                                              user=config['db_edit'],
+                                              passwd=config['db_edit_password'],
+                                              testing=testing)
     tagUnfree(dbWriteSQL, testing=testing)
     tagFree(dbWriteSQL, testing=testing)
     tagOldUnknown(dbWriteSQL, testing=testing)
