@@ -10,10 +10,10 @@ import codecs
 import json
 import common
 import WikiApi as wikiApi
-config = common.loadJsonConfig()
 
 
 def run(start='2015-01-01', end=None):
+    config = common.loadJsonConfig()
     # connect to api
     wpApi = wikiApi.WikiApi.setUpApi(user=config['w_username'],
                                      password=config['w_password'],
