@@ -7,16 +7,16 @@
  Requires python2.7, json, and PyCurl
 
  TODO
-   Separate debug from verbose. There should be no non-error print statment which is not tied to either of these. Standardise verbose output.
+   Separate debug from verbose. There should be no non-error print statement which is not tied to either of these. Standardise verbose output.
        (Do this also for odok.OdokApi)
    _http errors should be thrown again so that they can be caught upstream (instead of printed to commandline)
    _http timeout errors should output on verbose even if retried
    Allow setup to set Delay parameters and for these to be changed during the run
-   Reintegrate uploadelements from PyCJWiki as class WikiCommonsApi(WikiApi) so as to fully move over to WikiApi
+   Reintegrate upload elements from PyCJWiki as class WikiCommonsApi(WikiApi) so as to fully move over to WikiApi
        Break out WikiDataApi, WikiCommonsApi as separate files
    consider integrating some elements of Europeana.py (e.g. getImageInfos() into WikiCommonsApi.
        Deal with encoding of filenames, proper use of ignorewarnings etc., purging (think Broken filelinks)
-   Most "while 'query-continue'" could be redone as calling the same function wiht a 'query-continue' parameter
+   Most "while 'query-continue'" could be redone as calling the same function with a 'query-continue' parameter
 
 '''
 
@@ -284,13 +284,13 @@ class WikiApi(object):
 
     def getEmbeddedin(self, templatename, einamespace, debug=False):
         """
-        Returns list of all pages embeding a given template
+        Returns list of all pages embedding a given template
         :param templatename: The template to look for (including \"Template:\")
         :param einamespace: namespace to limit the search to (0=main)
         :return: list containing pagenames
         """
 
-        print "Fetching pages embeding: %s" % templatename
+        print "Fetching pages embedding: %s" % templatename
         members = []
         # action=query&list=embeddedin&cmtitle=Template:!
         jsonr = self.httpPOST("query", [('list', 'embeddedin'),
@@ -318,19 +318,19 @@ class WikiApi(object):
             for page in jsonr['query']['embeddedin']:
                 members.append((page['title']))
 
-        print "Fetching pages embeding: %s...complete" % templatename
+        print "Fetching pages embedding: %s...complete" % templatename
         return members
 
     def getEmbeddedinTimestamps(self, templatename, einamespace, debug=False):
         """
-        Returns a list of all pages embeding a given template along with the timestamp for when it was last edited
+        Returns a list of all pages embedding a given template along with the timestamp for when it was last edited
         combines getEmbeddedin() and getTimestamps()
         :param templatename: The template to look for (including \"Template:\")
         :param einamespace: namespace to limit the search to (0=main)
         :return: list containing dicts {pagename, timestamp} where timestamp is a string in ISO 8601 format
         """
 
-        print "Fetching pages embeding: %s" % templatename
+        print "Fetching pages embedding: %s" % templatename
         members = []
         # action=query&prop=revisions&format=json&rvprop=timestamp&generator=embeddedin&geititle=Mall%3A!&geinamespace=0&geilimit=500
         jsonr = self.httpPOST("query", [('prop', 'revisions'),
@@ -350,7 +350,7 @@ class WikiApi(object):
             members.append({'title': page['title'], 'timestamp': page['revisions'][0]['timestamp']})
 
         while 'query-continue' in jsonr:
-            print "Fetching pages embeding: %s...fetching more" % templatename
+            print "Fetching pages embedding: %s...fetching more" % templatename
             # print jsonr['query-continue']['embeddedin']['geicontinue']
             jsonr = self.httpPOST("query", [('prop', 'revisions'),
                                         ('rvprop', 'timestamp'),
@@ -364,7 +364,7 @@ class WikiApi(object):
                 page = jsonr['query']['pages'][page]
                 members.append({'title': page['title'], 'timestamp': page['revisions'][0]['timestamp']})
 
-        print "Fetching pages embeding: %s...complete" % templatename
+        print "Fetching pages embedding: %s...complete" % templatename
         return members
 
     def getCategoryMembers(self, categoryname, cmnamespace, debug=False):
@@ -448,7 +448,7 @@ class WikiApi(object):
         Given a list of articles this tells us if the page is either
         * Non-existent (red link)
         * A redirect (and returns real page)
-        * A disambiguity page
+        * A disambiguation page
         * Normal page
         and whether the page corresponds to a wikidata entry (and returns the wikidata id)
         :param articles: a list of pagenames (or a single pagename) to look at
@@ -465,7 +465,7 @@ class WikiApi(object):
                 print "getPageInfo() requires a list of pagenames or a single pagename."
                 return None
 
-        # if no initial dict suplied
+        # if no initial dict supplied
         if dDict is None:
             dDict = {}
 
@@ -543,7 +543,7 @@ class WikiApi(object):
                 print "getPage() requires a list of pagenames or a single pagename."
                 return None
 
-        # if no initial dict suplied
+        # if no initial dict supplied
         if dDict is None:
             dDict = {}
 
@@ -785,7 +785,7 @@ class WikiApi(object):
                 print "getPageCategories() requires a list of pagenames or a single pagename."
                 return None
 
-        # if no initial dict suplied
+        # if no initial dict supplied
         if dDict is None:
             dDict = {}
 
@@ -931,7 +931,7 @@ class WikiApi(object):
 
 class WikiDataApi(WikiApi):
     """
-    Extends the WikiApi class with wikidataSpecific methods
+    Extends the WikiApi class with Wikidata specific methods
     """
 
     def getArticles(self, entities, dDict=None, site=u'svwiki', debug=False):
@@ -940,7 +940,7 @@ class WikiDataApi(WikiApi):
         :param entities: a list of entity_ids (or a single entity_id) to look at
         :param dDict: (optional) a dict object into which output is placed
         :param site: the site for which to return the sitelink
-        :return: a dict with the supplied entities as keys and a each value being a dict of teh form
+        :return: a dict with the supplied entities as keys and a each value being a dict of the form
                  page = {
                          'title':<Article title or None if missing>,
                          'url':<Article url (without http) or None if missing>,
@@ -1002,8 +1002,8 @@ class WikiDataApi(WikiApi):
 
     def makeEntity(self, article, site=u'svwiki', lang=None, label=None, claims=None, debug=False):
         """
-        Given an article on a certain site creates a wikidata entity for this object and returns the entity id
-        :param article: the article for which to create a wikidata entity
+        Given an article on a certain site creates a Wikidata entity for this object and returns the entity id
+        :param article: the article for which to create a Wikidata entity
         :param site: the site where the article exists
         :param label: (optional) a label to add
         :param lang: the language in which to add the label
@@ -1037,7 +1037,7 @@ class WikiDataApi(WikiApi):
                             'type': 'wikibase-entityid'}},
                     'type': 'statement',
                     'rank': 'normal'})
-        data = json.dumps(data)
+        data = json.dumps(data)  # should this be ensure_ascii=False ?
 
         jsonr = self.httpPOST("wbeditentity", [('new', 'item'),
                                     ('data', data.encode('utf-8')),
