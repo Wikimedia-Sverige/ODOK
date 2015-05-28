@@ -766,7 +766,7 @@ class WikiApi(object):
                 dDict[user['name']]['emailable'] = True
             # remove timestamp
             if user['registration']:  # this can be null
-                dDict[user['name']]['reg'] = user['registration'][:9]
+                dDict[user['name']]['reg'] = user['registration'][:10]
 
         return dDict
 
