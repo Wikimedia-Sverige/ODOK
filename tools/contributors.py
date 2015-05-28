@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 '''
-Identifies and lists contributors to list articles
-TODO:
-    Merge into synking
+Identifies and lists contributors to list articles and extracts some
+basic information about these.
+
+The latter is done in order to evaluate which user groups have been reached
 '''
 
 import codecs
@@ -22,14 +23,20 @@ def run(start='2015-01-01', end=None):
     # find changed pages
     pageList = wpApi.getEmbeddedin(u'Mall:Offentligkonstlista', 0)
 
-    contribs, ministats = handleContributions(wpApi,
-                                              pageList,
-                                              start=start,
-                                              end=end)
+    contribs, ministats, users = handleContributions(wpApi,
+                                                     pageList,
+                                                     start=start,
+                                                     end=end)
+
+    userInfo = wpApi.getUserData(users)
+    f = codecs.open('users.json', 'w', 'utf8')
+    f.write(json.dumps(userInfo, indent=4, ensure_ascii=False))
+    f.close()
 
     f = codecs.open('contribs.json', 'w', 'utf8')
-    f.write(json.dumps(contribs, indent=4))
-    print json.dumps(ministats, indent=4)
+    f.write(json.dumps(contribs, indent=4, ensure_ascii=False))
+    f.close()
+    print json.dumps(ministats, indent=4, ensure_ascii=False)
 
 
 def handleContributions(wpApi, pageList, start=None, end=None):
@@ -77,7 +84,8 @@ def handleContributions(wpApi, pageList, start=None, end=None):
     ministats['users'] = len(users_all)
     ministats['anons'] = len(anons_all)
 
-    return dDict, ministats
+    return dDict, ministats, users_all
+
 
 if __name__ == "__main__":
     import sys

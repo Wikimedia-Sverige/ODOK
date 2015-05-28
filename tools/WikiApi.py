@@ -708,6 +708,68 @@ class WikiApi(object):
             exit()
             # time.sleep(.2)
 
+    def getUserData(self, users, dDict=None, debug=False):
+        """
+        Returns some basic (public) information about a set of users
+        :param users: a list of usernames (or a single username) to look at
+        :param dDict: (optional) a dict object into which output is placed
+        :return: dict of contents with usernames as key
+        """
+        # if only one article given
+        if not isinstance(users, list):
+            if (isinstance(users, str) or isinstance(users, unicode)):
+                users = [users, ]
+            else:
+                print "getUserData() requires a single or list of usernames."
+                return None
+
+        # if no initial dict supplied
+        if dDict is None:
+            dDict = {}
+
+        # do an upper limit check and split into several requests if necessary
+        users = list(set(users))  # remove dupes
+        if len(users) > self.reqlimit:
+            i = 0
+            while (i+self.reqlimit < len(users)):
+                self.getUserData(users[i:i+self.reqlimit],
+                                 dDict=dDict,
+                                 debug=debug)
+                i += self.reqlimit
+            # less than reqlimit left
+            users = users[i:]
+            if len(users) < 1:  # i.e. exactly divisible by reqlimit
+                return dDict
+
+        # Single run
+        jsonr = self.httpPOST("query", [('list', 'users'),
+                                        ('usprop', 'editcount|registration|emailable|gender'),
+                                        ('ususers', '|'.join(users).encode('utf-8'))])
+
+        if debug:
+            print u"getUserData() : users= %s\n" % '|'.join(users)
+            print jsonr
+
+        # parse replies
+        for user in jsonr['query']['users']:
+            if 'missing' in user.keys() or 'invalid' in user.keys():
+                dDict[user['name']] = {'reg': '-',
+                                       'edits': '-',
+                                       'gender': '-',
+                                       'emailable': '-'}
+                continue
+            dDict[user['name']] = {'reg': user['registration'],
+                                   'edits': user['editcount'],
+                                   'gender': user['gender'],
+                                   'emailable': False}
+            if 'emailable' in user.keys():
+                dDict[user['name']]['emailable'] = True
+            # remove timestamp
+            if user['registration']:  # this can be null
+                dDict[user['name']]['reg'] = user['registration'][:9]
+
+        return dDict
+
     def getPageCategories(self, articles, nohidden=False, dDict=None, debug=False):
         """
         Returns the articles of a pageGiven an article this returns the contents of (the latest revision of) the page
