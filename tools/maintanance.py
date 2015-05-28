@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8  -*-
 '''
-Simple maintanance script which can be run from a cron tab.
+Simple maintanance script which can be run from a crontab.
 1. Synks Wikipedia lists
 2. Creates a new geojson file
 3. Overwrites the old geojson file
