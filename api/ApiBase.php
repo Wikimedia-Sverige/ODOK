@@ -596,7 +596,7 @@
                     $elist = substr($elist, 0, -1); #removing trailing '|'
                 }else
                     $elist = $entity;
-                $apiurl = 'http://www.wikidata.org/w/api.php';
+                $apiurl = 'https://www.wikidata.org/w/api.php';
                 $queryUrl = $apiurl.'?action=wbgetentities&format=php&ids='.$elist.'&props=sitelinks%2Furls';
                 $page = ApiBase::get_curl_data($queryUrl);
                 if ( is_null($page) )
@@ -627,7 +627,7 @@
         function getArticleIntro($article) {
             if ($article) {
                 $maxChar = 250; #Could for some reason not set this through param in function call
-                $apiurl = 'http://sv.wikipedia.org/w/api.php?';
+                $apiurl = 'https://sv.wikipedia.org/w/api.php?';
                 $query = Array( 'action'=>'query',
                                 'prop'=>'extracts',
                                 'format'=>'php',
