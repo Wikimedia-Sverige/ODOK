@@ -72,7 +72,7 @@ def is_iso_date(s):
     Checks if a string is a valid YYYY-MM-DD date
     NOTE: Does not validate if length of month is < 31
     '''
-    if not isinstance(s, str) or isinstance(s, unicode):
+    if not isinstance(s, (str, unicode)):
         return False
     if not len(s) == len('YYYY-MM-DD'):
         return False

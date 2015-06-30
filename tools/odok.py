@@ -494,7 +494,7 @@ class OdokWriter(OdokSQL):
         :return: None if successful
         '''
         if not isinstance(wikidata, list):
-            if (isinstance(wikidata, str) or isinstance(wikidata, unicode)):
+            if isinstance(wikidata, (str, unicode)):
                 wikidata = [wikidata, ]
             else:
                 return '"clearListEntries()" requires a list of wikidata \
@@ -503,8 +503,8 @@ class OdokWriter(OdokSQL):
             return None
 
         format_strings = ','.join(['%s'] * len(wikidata))
-        q = u"""UPDATE `main_table` 
-                SET `list` = '' 
+        q = u"""UPDATE `main_table`
+                SET `list` = ''
                 WHERE `list` IN (%s);""" % format_strings
 
         # run and return any error
@@ -612,7 +612,7 @@ class OdokReader(OdokSQL):
         '''
         # if only one entity given
         if not isinstance(wikidata, list):
-            if (isinstance(wikidata, str) or isinstance(wikidata, unicode)):
+            if isinstance(wikidata, (str, unicode)):
                 wikidata = [wikidata, ]
             else:
                 print '"getArtistByWiki()" requires a list of wikidata entities or a single entity.'

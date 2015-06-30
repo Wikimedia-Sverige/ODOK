@@ -459,7 +459,7 @@ class WikiApi(object):
         """
         # if only one article given
         if not isinstance(articles, list):
-            if (isinstance(articles, str) or isinstance(articles, unicode)):
+            if isinstance(articles, (str, unicode)):
                 articles = [articles, ]
             else:
                 print "getPageInfo() requires a list of pagenames or a single pagename."
@@ -537,7 +537,7 @@ class WikiApi(object):
         """
         # if only one article given
         if not isinstance(articles, list):
-            if (isinstance(articles, str) or isinstance(articles, unicode)):
+            if isinstance(articles, (str, unicode)):
                 articles = [articles, ]
             else:
                 print "getPage() requires a list of pagenames or a single pagename."
@@ -594,7 +594,7 @@ class WikiApi(object):
         :return: None on fail or no revisions
         """
         # if only one article given
-        if not (isinstance(article, str) or isinstance(article, unicode)):
+        if not isinstance(article, (str, unicode)):
             print "getContributors() requires a single pagename."
             return None
 
@@ -717,7 +717,7 @@ class WikiApi(object):
         """
         # if only one article given
         if not isinstance(users, list):
-            if (isinstance(users, str) or isinstance(users, unicode)):
+            if isinstance(users, (str, unicode)):
                 users = [users, ]
             else:
                 print "getUserData() requires a single or list of usernames."
@@ -779,7 +779,7 @@ class WikiApi(object):
         """
         # if only one article given
         if not isinstance(articles, list):
-            if (isinstance(articles, str) or isinstance(articles, unicode)):
+            if isinstance(articles, (str, unicode)):
                 articles = [articles, ]
             else:
                 print "getPageCategories() requires a list of pagenames or a single pagename."
@@ -950,7 +950,7 @@ class WikiDataApi(WikiApi):
         """
         # if only one article given
         if not isinstance(entities, list):
-            if (isinstance(entities, str) or isinstance(entities, unicode)):
+            if isinstance(entities, (str, unicode)):
                 entities = [entities, ]
             else:
                 print "getArticles() requires a list of entity_ids or a single entity_id."
@@ -1011,7 +1011,7 @@ class WikiDataApi(WikiApi):
         :return: the entityId of the new object
                 If an error is encountered it returns None
         """
-        if not (isinstance(article, str) or isinstance(article, unicode)):  # does this give trouble with utf-8 strings?
+        if not isinstance(article, (str, unicode)):  # does this give trouble with utf-8 strings?
             print "makeEntity() requires a single article name as its parameter"
             return None
         if not article or len(article.strip()) == 0:
