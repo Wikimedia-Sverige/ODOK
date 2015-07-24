@@ -109,8 +109,13 @@ class OdokApi(wikiApi.WikiApi):
         if members is None:
             members = []
 
-        jsonr = self.httpGET("admin", [('function', 'lists'.encode('utf-8')),
-                                       ('limit', str(100))], debug=debug)
+        # Single run
+        requestparams = [('limit', str(100)),
+                         ('function', 'lists'.encode('utf-8'))]
+        if offset:
+            requestparams.append(('offset', str(offset)))
+
+        jsonr = self.httpGET("admin", requestparams, debug=debug)
 
         if debug:
             print u'getAllLists(): \n'

@@ -7,6 +7,8 @@ To do:
     Highlight wrongful formatting, missing/illegal parameter values
     Expand UGC to rewrite object correctly formatted (including any ignored parameters)
     Deal with section links (these do not have real wikidata entries)
+    split run into 'generate list of pages to run on' and 'run on a given list of pages'
+        that way a non-main function for runing on a given page can be introduced
 '''
 
 import dateutil.parser
