@@ -17,6 +17,8 @@
    consider integrating some elements of Europeana.py (e.g. getImageInfos() into WikiCommonsApi.
        Deal with encoding of filenames, proper use of ignorewarnings etc., purging (think Broken filelinks)
    Most "while 'query-continue'" could be redone as calling the same function with a 'query-continue' parameter
+   Listify function (for all of the if is not a list then return a list
+   Split by reqlimit function
 
 '''
 
@@ -442,6 +444,67 @@ class WikiApi(object):
 
         # print  "Fetching imageusages: %s...complete" % filename
         return members
+
+    def getImages(self, articles, results=None, offset=None, debug=False):
+        """
+        Return all of the images used in the given page
+        :param articles: a list of pagenames (or a single pagename) to look at
+        :param results: a list to which filenames should be added
+        :param offset: the imcontinue parameter
+        :return: list of filenames (without prefix)
+        """
+        # if only one article given
+        if not isinstance(articles, list):
+            if isinstance(articles, (str, unicode)):
+                articles = [articles, ]
+            else:
+                print "getImages() requires a list of pagenames or a single pagename."
+                return None
+
+        # if no initial list supplied
+        if results is None:
+            results = []
+
+        # do an upper limit check and split into several requests if necessary
+        reqlimit = self.reqlimit  # max 50 titles per request allowed
+        if len(articles) > reqlimit:
+            i = 0
+            while (i+reqlimit < len(articles)):
+                results = self.getImages(articles[i:i+reqlimit],
+                                         results=results,
+                                         offset=offset, debug=debug)
+                i += reqlimit
+            # less than reqlimit left
+            articles = articles[i:]
+            if len(articles) < 1:  # i.e. exactly divisible by reqlimit
+                return results
+
+        # do a single request
+        requestparams = [
+            ('prop', 'images'),
+            ('imlimit', '100'),
+            ('rawcontinue', ''),
+            ('titles', u'|'.join(articles).encode('utf-8'))]
+        if offset:
+            requestparams.append(('imcontinue', offset.encode('utf-8')))
+        jsonr = self.httpPOST("query", requestparams)
+        if debug:
+            print u"getImages(): articles=%s\n" % '|'.join(articles)
+            print jsonr
+
+        # parse results
+        for page, info in jsonr['query']['pages'].iteritems():
+            if 'images' in info.keys():
+                for image in info['images']:
+                    results.append(image['title'].split(':')[-1])
+
+        # handle query-continue
+        if 'query-continue' in jsonr.keys():
+            offset = jsonr['query-continue']['images']['imcontinue']
+            results = self.getImages(articles, results=results,
+                                     offset=offset, debug=debug)
+
+        return results
 
     def getPageInfo(self, articles, dDict=None, debug=False):
         """
@@ -1060,3 +1123,58 @@ class WikiDataApi(WikiApi):
         # deal with success
         if u'success' in jsonr.keys():
             return jsonr[u'entity'][u'id']
+
+
+class CommonsApi(WikiApi):
+    """
+    Extends the WikiApi class with Commons specific methods
+    """
+
+    def getImageInfo(self, images, dDict=None, debug=False):
+        """
+        Return all of timstamp+uploader for a list of images
+        :param images: a list of filenames (or a single pagename) without prefix
+        :param dDict: a dict to which filenames should be added
+        :param offset: the continue parameter
+        :return: dict
+        """
+        if not isinstance(images, list):
+            if isinstance(images, (str, unicode)):
+                images = [images, ]
+            else:
+                print "getImageInfo() requires a list of filenames or a single filename."
+                return None
+
+        # if no initial dict supplied
+        if dDict is None:
+            dDict = {}
+
+        # do an upper limit check and split into several requests if necessary
+        reqlimit = self.reqlimit  # max 50 titles per request allowed
+        if len(images) > reqlimit:
+            i = 0
+            while (i+reqlimit < len(images)):
+                self.getImageInfo(images[i:i+reqlimit], dDict=dDict, debug=debug)
+                i += reqlimit
+            # less than reqlimit left
+            images = images[i:]
+            if len(images) < 1:  # i.e. exactly divisible by reqlimit
+                return dDict
+
+        # do a single request
+        requestparams = [
+            ('prop', 'imageinfo'),
+            ('iiprop', 'timestamp|user'),
+            ('iilimit', '1'),
+            ('rawcontinue', ''),
+            ('titles', 'File:'+u'|File:'.join(images).encode('utf-8'))]
+        jsonr = self.httpPOST("query", requestparams)
+        if debug:
+            print u"getImageInfo(): images=%s\n" % '|'.join(images)
+            print jsonr
+
+        # parse results
+        for page, info in jsonr['query']['pages'].iteritems():
+            dDict[info['title']] = info['imageinfo'][0]
+
+        return dDict

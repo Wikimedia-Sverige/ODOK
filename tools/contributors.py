@@ -19,6 +19,9 @@ def run(start='2015-01-01', end=None):
     wpApi = wikiApi.WikiApi.setUpApi(user=config['w_username'],
                                      password=config['w_password'],
                                      site=config['wp_site'])
+    comApi = wikiApi.CommonsApi.setUpApi(user=config['w_username'],
+                                         password=config['w_password'],
+                                         site=u'https://commons.wikimedia.org')
 
     # find changed pages
     pageList = wpApi.getEmbeddedin(u'Mall:Offentligkonstlista', 0)
@@ -28,7 +31,19 @@ def run(start='2015-01-01', end=None):
                                                      start=start,
                                                      end=end)
 
+    images, image_users = handleImages(wpApi, comApi, pageList,
+                                       start=start, end=end)
+
+    # combine users
+    users = list(set(users+image_users))
     userInfo = wpApi.getUserData(users)
+
+    # add some more ministats
+    ministats['images'] = len(images)
+    ministats['image_users'] = len(list(set(image_users)))
+    ministats['list_users'] = ministats['users']
+    ministats['users'] = len(users)
+
     f = codecs.open('users.json', 'w', 'utf8')
     f.write(json.dumps(userInfo, indent=4, ensure_ascii=False))
     f.close()
@@ -39,21 +54,74 @@ def run(start='2015-01-01', end=None):
     print json.dumps(ministats, indent=4, ensure_ascii=False)
 
 
+def handleImages(wpApi, comApi, pageList, start=None, end=None):
+    """
+    Given a pagelist get all images displayed in them which were uploaded
+    in the timespan
+    """
+    # quick and dirty date conversion
+    validateInput(start, 'start')
+    start = dateHack(start, ifNone=0)
+    validateInput(end, 'end')
+    end = dateHack(end, ifNone=float('inf'))
+
+    # find new images
+    images = wpApi.getImages(pageList)
+
+    # identify duplicates and remove any image appearing more than once
+    dupes = []
+    tmp = []
+    for i in images:
+        if i in tmp:
+            dupes.append(i)
+        else:
+            tmp.append(i)
+    images = list(set(images))
+    dupes = list(set(dupes))
+    for i in dupes:
+        images.remove(i)
+
+    # request timestamps and compare
+    imageInfo = comApi.getImageInfo(images)
+    valid = []
+    users = []
+    for k, v in imageInfo.iteritems():
+        timestamp = dateHack(v['timestamp'])
+        if start < timestamp and end > timestamp:
+            valid.append(k)
+            users.append(v['user'])
+
+    users = list(set(users))
+    return valid, users
+
+
+def dateHack(date, ifNone=None):
+    """
+    Quick hack to convert iso-dates to something comparible
+    """
+    if date is None:
+        return ifNone
+    else:
+        return int(date[:len('YYYY-MM-DD')].replace('-', ''))
+
+
+def validateInput(date, cmt):
+    # validate input
+    if date is not None:
+        if not common.is_iso_date(date):
+            print '%s was not a valid YYYY-MM-DD date' % cmt
+            exit
+        date = str(date)  # in case of unicode
+    return date
+
+
 def handleContributions(wpApi, pageList, start=None, end=None):
     '''
     Given a pagelist get all off the contribution statistics
     '''
     # validate input
-    if start is not None:
-        if not common.is_iso_date(start):
-            print 'start was not a valid YYYY-MM-DD date'
-            exit
-        start = str(start)  # in case of unicode
-    if end is not None:
-        if not common.is_iso_date(end):
-            print 'end was not a valid YYYY-MM-DD date'
-            exit
-        end = str(end)  # in case of unicode
+    validateInput(start, 'start')
+    validateInput(end, 'end')
 
     # get all stats
     dDict = {}
