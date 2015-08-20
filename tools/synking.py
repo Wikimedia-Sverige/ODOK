@@ -23,7 +23,7 @@ import UGC_synk as UGCsynk
 config = common.loadJsonConfig()
 
 
-def run(verbose=False, days=100, testing=False):
+def run(verbose=False, days=100, strict=True, testing=False):
     '''
     update database based on all list changes
     INCOMPLETE
@@ -62,6 +62,8 @@ def run(verbose=False, days=100, testing=False):
     checkList = []
     pageList = wpApi.getEmbeddedinTimestamps(u'Mall:Offentligkonstlista', 0)
     for p in pageList:
+        if strict and not p['title'].startswith(u'Lista över'):
+            continue
         if convertTimestamp(p['timestamp']) > lastSync:
             checkList.append(p['title'])
     flog.write(u'changed pages: %r\n------------------\n' % len(checkList))
