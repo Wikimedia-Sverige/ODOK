@@ -81,9 +81,9 @@ def is_iso_date(s):
     y, m, d = s[:4], s[5:7], s[8:]
     if not is_int(y):
         return False
-    if not (is_int(m) and int(m) in range(1, 12)):
+    if not (is_int(m) and int(m) in range(1, 12+1)):
         return False
-    if not (is_int(d) and int(d) in range(1, 31)):
+    if not (is_int(d) and int(d) in range(1, 31+1)):
         return False
     return True
 
