@@ -127,6 +127,14 @@ class WikiApi(object):
             self.responsebuffer.truncate(0)
 
         self.headerbuffer.truncate(0)  # no need to keep more than the last
+
+        # check for warnings
+        if 'warnings' in jsonr.keys():
+            for k, v in jsonr['warnings'].iteritems():
+                print u'Warning for "%s":' % k
+                for kk, vv in jsonr['warnings'][k].iteritems():
+                    print u'\t"%s": %s' % (kk, vv)
+
         return jsonr
 
     def httpGET(self, action, params, timeoutretry=0, form=None, debug=False):
