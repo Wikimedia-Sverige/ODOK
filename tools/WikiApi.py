@@ -1235,7 +1235,7 @@ class CommonsApi(WikiApi):
             elif(jsonr['upload']['result'] == "Warning"):
                 if 'duplicate' in jsonr['upload']['warnings']:
                     if not uploadifduplicate:
-                        pass
+                        txt += " " + "Upload warning"
                 elif 'page-exists' in jsonr['upload']['warnings']:
                     if overwritepageexists:
                         # does not work since
