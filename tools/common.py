@@ -25,7 +25,7 @@ def loadJsonConfig(filename='config.json'):
         if e.errno == 2:  # file not found
             import os
             path = os.getenv("HOME")
-            f = open('%s/%s' % (path, filename), 'r')
+            f = open(os.path.join(path, filename), 'r')
             config = json.load(f)
             f.close()
         else:
