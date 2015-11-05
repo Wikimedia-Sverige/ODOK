@@ -1194,24 +1194,41 @@ class CommonsApi(WikiApi):
     # http://www.mediawiki.org/wiki/API:Upload
     def chunkupload(self, title, file, text, comment, chunksize=5,
                     chunkinmem=True, overwritepageexists=False,
-                    uploadifduplicate=False, ignorewarnings=False):
+                    uploadifduplicate=False, uploadifbadprefix=False,
+                    ignorewarnings=False):
         """
 
         :param title:  File title to upload to without the "File:" in u
-        :param file: The name of the file on the harddrive in str, may include relative/full path
-        :param text: Text of article in u
+        :param file: The name of the file on the harddrive in str,
+                     may include relative/full path
+        :param text: Text in file description in u
         :param comment: The comment in u
         :param chunksize: The chunk size to upload in MB
-        :param chunkinmem: Whether to read full file to memory first, or read pieces off disc. True for full in mem
+        :param chunkinmem: Whether to read full file to memory first,
+                           or read pieces off disc. True for full in mem
         :param overwritepageexists: Set to True to overwrite existing pages
         :param uploadifduplicate: Set to True to upload even if duplicate
-        :param ignorewarnings: Set to True to ignore all warnings (stash and upload) use with care
+        :param uploadifbadprefix: Set to True to upload even if bad prefix
+        :param ignorewarnings: Set to True to ignore all warnings
+                               (stash and upload) use with care
         :return:
         """
         txt = ''
         txt += "Chunk uploading to " + title.encode('utf-8', 'ignore')
-        filekey, errors = self.stash(title, file, chunksize, chunkinmem,
-                                     ignorewarnings)
+
+        # collect allowed warnings
+        allowedWarnings = []
+        if uploadifduplicate:
+            allowedWarnings.append('duplicate')
+        if overwritepageexists:
+            allowedWarnings.append('page-exists')
+        if uploadifbadprefix:
+            allowedWarnings.append('bad-prefix')
+        allowedWarnings = tuple(allowedWarnings)
+
+        # stash
+        filekey, errors = self.stash(title, file, allowedWarnings,
+                                     chunksize, chunkinmem, ignorewarnings)
 
         if errors is not None:
             txt += " " + "Upload failed"
@@ -1233,30 +1250,33 @@ class CommonsApi(WikiApi):
             if(jsonr['upload']['result'] == "Success"):
                 txt += " " + "Upload success"
             elif(jsonr['upload']['result'] == "Warning"):
-                if 'duplicate' in jsonr['upload']['warnings']:
-                    if not uploadifduplicate:
-                        txt += " " + "Upload warning"
-                elif 'page-exists' in jsonr['upload']['warnings']:
-                    if overwritepageexists:
-                        # does not work since
-                        # uploadignorewarnings() doesn't deal with chunks
-                        # error first appears in stash()
-                        self.uploadignorewarnings(title, jsonr['upload']['filekey'],
-                                                  text, comment)
+                warnings = jsonr['upload']['warnings'].keys()
+                if all(warning in allowedWarnings for warning in warnings):
+                    filekey = jsonr['upload']['filekey']
+                    jsonr = self.uploadignorewarnings(title, filekey,
+                                                      text, comment)
+                    if(jsonr['upload']['result'] == "Success"):
+                        txt += " " + "Upload success"
+                else:
+                    txt += " " + "Upload warning"
+
         if self.verbose:
             print txt
         txt += " " + self.responsebuffer.getvalue()
         return txt
 
-    def stash(self, title, filename, chunksize=5, chunkinmem=True,
-              ignorewarnings=False):
+    def stash(self, title, filename, allowedWarnings=(), chunksize=5,
+              chunkinmem=True, ignorewarnings=False):
         """
 
         :param title: The filename to stash it under in u
-        :param filename:
+        :param filename: The name of the file on the harddrive in str,
+                         may include relative/full path
+        :param allowedWarnings: Tuple of warning strings which are permitted
         :param chunksize: The chunksize in MB
-        :param chunkinmem: Whether to read all into mem at once, or off disk.
-                           True for all into mem
+        :param chunkinmem: Whether to read full file to memory first,
+                           or read pieces off disc. True for full in mem
+        :param ignorewarnings: Whether all warnings should be ignored
         :return (filekey, errors)
         """
         if self.verbose:
@@ -1285,6 +1305,19 @@ class CommonsApi(WikiApi):
 
         if 'upload' in jsonr:
             # @todo redo as a second call
+
+            # handle some known warnings
+            if jsonr['upload']['result'] == "Warning":
+                warnings = jsonr['upload']['warnings'].keys()
+                if all(warning in allowedWarnings for warning in warnings):
+                    if self.verbose:
+                        print "Ok warning (%s)... trying again" % \
+                              ", ".join(warnings)
+                    return self.stash(title, filename,
+                                      allowedWarnings=allowedWarnings,
+                                      chunksize=chunksize,
+                                      chunkinmem=chunkinmem,
+                                      ignorewarnings=True)
             uploadcounter = 1
             try:
                 while(jsonr['upload']['result'] == "Continue"):
@@ -1322,3 +1355,22 @@ class CommonsApi(WikiApi):
 
         # getting here meant something went wrong
         return None, self.responsebuffer.getvalue()
+
+    def uploadignorewarnings(self, title, filekey, text, comment):
+        """
+        Chunkupload() but for when the file is already stashed and with
+        ignorewarnings always true
+        :param title: File title to upload to without the "File:" in u
+        :param filekey: The filekey returned during stash
+        :param text: Text in file description in u
+        :param comment: The comment in u
+        :return:
+        """
+        requestparams = [('filename', title.encode('utf-8')),
+                         ('filekey', str(filekey)),
+                         ('comment', comment.encode('utf-8')),
+                         ('text', text.encode('utf-8')),
+                         ('token', self.edittoken),
+                         ('ignorewarnings', '1')]
+        jsonr = self.httpPOST("upload", requestparams)
+        return jsonr
