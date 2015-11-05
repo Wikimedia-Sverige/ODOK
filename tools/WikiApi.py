@@ -7,13 +7,13 @@
  Requires python2.7, json, and PyCurl
 
  TODO
-   Separate debug from verbose. There should be no non-error print statement which is not tied to either of these. Standardise verbose output.
+   * Separate debug from verbose. There should be no non-error print statement which is not tied to either of these.
+   ** Standardise verbose output to always use self.output wrapper
        (Do this also for odok.OdokApi)
    _http errors should be thrown again so that they can be caught upstream (instead of printed to commandline)
    _http timeout errors should output on verbose even if retried
    Allow setup to set Delay parameters and for these to be changed during the run
-   Reintegrate upload elements from PyCJWiki as class WikiCommonsApi(WikiApi) so as to fully move over to WikiApi
-       Break out WikiDataApi, WikiCommonsApi as separate files
+   Break out WikiDataApi, WikiCommonsApi as separate files
    consider integrating some elements of Europeana.py (e.g. getImageInfos() into WikiCommonsApi.
        Deal with encoding of filenames, proper use of ignorewarnings etc., purging (think Broken filelinks)
    Most "while 'query-continue'" could be redone as calling the same function with a 'query-continue' parameter
@@ -950,6 +950,15 @@ class WikiApi(object):
     def logout(self):
         self.httpPOST('logout', [('', '')])
 
+    def output(self, text):
+        """
+        A wrapper to only print text if verbose is True
+        :param text: text to print
+        :returns: None
+        """
+        if self.verbose:
+            print text
+
     def limitByBytes(self, valList, reqlimit=None):
         """
         php $_GET is limited to 512 bytes per request and parameter
@@ -1232,8 +1241,7 @@ class CommonsApi(WikiApi):
 
         if errors is not None:
             txt += " " + "Upload failed"
-            if self.verbose:
-                print txt
+            self.output(txt)
             txt += " " + errors
             return txt
 
@@ -1260,8 +1268,7 @@ class CommonsApi(WikiApi):
                 else:
                     txt += " " + "Upload warning"
 
-        if self.verbose:
-            print txt
+        self.output(txt)
         txt += " " + self.responsebuffer.getvalue()
         return txt
 
@@ -1279,8 +1286,7 @@ class CommonsApi(WikiApi):
         :param ignorewarnings: Whether all warnings should be ignored
         :return (filekey, errors)
         """
-        if self.verbose:
-            print "Stashing to " + title.encode('utf-8', 'ignore')
+        self.output("Stashing to " + title.encode('utf-8', 'ignore'))
 
         b = open(filename, 'r+b')
         if chunkinmem:
@@ -1310,9 +1316,8 @@ class CommonsApi(WikiApi):
             if jsonr['upload']['result'] == "Warning":
                 warnings = jsonr['upload']['warnings'].keys()
                 if all(warning in allowedWarnings for warning in warnings):
-                    if self.verbose:
-                        print "Ok warning (%s)... trying again" % \
-                              ", ".join(warnings)
+                    self.output("Ok warning (%s)... trying again" %
+                                ", ".join(warnings))
                     return self.stash(title, filename,
                                       allowedWarnings=allowedWarnings,
                                       chunksize=chunksize,
@@ -1343,9 +1348,8 @@ class CommonsApi(WikiApi):
                             jsonr['upload']['result'] = "Success"
                             break
                 if(jsonr['upload']['result'] == "Success"):
-                    if self.verbose:
-                        print '\nSuccessfully stashed at: %s' % \
-                              jsonr['upload']['filekey']
+                    self.output('\nSuccessfully stashed at: %s' %
+                                jsonr['upload']['filekey'])
                     return jsonr['upload']['filekey'], None
             except KeyError:
                 print jsonr
