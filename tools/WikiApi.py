@@ -954,7 +954,7 @@ class WikiApi(object):
         """
         A wrapper to only print text if verbose is True
         :param text: text to print
-        :returns: None
+        :return: None
         """
         if self.verbose:
             print text
