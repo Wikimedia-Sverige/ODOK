@@ -217,29 +217,22 @@ class WikiApi(object):
         :param userName: username as u
         :param userPass: userpassword as u. Not stored after login
         :return:
-        :eturns type:
         """
         if verbose:
             print "Logging into %s as %s" % (self._apiurl, userName)
             print "Logging in...(1/2)"
 
-        # Login
-        jsonr = self.httpPOST("login", [('lgname', userName.encode('utf-8')),
-                                        ('lgpassword', userPass.encode('utf-8'))])
-        if 'NeedToken' in jsonr['login']['result']:
-            if verbose:
-                print "Logging in...(1/2)...Success!"
-        else:
-            print "Logging in...(1/2)...Failed."
-            self.printResponseBuffer()
-            exit()
+        # Request login token
+        lgtoken = self.setToken('login', verbose=verbose)
+        if verbose:
+            print "Logging in...(1/2)...Success!"
 
         # Login 2/2
         if verbose:
             print "Logging in...(2/2)"
         jsonr = self.httpPOST("login", [('lgname', userName.encode('utf-8')),
                                         ('lgpassword', userPass.encode('utf-8')),
-                                        ('lgtoken', str(jsonr['login']['token']))])
+                                        ('lgtoken', lgtoken)])
         if 'Success' in jsonr['login']['result']:
             if verbose:
                 print "Logging in...(2/2)...Success!"
