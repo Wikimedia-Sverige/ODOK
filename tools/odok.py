@@ -11,6 +11,7 @@ import WikiApi as wikiApi
 import MySQLdb
 # import pycurl
 
+
 class OdokApi(wikiApi.WikiApi):
     '''
     When possible connect through the api
@@ -18,6 +19,8 @@ class OdokApi(wikiApi.WikiApi):
     Should replace login/token/logout by dummyfunction to prevent
     these from being executed
     '''
+
+    MAX_LIMIT = 500
 
     # dummy functions to prevent these from being executed
     def login(self, userName, userPass, verbose=True): self.dummyFunction(u'login')
@@ -83,7 +86,8 @@ class OdokApi(wikiApi.WikiApi):
         # Single run
         # action=query&list=embeddedin&cmtitle=Template:!
         jsonr = self.httpGET("get", [('id', '|'.join(idList).encode('utf-8')),
-                                     ('limit', str(100))], debug=debug)
+                                     ('limit', str(self.MAX_LIMIT))],
+                             debug=debug)
 
         if debug:
             print u'getIds(): idList=%s\n' % idList
@@ -110,7 +114,7 @@ class OdokApi(wikiApi.WikiApi):
             members = []
 
         # Single run
-        requestparams = [('limit', str(100)),
+        requestparams = [('limit', str(self.MAX_LIMIT)),
                          ('function', 'lists'.encode('utf-8'))]
         if offset:
             requestparams.append(('offset', str(offset)))
@@ -164,7 +168,7 @@ class OdokApi(wikiApi.WikiApi):
                 return members
 
         # Single run
-        query = [('limit', str(100)),
+        query = [('limit', str(self.MAX_LIMIT)),
                  ('list', '|'.join(idList).encode('utf-8'))]
         if show:
             query += [('show', '|'.join(show).encode('utf-8'))]
@@ -217,7 +221,7 @@ class OdokApi(wikiApi.WikiApi):
 
         # Single run
         if 'limit' not in queries.keys():
-            queries['limit'] = str(100)
+            queries['limit'] = str(self.MAX_LIMIT)
         requestparams = []
         for k, v in queries.iteritems():
             requestparams.append((k, v.encode('utf-8')))
@@ -259,7 +263,7 @@ class OdokApi(wikiApi.WikiApi):
         if members is None:
             members = []
 
-        query = [('limit', str(100)),
+        query = [('limit', str(self.MAX_LIMIT)),
                  ('offset', str(offset))]
         if full:
             query += [('geojson', 'full')]

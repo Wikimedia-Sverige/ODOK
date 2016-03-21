@@ -9,7 +9,7 @@
      *  d. by artwork id (return array of artists matching)
      *  e. birth/death year (span)
      * Also should reuse the following parameters:
-     *    limit: max number of results (artists) returned (must be in range 1-100, defaults to 10)
+     *    limit: max number of results (artists) returned (must be in range 1-500, defaults to 10)
      *    offset: which result to start showing (used in combination with limit)
      *    show: the parameters to show (possibly skip this)
      */

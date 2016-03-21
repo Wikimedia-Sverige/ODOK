@@ -191,9 +191,9 @@
             return $query;
         }
 
-        /* Read in limit (must be in range 1-100, defaults to 10)*/
+        /* Read in limit (must be in range 1-500, defaults to 10)*/
         function setLimit($lim){
-            $max_limit = 100;
+            $max_limit = 500;
             $min_limit = 1;
             $default_limit = 10;
             $limit = isset($lim) ? intval($lim) : $default_limit;

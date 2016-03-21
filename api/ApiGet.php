@@ -3,7 +3,7 @@
      * Performs a standard SQL query on the database.
      * In addition to the ordinary constraints this module listens for the
      * following parameters:
-     *    limit: max number of results returned (must be in range 1-100, defaults to 10)
+     *    limit: max number of results returned (must be in range 1-500, defaults to 10)
      *    offset: which result to start showing (used in combination with limit)
      *    view: the view used [strict, enhanced, normal].
      *    show: the parameters to show
