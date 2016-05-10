@@ -112,7 +112,7 @@ class WikiApi(object):
             if(errno == 28):
                 if(timeoutretry < 3):
                     time.sleep(2)
-                    func(action, params, timeoutretry=(timeoutretry+1))
+                    func(action, params, timeoutretry=(timeoutretry + 1))
                 else:
                     print "timed out 3 times! Not retrying"
             else:
@@ -150,7 +150,8 @@ class WikiApi(object):
         """
         # Set curl http request
         self.sitecurl.setopt(pycurl.HTTPGET, 1)
-        self.sitecurl.setopt(pycurl.URL, self.apiaction(action, form=form)+'&'+urllib.urlencode(params))
+        self.sitecurl.setopt(pycurl.URL, self.apiaction(action, form=form) +
+                             '&' + urllib.urlencode(params))
 
         return self._httpREQ(action, params, self.httpGET, timeoutretry=timeoutretry, debug=debug)
 
@@ -198,7 +199,7 @@ class WikiApi(object):
             if(errno == 28):
                 if(timeoutretry < 3):
                     time.sleep(2)
-                    self.httpPOST(action, params, timeoutretry=(timeoutretry+1))
+                    self.httpPOST(action, params, timeoutretry=(timeoutretry + 1))
 
         # print self.responsebuffer.getvalue()
         jsonr = json.loads(self.responsebuffer.getvalue())
@@ -359,14 +360,15 @@ class WikiApi(object):
         while 'query-continue' in jsonr:
             print "Fetching pages embedding: %s...fetching more" % templatename
             # print jsonr['query-continue']['embeddedin']['geicontinue']
-            jsonr = self.httpPOST("query", [('prop', 'revisions'),
-                                        ('rvprop', 'timestamp'),
-                                        ('generator', 'embeddedin'),
-                                        ('geititle', templatename.encode('utf-8')),
-                                        ('geinamespace', str(einamespace)),
-                                        ('rawcontinue', ''),
-                                        ('geilimit', '500'),
-                                        ('geicontinue', str(jsonr['query-continue']['embeddedin']['geicontinue']))])
+            jsonr = self.httpPOST("query", [
+                ('prop', 'revisions'),
+                ('rvprop', 'timestamp'),
+                ('generator', 'embeddedin'),
+                ('geititle', templatename.encode('utf-8')),
+                ('geinamespace', str(einamespace)),
+                ('rawcontinue', ''),
+                ('geilimit', '500'),
+                ('geicontinue', str(jsonr['query-continue']['embeddedin']['geicontinue']))])
             for page in jsonr['query']['pages']:
                 page = jsonr['query']['pages'][page]
                 members.append({'title': page['title'], 'timestamp': page['revisions'][0]['timestamp']})
@@ -400,12 +402,13 @@ class WikiApi(object):
         while 'query-continue' in jsonr:
             print "Fetching categorymembers: %s...fetching more" % categoryname
             # print jsonr['query-continue']['categorymembers']['cmcontinue']
-            jsonr = self.httpPOST("query", [('list', 'categorymembers'),
-                                        ('cmtitle', categoryname.encode('utf-8')),
-                                        ('cmnamespace', str(cmnamespace)),
-                                        ('rawcontinue', ''),
-                                        ('cmlimit', '500'),
-                                        ('cmcontinue', str(jsonr['query-continue']['categorymembers']['cmcontinue']))])
+            jsonr = self.httpPOST("query", [
+                ('list', 'categorymembers'),
+                ('cmtitle', categoryname.encode('utf-8')),
+                ('cmnamespace', str(cmnamespace)),
+                ('rawcontinue', ''),
+                ('cmlimit', '500'),
+                ('cmcontinue', str(jsonr['query-continue']['categorymembers']['cmcontinue']))])
             for page in jsonr['query']['categorymembers']:
                 members.append((page['title']))
 
@@ -474,8 +477,8 @@ class WikiApi(object):
         reqlimit = self.reqlimit  # max 50 titles per request allowed
         if len(articles) > reqlimit:
             i = 0
-            while (i+reqlimit < len(articles)):
-                results = self.getImages(articles[i:i+reqlimit],
+            while (i + reqlimit < len(articles)):
+                results = self.getImages(articles[i:i + reqlimit],
                                          results=results,
                                          offset=offset, debug=debug)
                 i += reqlimit
@@ -542,8 +545,8 @@ class WikiApi(object):
         articles = list(set(articles))  # remove dupes
         if len(articles) > reqlimit:
             i = 0
-            while (i+reqlimit < len(articles)):
-                self.getPageInfo(articles[i:i+reqlimit], dDict, debug=debug)
+            while (i + reqlimit < len(articles)):
+                self.getPageInfo(articles[i:i + reqlimit], dDict, debug=debug)
                 i += reqlimit
             # less than reqlimit left
             articles = articles[i:]
@@ -551,9 +554,10 @@ class WikiApi(object):
                 return dDict
 
         # Single run
-        jsonr = self.httpPOST("query", [('prop', 'pageprops'),
-                                    ('redirects', ''),
-                                    ('titles', '|'.join(articles).encode('utf-8'))])
+        jsonr = self.httpPOST("query", [
+            ('prop', 'pageprops'),
+            ('redirects', ''),
+            ('titles', '|'.join(articles).encode('utf-8'))])
         if debug:
             print u"getPageInfo(): articles=%s\n" % '|'.join(articles)
             print jsonr
@@ -620,8 +624,8 @@ class WikiApi(object):
         articles = list(set(articles))  # remove dupes
         if len(articles) > reqlimit:
             i = 0
-            while (i+reqlimit < len(articles)):
-                self.getPage(articles[i:i+reqlimit], dDict, debug=debug)
+            while (i + reqlimit < len(articles)):
+                self.getPage(articles[i:i + reqlimit], dDict, debug=debug)
                 i += reqlimit
             # less than reqlimit left
             articles = articles[i:]
@@ -629,9 +633,10 @@ class WikiApi(object):
                 return dDict
 
         # Single run
-        jsonr = self.httpPOST("query", [('prop', 'revisions'),
-                                    ('rvprop', 'content'),
-                                    ('titles', '|'.join(articles).encode('utf-8'))])
+        jsonr = self.httpPOST("query", [
+            ('prop', 'revisions'),
+            ('rvprop', 'content'),
+            ('titles', '|'.join(articles).encode('utf-8'))])
         if debug:
             print u"getPage() : articles= %s\n" % '|'.join(articles)
             print jsonr
@@ -748,7 +753,7 @@ class WikiApi(object):
 
     def editText(self, title, newtext, comment, minor=False, bot=True, userassert='bot', nocreate=False, debug=False, append=False):
         print "Editing %s" % title.encode('utf-8', 'ignore')
-        requestparams = [('title',  title.encode('utf-8')),
+        requestparams = [('title', title.encode('utf-8')),
                          ('text', newtext.encode('utf-8')),
                          ('summary', comment.encode('utf-8')),
                          ('token', str(self.edittoken))]
@@ -799,8 +804,8 @@ class WikiApi(object):
         users = list(set(users))  # remove dupes
         if len(users) > self.reqlimit:
             i = 0
-            while (i+self.reqlimit < len(users)):
-                self.getUserData(users[i:i+self.reqlimit],
+            while (i + self.reqlimit < len(users)):
+                self.getUserData(users[i:i + self.reqlimit],
                                  dDict=dDict,
                                  debug=debug)
                 i += self.reqlimit
@@ -862,8 +867,9 @@ class WikiApi(object):
         articles = list(set(articles))  # remove dupes
         if len(articles) > reqlimit:
             i = 0
-            while (i+reqlimit < len(articles)):
-                self.getPageCategories(articles[i:i+reqlimit], nohidden=nohidden, dDict=dDict, debug=debug)
+            while (i + reqlimit < len(articles)):
+                self.getPageCategories(articles[i:i + reqlimit], nohidden=nohidden,
+                                       dDict=dDict, debug=debug)
                 i += reqlimit
             # less than reqlimit left
             articles = articles[i:]
@@ -907,12 +913,13 @@ class WikiApi(object):
         while 'query-continue' in jsonr:
             # print  "Fetching pagecategories: %s...fetching more" % '|'.join(articles)
             # print jsonr['query-continue']['categorymembers']['clcontinue']
-            jsonr = self.httpPOST("query", [('prop', 'categories'),
-                                        ('cllimit', '500'),
-                                        ('clshow', clshow),
-                                        ('rawcontinue', ''),
-                                        ('titles', '|'.join(articles).encode('utf-8'))
-                                        ('clcontinue', str(jsonr['query-continue']['categories']['clcontinue']))])
+            jsonr = self.httpPOST("query", [
+                ('prop', 'categories'),
+                ('cllimit', '500'),
+                ('clshow', clshow),
+                ('rawcontinue', ''),
+                ('titles', '|'.join(articles).encode('utf-8'))
+                ('clcontinue', str(jsonr['query-continue']['categories']['clcontinue']))])
 
             for page in jsonr['query']['pages']:
                 page = jsonr['query']['pages'][page]
@@ -967,10 +974,10 @@ class WikiApi(object):
         oldresult = reqlimit
         while True:
             byteLength = len('|'.join(valList[:reqlimit]).encode('utf-8'))
-            num = byteLength/byteLimit
+            num = byteLength / byteLimit
             if not num > 1:
                 break
-            reqlimit = int(reqlimit/num)
+            reqlimit = int(reqlimit / num)
             if reqlimit < 1:
                 print "%r byte limit broken by a single parameter! What to do?" % int(byteLimit)
                 return None  # Should do proper error handling
@@ -1042,8 +1049,8 @@ class WikiDataApi(WikiApi):
         entities = list(set(entities))  # remove dupes
         if len(entities) > reqlimit:
             i = 0
-            while (i+reqlimit < len(entities)):
-                self.getArticles(entities[i:i+reqlimit], dDict, site=site, debug=debug)
+            while (i + reqlimit < len(entities)):
+                self.getArticles(entities[i:i + reqlimit], dDict, site=site, debug=debug)
                 i += reqlimit
             # less than reqlimit left
             entities = entities[i:]
@@ -1051,8 +1058,9 @@ class WikiDataApi(WikiApi):
                 return dDict
 
         # Single run
-        jsonr = self.httpPOST("wbgetentities", [('props', 'sitelinks/urls'),
-                                    ('ids', '|'.join(entities).encode('utf-8'))])
+        jsonr = self.httpPOST("wbgetentities", [
+            ('props', 'sitelinks/urls'),
+            ('ids', '|'.join(entities).encode('utf-8'))])
         if debug:
             print u"getArticles() : site=%s ; entities=%s\n" % (site, '|'.join(entities))
             print jsonr
@@ -1116,9 +1124,10 @@ class WikiDataApi(WikiApi):
                     'rank': 'normal'})
         data = json.dumps(data)  # should this be ensure_ascii=False ?
 
-        jsonr = self.httpPOST("wbeditentity", [('new', 'item'),
-                                    ('data', data.encode('utf-8')),
-                                    ('token', str(self.edittoken))])
+        jsonr = self.httpPOST("wbeditentity", [
+            ('new', 'item'),
+            ('data', data.encode('utf-8')),
+            ('token', str(self.edittoken))])
         if debug:
             print u"makeEntity() : site=%s ; article=%s\n" % (site, article)
             print jsonr
@@ -1167,8 +1176,8 @@ class CommonsApi(WikiApi):
         reqlimit = self.reqlimit  # max 50 titles per request allowed
         if len(images) > reqlimit:
             i = 0
-            while (i+reqlimit < len(images)):
-                self.getImageInfo(images[i:i+reqlimit], dDict=dDict, debug=debug)
+            while (i + reqlimit < len(images)):
+                self.getImageInfo(images[i:i + reqlimit], dDict=dDict, debug=debug)
                 i += reqlimit
             # less than reqlimit left
             images = images[i:]
@@ -1181,7 +1190,7 @@ class CommonsApi(WikiApi):
             ('iiprop', 'timestamp|user'),
             ('iilimit', '1'),
             ('rawcontinue', ''),
-            ('titles', 'File:'+u'|File:'.join(images).encode('utf-8'))]
+            ('titles', 'File:' + u'|File:'.join(images).encode('utf-8'))]
         jsonr = self.httpPOST("query", requestparams)
         if debug:
             print u"getImageInfo(): images=%s\n" % '|'.join(images)
