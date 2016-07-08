@@ -81,9 +81,9 @@ def is_iso_date(s):
     y, m, d = s[:4], s[5:7], s[8:]
     if not is_int(y):
         return False
-    if not (is_int(m) and int(m) in range(1, 12+1)):
+    if not (is_int(m) and int(m) in range(1, 12 + 1)):
         return False
-    if not (is_int(d) and int(d) in range(1, 31+1)):
+    if not (is_int(d) and int(d) in range(1, 31 + 1)):
         return False
     return True
 
@@ -109,7 +109,7 @@ def extractName(entry):
     if u'[' in entry:
         pos1 = entry.find(u'[')
         pos2 = entry.find(u']')
-        entry = entry[pos1+1:pos2]
+        entry = entry[pos1 + 1:pos2]
     return entry.split(u';')
 
 
@@ -162,7 +162,7 @@ def findUnit(contents, start, end, brackets=None):
             uEnd = None
         if brackets:
             for bStart, bEnd in brackets.iteritems():
-                dummy = u'¤'*len(bEnd)
+                dummy = u'¤' * len(bEnd)
                 diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
                 if diff < 0:
                     print 'Negative bracket missmatch for: %s <--> %s' % (bStart, bEnd)
@@ -181,7 +181,7 @@ def findUnit(contents, start, end, brackets=None):
                     i = 0
                     while(diff > 0):
                         i += 1
-                        uEnd = contents.find(end, uEnd+len(end))
+                        uEnd = contents.find(end, uEnd + len(end))
                         if uEnd < 0:
                             diff = contents[uStart:].count(bStart) - contents[uStart:].count(bEnd)
                             if diff > 0:
@@ -191,12 +191,12 @@ def findUnit(contents, start, end, brackets=None):
                             diff = contents[uStart:uEnd].count(bStart) - contents[uStart:uEnd].count(bEnd)
 
         unit = contents[uStart:uEnd]
-        lead_in = contents[:uStart-len(start)]
+        lead_in = contents[:uStart - len(start)]
         if uEnd:  # i.e. if not until end of string
             if noEnd:
                 remainder = contents[uEnd:]
             else:
-                remainder = contents[uEnd+len(end):]
+                remainder = contents[uEnd + len(end):]
         else:
             remainder = ''
         return (unit, remainder, lead_in)
@@ -215,21 +215,21 @@ def extractLink(text, kill_tags=False):
     if kill_tags:
         while '<' in text and '>' in text:
             tag, dummy, dummy = findUnit(text, u'<', u'>')
-            endtag = u'</'+tag+u'>'
-            tag = u'<'+tag+u'>'
+            endtag = u'</' + tag + u'>'
+            tag = u'<' + tag + u'>'
             if endtag in text:
                 dummy, remainder, lead_in = findUnit(text, tag, endtag)
             else:
                 dummy, remainder, lead_in = findUnit(text, u'<', u'>')
-            text = lead_in.strip()+' '+remainder.strip()
+            text = lead_in.strip() + ' ' + remainder.strip()
 
     if u'[[' not in text:
         return (text.strip(), '')
     interior, dummy, dummy = findUnit(text, u'[[', u']]')
-    wikilink = u'[['+interior+u']]'
+    wikilink = u'[[' + interior + u']]'
     pos = text.find(wikilink)
     pre = text[:pos]
-    post = text[pos+len(wikilink):]
+    post = text[pos + len(wikilink):]
     center = ''
     link = ''
 
@@ -240,7 +240,7 @@ def extractLink(text, kill_tags=False):
     else:
         pos = interior.find(u'|')
         link = interior[:pos]
-        center = interior[pos+1:]
+        center = interior[pos + 1:]
         if len(link) == 0:  # [[|ab]] -> ('ab', 'ab')
             link = center
         elif len(center) > 0:  # [[a|b]] -> ('b', 'a')
@@ -248,7 +248,7 @@ def extractLink(text, kill_tags=False):
         else:
             center = link
             if u':' in center:  # [[a:b|]] -> ('b', 'a:b')
-                center = center[center.find(u':')+1:]
+                center = center[center.find(u':') + 1:]
             if u', ' in center:  # [[a, b|]] -> ('a', 'a, b')
                 center = center.split(u', ')[0]
             if u'(' in center:  # [[a (b)|]] -> ('a', 'a (b)')
@@ -257,7 +257,7 @@ def extractLink(text, kill_tags=False):
                     center = center[:pos]
                     if center.endswith(' '):  # the first space separating text and bracket is ignored
                         center = center[:-1]
-    return ((pre+center+post).strip(), link.strip())
+    return ((pre + center + post).strip(), link.strip())
 
 
 def extractAllLinks(text, kill_tags=False):
@@ -296,13 +296,13 @@ def latLonFromCoord(coord):
                 elif is_number(p[3]):  # {{coord|12|12|12.123|N|12|12|12.123|E|...}}
                     lat_d, lat_m, lat_s, lat_sign = float(p[1].strip()), float(p[2].strip()), float(p[3].strip()), p[4].strip().rstrip('}')
                     lon_d, lon_m, lon_s, lon_sign = float(p[5].strip()), float(p[6].strip()), float(p[7].strip()), p[8].strip().rstrip('}')
-                    lat = lat_d + lat_m/60 + lat_s/3600
-                    lon = lon_d + lon_m/60 + lon_s/3600
+                    lat = lat_d + lat_m / 60 + lat_s / 3600
+                    lon = lon_d + lon_m / 60 + lon_s / 3600
                 else:  # {{coord|12|12.123|N|12|12.123|E|...}}
                     lat_d, lat_m, lat_sign = float(p[1].strip()), float(p[2].strip()), p[3].strip().rstrip('}')
                     lon_d, lon_m, lon_sign = float(p[4].strip()), float(p[5].strip()), p[6].strip().rstrip('}')
-                    lat = lat_d + lat_m/60
-                    lon = lon_d + lon_m/60
+                    lat = lat_d + lat_m / 60
+                    lon = lon_d + lon_m / 60
             else:  # {{coord|12.123|N|12.123|E|...}}
                 lat, lat_sign = float(p[1].strip()), p[2].strip().rstrip('}')
                 lon, lon_sign = float(p[3].strip()), p[4].strip().rstrip('}')
@@ -320,8 +320,8 @@ def latLonFromCoord(coord):
             else:
                 print 'incorrectly formated coordinate (lon_sign): %s, %s' % (lon_sign, coord)
                 return None
-            lat = lat_sign*lat
-            lon = lon_sign*lon
+            lat = lat_sign * lat
+            lon = lon_sign * lon
             return (lat, lon)
         except IndexError:
             print 'incorrectly formated coordinate (?): %s' % coord
