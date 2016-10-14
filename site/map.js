@@ -24,12 +24,6 @@ $(document).ready(function() {
     );
 
     var attribution = 'Ett projekt från <a href="//wikimedia.se/">Wikimedia Sverige</a> med stöd av <a href="http://www.vinnova.se">Vinnova</a>. | ';
-    // settings for MapQuest
-    var mapQuest = L.tileLayer("http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png", {
-        attribution: attribution + 'Kartdata © <a href="//openstreetmap.org/">OpenStreetMap</a>-bidragsgivare. kartrendering av <a href="//www.mapquest.com/">MapQuest</a>',
-        maxZoom: 19,
-        subdomains: ['otile1','otile2','otile3','otile4']
-    });
 
     // settings for OSM Sweden
     var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
@@ -100,7 +94,6 @@ $(document).ready(function() {
 
         // for layers control
         var baseMaps = {
-            "MapQuest": mapQuest,
             "OSM": osm,
             "OSM Sweden": osmSE
         };
