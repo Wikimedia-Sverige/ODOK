@@ -143,6 +143,7 @@
                         break;
                     case 'json' :
                         Format::outputJson($results);
+                        header('Access-Control-Allow-Origin: *');
                         break;
                     case 'php' :
                         Format::outputPhp($results);
@@ -158,6 +159,7 @@
                         break;
                     case 'geojson' :
                         Format::outputGeojson($results);
+                        header('Access-Control-Allow-Origin: *');
                         break;
                     case 'jsonp' :
                         Format::outputJsonp($results, $_GET['callback']);
