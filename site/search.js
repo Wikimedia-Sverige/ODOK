@@ -244,8 +244,15 @@ function populateSearchResult(rObjs) {
         bc.append('<a href="' + editLnk + '" target="_blank">' + editImg + '</a>');
     }
 
+    var ballonPosition;
+    if ($(document).width() > 800) {
+        ballonPosition = 'left';
+    } else {
+        ballonPosition = 'bottom';
+    }
+
     $('#rc_' + index).balloon({
-        position: 'bottom',
+        position: ballonPosition,
         classname: 'rcballoon',
         css: { maxWidth: '100%' },
         contents: bc });
