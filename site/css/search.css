@@ -82,6 +82,20 @@
     margin-left: 0.2em;
 }
 
+fieldset {
+    padding-bottom: 2px;
+}
+
+fieldset div {
+    width: 95%;
+    display: inline-block;
+    float: left;
+}
+
+fieldset div:last-of-type {
+    float: initial;
+}
+
 /* Image size inside the resultcard */
 .resultcard img.thumb {
     padding-right: .5em;
@@ -132,6 +146,12 @@
 @font-face {
     font-family:'Varela';
     src:url('varela.woff') format('woff');
+}
+
+@media (min-width: 800px) {
+    #main {
+        max-height: 100vh;
+    }
 }
 
 @media (max-width: 800px) {
