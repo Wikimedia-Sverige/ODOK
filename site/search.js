@@ -212,6 +212,9 @@ function populateSearchResult(rObjs) {
     // console.log(newCard);
     $('#searchresults').append(newCard);
 
+    // set map below results(#sidebarholder)
+    $('#main').css('bottom',  '-' + $('#sidebarholder').height() + 'px');
+
     var bc = $(document.createElement('div'));
     bc.append(newCard.html());
 
@@ -242,9 +245,9 @@ function populateSearchResult(rObjs) {
     }
 
     $('#rc_' + index).balloon({
-        position: 'left',
+        position: 'bottom',
         classname: 'rcballoon',
-        css: { minWidth: '400px' },
+        css: { maxWidth: '100%' },
         contents: bc });
     });
 
