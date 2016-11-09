@@ -21,7 +21,8 @@
         function outputJson($results){
             /* Setting up JSON headers */
             @header ("content-type: application/json; charset=utf-8");
-            
+            header ("Access-Control-Allow-Origin: *");
+
             $compact=False;
             if (strtolower($_GET['json']) == 'compact'){
                 $compact=True;
@@ -108,6 +109,7 @@
         
         function outputGeojson($results){
             if (strtolower($_GET['action']) == 'get'){
+                header ("Access-Control-Allow-Origin: *");
                 include('FormatGeojson.php');
                 $full = False;
                 $compact = False;
