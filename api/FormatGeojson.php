@@ -6,8 +6,9 @@
      */
     class FormatGeojson{
         private function initialise(){
-            /* Setting header */
+            /* Setting headers */
             @header ("content-type: application/vnd.geo+json; charset=utf-8");
+            header ("Access-Control-Allow-Origin: *");
         }
         
         private function finalise($features, $head){

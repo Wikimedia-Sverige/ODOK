@@ -109,7 +109,6 @@
         
         function outputGeojson($results){
             if (strtolower($_GET['action']) == 'get'){
-                header ("Access-Control-Allow-Origin: *");
                 include('FormatGeojson.php');
                 $full = False;
                 $compact = False;
