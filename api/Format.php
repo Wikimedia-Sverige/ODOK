@@ -21,7 +21,8 @@
         function outputJson($results){
             /* Setting up JSON headers */
             @header ("content-type: application/json; charset=utf-8");
-            
+            header ("Access-Control-Allow-Origin: *");
+
             $compact=False;
             if (strtolower($_GET['json']) == 'compact'){
                 $compact=True;
