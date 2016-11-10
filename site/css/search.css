@@ -21,9 +21,11 @@
     right:1%;
     left: 61%;
 }
+
 #searchheader label {
     color: #b3b3b3;
 }
+
 #searchheader span {
     display:inline-block;
     vertical-align: middle;
@@ -43,7 +45,7 @@
 
 /* Div for results of search */
 #searchresults {
-    padding-top: 18em;
+    padding-top: 18.2em;
 }
 
 /* Main map div */
@@ -79,17 +81,34 @@
     overflow: auto;
     margin-left: 0.2em;
 }
+
+fieldset {
+    padding-bottom: 2px;
+}
+
+fieldset div {
+    width: 95%;
+    display: inline-block;
+    float: left;
+}
+
+fieldset div:last-of-type {
+    float: initial;
+}
+
 /* Image size inside the resultcard */
 .resultcard img.thumb {
     padding-right: .5em;
     width: 15%;
     float: left;
 }
+
 .resultcard img.nopic {
     padding-left: .5em;
     width: 5%;
     float: right;
 }
+
 .resultcard img.edit {
     padding-left: .5em;
     width: 5%;
@@ -102,7 +121,7 @@
 
 /* The balloon shown on mouse over a resultcard */
 .rcballoon {
-    max-width: 40%;
+    box-sizing: border-box;
 }
 
 /* Image size inside balloon */
@@ -111,18 +130,57 @@
     width: 20%;
     float: left;
 }
+
 .rcballoon img.nopic {
     padding-left: .5em;
     width: 5%;
     float: right;
 }
+
 .rcballoon img.edit {
     padding-left: .5em;
     width: 5%;
     float: right;
 }
 
-@font-face{
+@font-face {
     font-family:'Varela';
     src:url('varela.woff') format('woff');
+}
+
+@media (min-width: 800px) {
+    #main {
+        max-height: 100vh;
+    }
+}
+
+@media (max-width: 800px) {
+    #sidebarholder {
+        min-width: 100%;
+        bottom: initial;
+        height: initial;
+        overflow: initial;
+    }
+
+    #searchheader {
+        width: 100%;
+        position: relative;
+        left: initial;
+        right: initial;
+    }
+
+    #searchresults {
+        padding-top: 0;
+    }
+
+    .pure-u-3-5 {
+        width: 100%;
+    }
+
+    #main {
+        right: 0;
+        height: 100vh;
+        top: initial;
+        bottom: -287px;
+    }
 }

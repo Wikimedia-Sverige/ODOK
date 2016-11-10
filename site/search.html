@@ -2,61 +2,57 @@
 <html lang="sv">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta property="og:title" content="Offentligkonst.se &ndash; sökmotorn"/>
-    <meta property="og:description" content="Sökmotor för offentlig konst i Sverige"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="Offentligkonst.se &ndash; sökmotorn" />
+    <meta property="og:description" content="Sökmotor för offentlig konst i Sverige" />
     <title>Offentligkonst.se &ndash; sökmotorn</title>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.min.css" />
-    <link rel="profile" href="//www.w3.org/2005/10/profile" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.min.css" />
+    <link rel="profile" href="https://www.w3.org/2005/10/profile" />
     <link rel="icon"
         type="image/ico"
         href="favicon.ico" />
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
     <script type="text/javascript" src="external/jquery.balloon.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.1.0/chosen.jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
     <script type="text/javascript" src="search.js"></script>
 
     <!--These should be replaced by something which works better on mobile-->
-    <link rel="stylesheet" href="http://yui.yahooapis.com/combo?pure/0.3.0/pure-min.css&amp;pure/0.3.0/base-min.css&amp;pure/0.3.0/forms-min.css&amp;pure/0.3.0/grids-min.css"/>
-    <link rel="stylesheet" href="HACK4DK/web/css/pure-skin-mine.css"/>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/combo?pure/0.3.0/pure-min.css&amp;pure/0.3.0/base-min.css&amp;pure/0.3.0/forms-min.css&amp;pure/0.3.0/grids-min.css" />
 
-    <link rel="stylesheet" href="css/search.css"/>
+    <link rel="stylesheet" href="css/search.css" />
 </head>
 <body>
 
   <div class="pure-g-r" id="outer">
-    <div class="pure-u-3-5">
-      <div id="main"></div>
-    </div>
-
     <div class="pure-u-2-5" id="sidebarholder">
       <div id="sidebar">
         <div class="pure-form" id="searchheader">
-          <fieldset style="padding-bottom: 2px;">
+          <fieldset>
             <legend class="logo"><a href="index.html"><img src="images/Offentligkonst_logo_nav.svg" alt="logo" /></a>&nbsp; &ndash; Sökmotorn</legend>
-            <div style="width: 99%;display: inline-block; float:right">
+            <div>
                 <label for="coord_input">&nbsp;med Koordinater</label>
                 <input id="coord_input" type="checkbox" value="coord" name="ci" title="Require coordinate" tabindex=1/>
                 &nbsp;
                 <label for="image_input">&nbsp;med Bild</label>
                 <input id="image_input" type="checkbox" value="image" name="ii" title="Require image" tabindex=2/>
             </div>
-            <div style="width: 99%;display: inline-block" class="enterTriggered">
+            <div class="enterTriggered">
                 <label for="artist_input" style="width: 24%">&nbsp;Konstnär:</label>
                 <input type="text" id="artist_input" title="Ange konstnär" placeholder="<alla>" tabindex=3 style="width: 75%; float:right"/>
             </div>
-            <div style="width: 99%;display: inline-block" class="enterTriggered">
+            <div class="enterTriggered">
                 <label for="title_input" style="width: 24%">&nbsp;Titel:</label>
                 <input type="text" id="title_input" title="Ange titel" placeholder="<alla>" tabindex=4 style="width: 75%; float:right"/>
             </div>
-            <div style="width: 99%;display: inline-block" class="enterTriggered">
+            <div class="enterTriggered">
                 <label for="year_input_from" style="width: 24%">&nbsp;Tillkomstår:</label>
                 <input type="number" min="1000" max="2500" step="1" id="year_input_til" title="Till" placeholder="<till>" tabindex=6 style="width: 36%; float:right"/>
-                <span style="width: 3%; float:right">&nbsp;&ndash;&nbsp;</span>
-                <input type="number" min="1000" max="2500" step="1" id="year_input_from" title="Från" placeholder="<från>" tabindex=5 style="width: 36%; float:right"/>                
+                <span style="width: 3%; float:right" aria-hidden>&nbsp;&ndash;&nbsp;</span>
+                <input type="number" min="1000" max="2500" step="1" id="year_input_from" title="Från" placeholder="<från>" tabindex=5 style="width: 36%; float:right"/>
             </div>
-            <div style="width: 99%;display: inline-block">
+            <div>
                 <label for="muni_selector" style="width: 24%">&nbsp;Kommun:</label><br/>
                 <select id="muni_selector" title="Välj kommun" data-placeholder="<alla>" multiple tabindex=7 style="width: 100%; float:right; "></select>
             </div>
@@ -67,6 +63,10 @@
         <br clear="right" />
         <div id="searchresults"></div>
       </div>
+    </div>
+
+    <div class="pure-u-3-5">
+      <div id="main"></div>
     </div>
   </div>
     <!-- Piwik -->

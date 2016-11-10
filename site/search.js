@@ -212,6 +212,9 @@ function populateSearchResult(rObjs) {
     // console.log(newCard);
     $('#searchresults').append(newCard);
 
+    // set map below results(#sidebarholder)
+    $('#main').css('bottom',  '-' + $('#sidebarholder').height() + 'px');
+
     var bc = $(document.createElement('div'));
     bc.append(newCard.html());
 
@@ -241,10 +244,17 @@ function populateSearchResult(rObjs) {
         bc.append('<a href="' + editLnk + '" target="_blank">' + editImg + '</a>');
     }
 
+    var ballonPosition;
+    if ($(document).width() > 800) {
+        ballonPosition = 'left';
+    } else {
+        ballonPosition = 'bottom';
+    }
+
     $('#rc_' + index).balloon({
-        position: 'left',
+        position: ballonPosition,
         classname: 'rcballoon',
-        css: { minWidth: '400px' },
+        css: { maxWidth: '100%' },
         contents: bc });
     });
 
