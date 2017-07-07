@@ -33,7 +33,16 @@
         $(document).ready(function() {
             $.ui.dialog.prototype.options.scaleH = 0.9;
             $.ui.dialog.prototype.options.scaleW = 0.9;
-            $( function() {
+            var $dialogDiv = $( "#dialog-modal" ).clone();
+            $dialogDiv.dialog({
+                clickOut: false,
+                modal: true,
+                height: "auto",
+                width: "400",
+                fluid: true,
+                responsive: true
+            });
+            $( "#openDialog" ).click(function() {
                 var $dialogDiv = $( "#dialog-modal" ).clone();
                 $dialogDiv.dialog({
                     clickOut: false,
@@ -42,17 +51,6 @@
                     width: "400",
                     fluid: true,
                     responsive: true
-                });
-                $( "#openDialog" ).click(function() {
-                    var $dialogDiv = $( "#dialog-modal" ).clone();
-                    $dialogDiv.dialog({
-                        clickOut: false,
-                        modal: true,
-                        height: "auto",
-                        width: "400",
-                        fluid: true,
-                        responsive: true
-                    });
                 });
             });
         });
