@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Offentlig konst i Sverige</title>
     <link rel="profile" href="//www.w3.org/2005/10/profile" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
@@ -22,13 +23,48 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-    <script type="text/javascript" src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js'></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js"></script>
     <script type="text/javascript" src="leaflet/Control.OSMGeocoder.min.js"></script>
     <script type="text/javascript" src="leaflet/L.Control.Sidebar.min.js"></script>
     <script type="text/javascript" src="leaflet/L.Control.Locate.min.js" ></script>
+    <script>
+        $( function() {
+            $( "#dialog-modal" ).dialog({
+                modal: true,
+                height: "auto",
+                width: 400,
+            });
+        } );
+    </script>
     <script type="text/javascript" src="map.js"></script>
   </head>
   <body>
+    <div id="dialog-modal" title="Var är bilderna?">
+        <p>
+        Den 6 juli fällde Patent- och marknadsdomstolen sin dom som säger att Offentligkonst.se bryter mot upphovsrätten. 
+        Bilderna på den här sajten visar offentlig konst, placerad stadigvarande i det offentliga rummet i Sverige.
+        </p>
+        <p>
+        Att Offentligkonst.se drivs utan vinstintresse och endast länkar till fritt licensierade bilder på andra plattformar 
+        spelade ingen roll. Alla bilder på modern offentlig konst från sajten har nu tagits bort genom att inte vara länkade 
+        längre. De bilder som finns kvar är de som är Public Domain. Wikimedia Sverige får betala rättegångskostnader och 
+        ersättning på cirka 750&nbsp;000 kronor.
+        </p>
+        <p>
+        Vi hoppas därför på att få stöd genom crowdfunding för att täcka kostnaderna, och för att på längre sikt kunna förändra 
+        lagstiftningen. Om du tycker att domen är orimlig hoppas vi att du kan avvara några kronor. Enklast swishar du till oss 
+        på 1232692697 eller besöker <a href="http://wikimedia.se/en/donera" style="color:blue">http://wikimedia.se/en/donera</a>. 
+        Skriv bara BUS i kommentaren så går pengarna oavkortat till detta arbete.
+        </p>
+        <p>
+        John Andersson<br>
+        Verksamhetschef, Wikimedia Sverige
+        </p>
+        <p>
+        Läs mer i vårt <a href="https://www.mynewsdesk.com/se/wikimedia-sverige/pressreleases/domslut-krymper-det-offentliga-rummet-i-sverige-2054679" style="color:blue">pressmeddelande</a>.
+        </p>
+    </div>
     <div id="wrap">
         <header class="navbox">
             <h1 class="logo">Offentligkonst.se</h1>
