@@ -24,16 +24,22 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="external/jquery.dialogOptions.js"></script>
     <script type="text/javascript" src="//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-hash/v0.2.1/leaflet-hash.js"></script>
     <script type="text/javascript" src="leaflet/Control.OSMGeocoder.min.js"></script>
     <script type="text/javascript" src="leaflet/L.Control.Sidebar.min.js"></script>
     <script type="text/javascript" src="leaflet/L.Control.Locate.min.js" ></script>
     <script>
+        $.ui.dialog.prototype.options.scaleH = 0.9;
+        $.ui.dialog.prototype.options.scaleW = 0.9;
         $( function() {
             $( "#dialog-modal" ).dialog({
+                clickOut: false,
                 modal: true,
                 height: "auto",
-                width: 400,
+                width: "400",
+                fluid: true,
+                responsive: true
             });
         } );
     </script>
@@ -53,8 +59,8 @@
         </p>
         <p>
         Vi hoppas därför på att få stöd genom crowdfunding för att täcka kostnaderna, och för att på längre sikt kunna förändra 
-        lagstiftningen. Om du tycker att domen är orimlig hoppas vi att du kan avvara några kronor. Enklast swishar du till oss 
-        på 1232692697 eller besöker <a href="http://wikimedia.se/en/donera" style="color:blue">http://wikimedia.se/en/donera</a>. 
+        svensk och internationell lagstiftning. Om du tycker att domen är orimlig hoppas vi att du kan avvara några kronor. 
+        Enklast swishar du till oss på 1232692697 eller besöker <a href="http://wikimedia.se/en/donera" style="color:blue">http://wikimedia.se/en/donera</a>. 
         Skriv bara BUS i kommentaren så går pengarna oavkortat till detta arbete.
         </p>
         <p>
