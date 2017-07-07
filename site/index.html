@@ -30,23 +30,37 @@
     <script type="text/javascript" src="leaflet/L.Control.Sidebar.min.js"></script>
     <script type="text/javascript" src="leaflet/L.Control.Locate.min.js" ></script>
     <script>
-        $.ui.dialog.prototype.options.scaleH = 0.9;
-        $.ui.dialog.prototype.options.scaleW = 0.9;
-        $( function() {
-            $( "#dialog-modal" ).dialog({
-                clickOut: false,
-                modal: true,
-                height: "auto",
-                width: "400",
-                fluid: true,
-                responsive: true
+        $(document).ready(function() {
+            $.ui.dialog.prototype.options.scaleH = 0.9;
+            $.ui.dialog.prototype.options.scaleW = 0.9;
+            $( function() {
+                var $dialogDiv = $( "#dialog-modal" ).clone();
+                $dialogDiv.dialog({
+                    clickOut: false,
+                    modal: true,
+                    height: "auto",
+                    width: "400",
+                    fluid: true,
+                    responsive: true
+                });
+                $( "#openDialog" ).click(function() {
+                    var $dialogDiv = $( "#dialog-modal" ).clone();
+                    $dialogDiv.dialog({
+                        clickOut: false,
+                        modal: true,
+                        height: "auto",
+                        width: "400",
+                        fluid: true,
+                        responsive: true
+                    });
+                });
             });
-        } );
+        });
     </script>
     <script type="text/javascript" src="map.js"></script>
   </head>
   <body>
-    <div id="dialog-modal" title="Var är bilderna?">
+    <div id="dialog-modal" title="Var är bilderna?" style="display: none;">
         <p>
         Den 6 juli fällde Patent- och marknadsdomstolen sin dom som säger att Offentligkonst.se bryter mot upphovsrätten. 
         Bilderna på den här sajten visar offentlig konst, placerad stadigvarande i det offentliga rummet i Sverige.
@@ -99,6 +113,9 @@
             <div id="about" class="about clearfix">
                 <h2>Om offentligkonst.se</h2>
                 <p>
+                <big>Var är bilderna? <a href="#" id="openDialog">Information om stämningen</a>.</big>
+                </p>
+                <p>
                 Välkommen! Här presenteras Wikimedia Sveriges databas över offentlig konst.
                 Projektet består dels av den öppna databasen, med tillhörande <a href="//offentligkonst.se/api/">API</a>
                 och dels av denna webbplats där informationen lättare kan konsumeras. För mer information
@@ -108,11 +125,6 @@
                 <p>
                 Nedan visas de konstverk i Sverige för vilka vi har koordinater. Kartan uppdateras dagligen.
                 Det går även att <a href="/search.html">söka bland konstverken</a>.
-                </p>
-                <p>
-                <a href="https://se.wikimedia.org/wiki/Offentligkonst.se/Stämning">Information om stämningen och HDs utlåtande</a>.
-                Tills mer klarhet finns i denna fråga uppdateras databasen inte med nya bilder
-                (annan information läggs till löpande).
                 </p>
                 <p>
                 Detta är ett projekt från <a href="//wikimedia.se/">Wikimedia Sverige</a> som möjliggjorts med stöd av <a href="http://www.vinnova.se">Vinnova</a>.
