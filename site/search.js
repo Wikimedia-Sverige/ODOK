@@ -357,12 +357,12 @@ window.onload = function load() {
         })
     );
     // settings for tile Layer
-    var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+    var osmSE = L.tileLayer('https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
         attribution: messages.osmSE_attrib
-                    .replace('{OSM_link}','<a href="//openstreetmap.org">OpenStreetMap</a>')
-                    .replace('{OSM_Sweden}','<a href="http://openstreetmap.se">OpenStreetMap Sweden</a>')
+                    .replace('{OSM_link}','<a href="https://openstreetmap.org">OpenStreetMap</a>')
+                    .replace('{OSM_Sweden}','<a href="https://openstreetmap.se">OpenStreetMap Sweden</a>')
     }).addTo(map);
     map.addLayer(osmSE);
 
