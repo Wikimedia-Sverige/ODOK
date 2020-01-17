@@ -153,3 +153,7 @@ footer{
     font-family:'Varela';
     src:url('varela.woff') format('woff');
 }
+.ui-widget-overlay{
+    opacity:.5;
+    filter:Alpha(Opacity=50) ; /* support: IE8 */
+}
