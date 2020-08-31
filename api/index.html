@@ -4,8 +4,8 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Offentlig konst i Sverige - API</title>
     <link rel="profile" href="http://www.w3.org/2005/10/profile" />
-    <link rel="icon" 
-          type="image/ico" 
+    <link rel="icon"
+          type="image/ico"
           href="favicon.ico" />
     <style type="text/css">
       @font-face{
@@ -20,17 +20,20 @@
         <br /><br /><hr><br />
         Welcome to the API for offentligkonst.se! You will find the entry to the api at <a href="./api.php?">api.php<a/>. <br /> For a description <a href="https://se.wikimedia.org/wiki/Projekt:Öppen_databas_för_offentlig_konst/Teknisk_dokumentation/Api">see the documentation</a>.
     </div>
-    <!-- Piwik -->
+    <!-- Matomo -->
     <script type="text/javascript">
-        var pkBaseURL = (("https:" == document.location.protocol) ? "https://piwik.wikimedia.se/" : "http://piwik.wikimedia.se/");
-        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-    </script><script type="text/javascript">
-        try {
-            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 2);
-            piwikTracker.trackPageView();
-            piwikTracker.enableLinkTracking();
-        } catch( err ) {}
-    </script><noscript><p><img src="http://piwik.wikimedia.se/piwik.php?idsite=2" style="border:0" alt="" /></p></noscript>
-    <!-- End Piwik Tracking Code -->
+        var _paq = window._paq || [];
+        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+            var u="https://matomo.wikimedia.se/";
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', '3']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        })();
+    </script>
+    <!-- End Matomo Code -->
   </body>
 </html>
