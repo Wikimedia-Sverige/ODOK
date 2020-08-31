@@ -40,7 +40,7 @@ $(document).ready(function() {
         maxZoom: 19,
     });
     // Defaulting to OSMF while OSM SE is down due to server crash
-    // map.addLayer(osm);
+    map.addLayer(osm);
 
     // set-up markers
     var noPicIcon = L.icon({
