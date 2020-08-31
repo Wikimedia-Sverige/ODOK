@@ -31,13 +31,16 @@ $(document).ready(function() {
         subdomains: 'abc',
         attribution: attribution + 'Kartdata © <a href="https://openstreetmap.org">OpenStreetMap</a>-bidragsgivare, kartrendering av <a href="https://openstreetmap.se">OpenStreetMap Sweden</a>'
     }).addTo(map);
-    map.addLayer(osmSE);
+    // OSM SE is down due to server crash
+    // map.addLayer(osmSE);
 
     // settings for OSM
     var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: attribution + 'Kartdata © <a href="https://openstreetmap.org">OpenStreetMap</a>-bidragsgivare',
         maxZoom: 19,
     });
+    // Defaulting to OSMF while OSM SE is down due to server crash
+    // map.addLayer(osm);
 
     // set-up markers
     var noPicIcon = L.icon({
