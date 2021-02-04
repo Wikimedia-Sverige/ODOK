@@ -1,0 +1,1 @@
+The development of this software is covered by a [Code of Conduct](https://www.mediawiki.org/wiki/Special:MyLanguage/Code_of_Conduct). This applies even if the software is hosted on a space not explicitly listed in the linked Code of Conduct.
