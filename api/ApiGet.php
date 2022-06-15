@@ -12,10 +12,13 @@
      *    Numerical constraints e.g. year > X, coords inside box
      */
 
+    require_once('ApiMain.php');
+
     class ApiGet{
         /* Swith between different views. Defaults to "normal" */
-        function setView($view){
+        static function setView($view){
             /* Swith between different views */
+            $warning = '';
             if(isset($view)){
                 $view = strtolower($view);
                 switch ($view) {
@@ -38,12 +41,13 @@
             return Array($target_table, $warning);
         }
 
-        private function setSelect($show){
+        private static function setSelect($show){
             $allowed = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt',
                              'type', 'material', 'inside', 'address', 'county', 'muni', 'district',
                              'lat', 'lon', 'removed', 'image', 'source', 'ugc', 'changed', 'created',
                              'wiki', 'list', 'commons_cat', 'official_url', 'same_as',
                              'free', 'cmt', 'owner');
+            $warning = '';
             if(isset($show)){
                 $shows = explode('|', $show);
                 $i=0;
@@ -54,27 +58,27 @@
                     }
                     $i++;
                 }
-                $select = '`'.implode('`, `', array_map('mysql_real_escape_string', $shows)).'`';
+                $select = '`'.implode('`, `', array_map([ApiMain::$mysqli, 'real_escape_string'], $shows)).'`';
                 return Array($select, $warning);
             }else{
-                $select = '`'.implode('`, `', array_map('mysql_real_escape_string', $allowed)).'`';
+                $select = '`'.implode('`, `', array_map([ApiMain::$mysqli, 'real_escape_string'], $allowed)).'`';
                 return Array($select, $warning);
             }
         }
 
 
-        function run($constraints){
+        static function run($constraints){
             #set limit
-            list ($limit, $w) = ApiBase::setLimit($_GET['limit']);
+            list ($limit, $w) = ApiBase::setLimit(key_exists('limit', $_GET) ? $_GET['limit'] : null);
             $warning = isset($w) ? $w : null;
             #set offset
-            list ($offset, $w) = ApiBase::setOffset($_GET['offset']);
+            list ($offset, $w) = ApiBase::setOffset(key_exists('offset', $_GET) ? $_GET['offset'] : null);
             $warning = isset($w) ? $warning.$w : $warning;
             #set view
-            list ($target_table, $w) = self::setView($_GET['view']);
+            list ($target_table, $w) = self::setView(key_exists('view', $_GET) ? $_GET['view'] : null);
             $warning = isset($w) ? $warning.$w : $warning;
             #load list of parameters to select
-            list ($select, $w) = self::setSelect($_GET['show']);
+            list ($select, $w) = self::setSelect(key_exists('show', $_GET) ? $_GET['show'] : null);
             $warning = isset($w) ? $warning.$w : $warning;
             #load constraints
             #isset($_GET['muni']) ? $constraints['muni'] = $_GET['muni'] : null;
@@ -83,10 +87,10 @@
             #construct query
             $query = '
                 SELECT SQL_CALC_FOUND_ROWS '.$select.'
-                FROM `'.mysql_real_escape_string($target_table).'`
+                FROM `'.ApiMain::$mysqli->real_escape_string($target_table).'`
                 ';
-            $query = isset($constraints) ? ApiBase::addConstraints($query.'WHERE ', $constraints) : $query;
-            $query .= 'LIMIT '.mysql_real_escape_string($offset).', '.mysql_real_escape_string($limit).'
+            $query = $constraints ? ApiBase::addConstraints($query.'WHERE ', $constraints) : $query;
+            $query .= 'LIMIT '.ApiMain::$mysqli->real_escape_string($offset).', '.ApiMain::$mysqli->real_escape_string($limit).'
                 ';
             #run query
             try{

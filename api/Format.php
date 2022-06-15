@@ -10,7 +10,7 @@
      
     class Format{
         
-        function outputJsonp($results, $callback){
+        static function outputJsonp($results, $callback){
             /* Setting up JSONP headers */
             @header ("content-type: application/javascript; charset=utf-8");
             
@@ -18,13 +18,13 @@
             echo $callback.'('.json_encode($results).');';
         }
         
-        function outputJson($results){
+        static function outputJson($results){
             /* Setting up JSON headers */
             @header ("content-type: application/json; charset=utf-8");
             header ("Access-Control-Allow-Origin: *");
 
             $compact=False;
-            if (strtolower($_GET['json']) == 'compact'){
+            if (key_exists('json', $_GET) and strtolower($_GET['json']) == 'compact'){
                 $compact=True;
             }
             /* Printing the JSON Object */
@@ -35,7 +35,7 @@
             }
         }
         
-        function outputPhp($results){   
+        static function outputPhp($results){   
             /* Setting up PHP headers */
             header ("content-type: application/x-php; charset=utf-8");
     
@@ -43,7 +43,7 @@
             echo serialize($results);
         }
                 
-        function outputXml($results, $xsltPath){
+        static function outputXml($results, $xsltPath=null){
             /* Setting XML header */
             @header ("content-type: text/xml; charset=UTF-8");
             
@@ -78,7 +78,9 @@
             }
             
             /* Calls previously declared function, passing our results array as parameter */
-            write($xml, $results);
+            if($results) {
+                write($xml, $results);
+            }
             
             /* Closing last XML node */
             $xml->endElement();
@@ -87,7 +89,7 @@
             echo $xml->outputMemory(true);
         }
                         
-        function outputKml($results){
+        static function outputKml($results){
             if (strtolower($_GET['action']) == 'get'){
                 include('FormatKml.php');
                 FormatKml::output($results);
@@ -97,7 +99,7 @@
             }
         }
                         
-        function outputWiki($results){
+        static function outputWiki($results){
             if (strtolower($_GET['action']) == 'get'){
                 include('FormatWikilist.php');
                 FormatWikilist::output($results);
@@ -107,7 +109,7 @@
             }
         }
         
-        function outputGeojson($results){
+        static function outputGeojson($results){
             if (strtolower($_GET['action']) == 'get'){
                 include('FormatGeojson.php');
                 $full = False;
@@ -125,12 +127,12 @@
             }
         }
         
-        function outputDefault($results){
+        static function outputDefault($results){
             self::outputXml($results);
         }
         
         #quick and dirty
-        function outputXsl($results){
+        static function outputXsl($results){
             if (strtolower($_GET['action']) == 'get')
                 self::outputXml($results, 'get.xsl');
             elseif (strtolower($_GET['action']) == 'artist')
@@ -147,7 +149,7 @@
         
         #For backwards compatibility wiht PHP versions below 5.4
         #Code by Kendall Hopkins @ http://stackoverflow.com/questions/6054033/pretty-printing-json-with-php
-        function prettyPrintJson( $results ){
+        static function prettyPrintJson( $results ){
             if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
                 return json_encode($results, JSON_PRETTY_PRINT);
             }else{
@@ -155,7 +157,7 @@
             }
         }
         
-        function prettyPrint( $json )
+        static function prettyPrint( $json )
         {
             $result = '';
             $level = 0;
