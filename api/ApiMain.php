@@ -9,7 +9,7 @@
     $helpurl='https://se.wikimedia.org/wiki/Offentligkonst.se/Teknisk_dokumentation/Api';
 
     class ApiMain{
-        public static function search(){
+        static function search(){
             # Database info (including username+pass) in external file
             if ( file_exists('/home/andre/config.php')){
                 require_once('/home/andre/config.php');
@@ -60,6 +60,7 @@
                     $errors=1;
                 }
             }
+
 
             /*
              * If no errors were found during connection

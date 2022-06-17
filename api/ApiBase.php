@@ -37,7 +37,7 @@
     class ApiBase{
         const maxChar = 512; # max bytes allowed per url parameter
         const group_concat_max_len = 2500; # max characters allowed per group_concat response
-        public static $mysqli;
+        static private $mysqli;
 
         /*
          * Produce standardised output arrays
@@ -229,7 +229,7 @@
             return Array($offset, $warning);
         }
         /* Test if any of the parameters is to large for $_GET to handle */
-        private static function largeParam(){
+        static function largeParam(){
             if(!key_exists('QUERY_STRING', $_SERVER)){
                 return;
             }
@@ -239,6 +239,7 @@
                 if(!$q) {
                     break;
                 }
+
                 $v = explode('=',$q);
                 $v[1] = strlen(urldecode($v[1]));
                 if ($v[1]>$maxChar){
@@ -263,7 +264,7 @@
          * TO DO:
          *    wildcard/keyword searches (in e.g. descr)
          */
-        public static function readConstraints(){
+        static function readConstraints(){
             #define list of allowed generic constraints
             #Should material be added (if so it's soft)? Left out for now due to municipal concerns
             $getConstraints = Array(
@@ -535,7 +536,7 @@
             }
         }
         #A wrapper function for setting has_coords constraint outside of the normal procedure
-        public static function requireCoords(){
+        static function requireCoords(){
             return self::boolParam('has_coords', 'true');
         }
         /*

@@ -13,7 +13,6 @@
      *    offset: which result to start showing (used in combination with limit)
      *    show: the parameters to show (possibly skip this)
      */
-
     class ApiArtist{
 
         # set which parameters to include in output
@@ -160,7 +159,6 @@
             try{
                 $response = ApiBase::doQuery($query);
                 $hits = ApiBase::doQuery('SELECT FOUND_ROWS()');
-                // error_log("hits = $hits");
             }catch (Exception $e) {
                 return ApiBase::makeErrorResult(
                 '610',
