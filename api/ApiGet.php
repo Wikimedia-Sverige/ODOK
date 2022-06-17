@@ -12,8 +12,6 @@
      *    Numerical constraints e.g. year > X, coords inside box
      */
 
-    require_once('ApiMain.php');
-
     class ApiGet{
         /* Swith between different views. Defaults to "normal" */
         static function setView($view){
@@ -58,10 +56,10 @@
                     }
                     $i++;
                 }
-                $select = '`'.implode('`, `', array_map([ApiMain::$mysqli, 'real_escape_string'], $shows)).'`';
+                $select = '`'.implode('`, `', array_map([ApiBase::getMysql(), 'real_escape_string'], $shows)).'`';
                 return Array($select, $warning);
             }else{
-                $select = '`'.implode('`, `', array_map([ApiMain::$mysqli, 'real_escape_string'], $allowed)).'`';
+                $select = '`'.implode('`, `', array_map([ApiBase::getMysql(), 'real_escape_string'], $allowed)).'`';
                 return Array($select, $warning);
             }
         }
@@ -87,10 +85,10 @@
             #construct query
             $query = '
                 SELECT SQL_CALC_FOUND_ROWS '.$select.'
-                FROM `'.ApiMain::$mysqli->real_escape_string($target_table).'`
+                FROM `'.ApiBase::getMysql()->real_escape_string($target_table).'`
                 ';
             $query = $constraints ? ApiBase::addConstraints($query.'WHERE ', $constraints) : $query;
-            $query .= 'LIMIT '.ApiMain::$mysqli->real_escape_string($offset).', '.ApiMain::$mysqli->real_escape_string($limit).'
+            $query .= 'LIMIT '.ApiBase::getMysql()->real_escape_string($offset).', '.ApiBase::getMysql()->real_escape_string($limit).'
                 ';
             #run query
             try{

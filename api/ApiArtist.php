@@ -14,8 +14,6 @@
      *    show: the parameters to show (possibly skip this)
      */
 
-    require_once('ApiMain.php');
-
     class ApiArtist{
 
         # set which parameters to include in output
@@ -54,10 +52,10 @@
                     }
                     $i++;
                 }
-                $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map([ApiMain::$mysqli, 'real_escape_string'], $shows)).'`';
+                $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map([ApiBase::getMysql(), 'real_escape_string'], $shows)).'`';
                 return Array($select, $getWorks, $warning);
             }else{
-                $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map([ApiMain::$mysqli, 'real_escape_string'], $allowed)).'`';
+                $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map([ApiBase::getMysql(), 'real_escape_string'], $allowed)).'`';
                 return Array($select, $getWorks, $warning);
             }
         }
@@ -71,7 +69,7 @@
                 FROM `artist_links` al
                 INNER JOIN `artist_table` at ON at.`id` = al.`artist`
                 WHERE at.`id` in (
-                "'.implode('", "',array_map([ApiMain::$mysqli, 'real_escape_string'], $artist)).'"
+                "'.implode('", "',array_map([ApiBase::getMysql(), 'real_escape_string'], $artist)).'"
                 )
                 GROUP BY artist;';
 
@@ -143,7 +141,7 @@
                 FROM `artist_table` at
                 INNER JOIN `artist_links` al ON al.`artist` = at.`id`
                 WHERE al.`object` in (
-                "'.implode('", "',array_map([ApiMain::$mysqli, 'real_escape_string'], explode('|', $_GET['artwork']))).'"
+                "'.implode('", "',array_map([ApiBase::getMysql(), 'real_escape_string'], explode('|', $_GET['artwork']))).'"
                 )
                 ';
             }
@@ -156,7 +154,7 @@
                 $query = isset($constraints) ? ApiBase::addConstraints($query.'WHERE ', $constraints) : $query;
             }
             # add limit
-            $query .= 'LIMIT '.ApiMain::$mysqli->real_escape_string($offset).', '.ApiMain::$mysqli->real_escape_string($limit).'
+            $query .= 'LIMIT '.ApiBase::getMysql()->real_escape_string($offset).', '.ApiBase::getMysql()->real_escape_string($limit).'
                 ';
             #run query
             try{

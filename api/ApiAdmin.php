@@ -11,8 +11,6 @@
      *   *info: Displays all known info for a given object as identified by it's id and table
      */
 
-    require_once('ApiMain.php');
-
     class ApiAdmin{
         #assist function for getChanges
         private static function colAsmPrefix($col){
@@ -41,7 +39,7 @@
                 AND `main_table`.`id` = `audit_table`.`id`
                 ';
             $query = isset($constraints) ? ApiBase::addConstraints($query.'AND `main_table`.', $constraints, '`main_table`.') : $query;
-            $query .= 'LIMIT '.ApiMain::$mysqli->real_escape_string($offset).', '.ApiMain::$mysqli->real_escape_string($limit).'
+            $query .= 'LIMIT '.ApiBase::getMysql()->real_escape_string($offset).', '.ApiBase::getMysql()->real_escape_string($limit).'
                 ';
             #run query
             $error=false;
@@ -74,8 +72,8 @@
         private static function getInfo($table, $id){
             $query = '
                 SELECT *
-                FROM `'.ApiMain::$mysqli->real_escape_string($table).'_table`
-                WHERE id = "'.ApiMain::$mysqli->real_escape_string($id).'"
+                FROM `'.ApiBase::getMysql()->real_escape_string($table).'_table`
+                WHERE id = "'.ApiBase::getMysql()->real_escape_string($id).'"
                 ';
             #run query
             try{

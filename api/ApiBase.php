@@ -34,11 +34,10 @@
      *         returns an array of wikidataID-svwikiURLs (performs an api request, beware of delays, max limits etc.)
      */
 
-    require_once('ApiMain.php');
-
     class ApiBase{
         const maxChar = 512; # max bytes allowed per url parameter
         const group_concat_max_len = 2500; # max characters allowed per group_concat response
+        public static $mysqli;
 
         /*
          * Produce standardised output arrays
@@ -107,8 +106,8 @@
             if(key_exists('debug', $_GET) && $_GET['debug']=='true'){
                 echo($query);
             }
-            if(!@$go = ApiMain::$mysqli->query($query)){
-                throw new Exception(ApiMain::$mysqli->error());
+            if(!@$go = ApiBase::getMysql()->query($query)){
+                throw new Exception(ApiBase::getMysql()->error());
             } elseif($go !== true) {
                 $rows = [];
                 while ($row = $go->fetch_assoc()){
@@ -153,10 +152,10 @@
                     default: #(pipe separated) constraints
                         $v = explode('|', $value);
                         if (count($v)==1){
-                            $query .= '`'.ApiMain::$mysqli->real_escape_string($key).'` = "'.ApiMain::$mysqli->real_escape_string($value).'"
+                            $query .= '`'.ApiBase::getMysql()->real_escape_string($key).'` = "'.ApiBase::getMysql()->real_escape_string($value).'"
                 AND '.$prefix;
                         }else{
-                            $query .= '`'.ApiMain::$mysqli->real_escape_string($key).'` IN ("'.implode('" , "', array_map([ApiMain::$mysqli, 'real_escape_string'], $v)).'")
+                            $query .= '`'.ApiBase::getMysql()->real_escape_string($key).'` IN ("'.implode('" , "', array_map([ApiBase::getMysql(), 'real_escape_string'], $v)).'")
                 AND '.$prefix;
                         }
                 }
@@ -172,13 +171,13 @@
                     case 'lat':
                     case 'lon':
                     case 'year':
-                        $query .= '`'.ApiMain::$mysqli->real_escape_string($column).'` IS NOT NULL
+                        $query .= '`'.ApiBase::getMysql()->real_escape_string($column).'` IS NOT NULL
                 AND ';
                         break;
                     case 'ugc':
                     case 'inside':
                     case 'removed':
-                        $query .= '`'.ApiMain::$mysqli->real_escape_string($column).'` != "0"
+                        $query .= '`'.ApiBase::getMysql()->real_escape_string($column).'` != "0"
                 AND ';
                         break;
                     case 'coords':
@@ -186,7 +185,7 @@
                 AND ';
                         break;
                     default:
-                        $query .= '`'.ApiMain::$mysqli->real_escape_string($column).'` != ""
+                        $query .= '`'.ApiBase::getMysql()->real_escape_string($column).'` != ""
                 AND ';
                 }
             }
@@ -374,8 +373,8 @@
             }
             if (!empty($vArray)){ #since all elements may have been removed
                 $query = 'SELECT `id`, `name`
-            FROM `'.ApiMain::$mysqli->real_escape_string($table).'_table`
-            WHERE `name` IN ("'.implode('" , "', array_map([ApiMain::$mysqli, 'real_escape_string'], $vArray)).'")
+            FROM `'.ApiBase::getMysql()->real_escape_string($table).'_table`
+            WHERE `name` IN ("'.implode('" , "', array_map([ApiBase::getMysql(), 'real_escape_string'], $vArray)).'")
             ';
                 try{
                     $response = ApiBase::doQuery($query);
@@ -407,14 +406,14 @@
                 }
             if (!$errors){
                 if (count($vArray)==1)
-                    return '`'.ApiMain::$mysqli->real_escape_string($key).'` = "'.ApiMain::$mysqli->real_escape_string($vArray[0]).'"';
+                    return '`'.ApiBase::getMysql()->real_escape_string($key).'` = "'.ApiBase::getMysql()->real_escape_string($vArray[0]).'"';
                 elseif (count($vArray)==2){
                     if ( empty($vArray[0]) and !empty($vArray[1]) )
-                        return '`'.ApiMain::$mysqli->real_escape_string($key).'` <= "'.ApiMain::$mysqli->real_escape_string($vArray[1]).'"';
+                        return '`'.ApiBase::getMysql()->real_escape_string($key).'` <= "'.ApiBase::getMysql()->real_escape_string($vArray[1]).'"';
                     elseif ( !empty($vArray[0]) and empty($vArray[1]) )
-                        return '`'.ApiMain::$mysqli->real_escape_string($key).'` >= "'.ApiMain::$mysqli->real_escape_string($vArray[0]).'"';
+                        return '`'.ApiBase::getMysql()->real_escape_string($key).'` >= "'.ApiBase::getMysql()->real_escape_string($vArray[0]).'"';
                     elseif ( !empty($vArray[0]) and !empty($vArray[1]) )
-                        return '`'.ApiMain::$mysqli->real_escape_string($key).'` BETWEEN "'.ApiMain::$mysqli->real_escape_string($vArray[0]).'" AND "'.ApiMain::$mysqli->real_escape_string($vArray[1]).'"';
+                        return '`'.ApiBase::getMysql()->real_escape_string($key).'` BETWEEN "'.ApiBase::getMysql()->real_escape_string($vArray[0]).'" AND "'.ApiBase::getMysql()->real_escape_string($vArray[1]).'"';
                     else
                         throw new Exception('The "'.$key.'" parameter was formatted illegally (both values were empty). ');
                 } else
@@ -469,8 +468,8 @@
                 throw new Exception('The "'.$key.'" parameter speciifed an invalid bounding box. ');
             }
             if (!$errors){
-                $txt =      '`lat` BETWEEN "'.ApiMain::$mysqli->real_escape_string($coords[1]).'" AND "'.ApiMain::$mysqli->real_escape_string($coords[3]).'" AND ';
-                return $txt.'`lon` BETWEEN "'.ApiMain::$mysqli->real_escape_string($coords[0]).'" AND "'.ApiMain::$mysqli->real_escape_string($coords[2]).'"';
+                $txt =      '`lat` BETWEEN "'.ApiBase::getMysql()->real_escape_string($coords[1]).'" AND "'.ApiBase::getMysql()->real_escape_string($coords[3]).'" AND ';
+                return $txt.'`lon` BETWEEN "'.ApiBase::getMysql()->real_escape_string($coords[0]).'" AND "'.ApiBase::getMysql()->real_escape_string($coords[2]).'"';
             }
         }
         #a soft/wildcard parameter
@@ -485,9 +484,9 @@
             }
             if (!$errors){
                 if (!is_array($key))
-                    return '`'.ApiMain::$mysqli->real_escape_string($key).'` LIKE "%'.ApiMain::$mysqli->real_escape_string($value).'%" ';
+                    return '`'.ApiBase::getMysql()->real_escape_string($key).'` LIKE "%'.ApiBase::getMysql()->real_escape_string($value).'%" ';
                 else
-                    return 'CONCAT(`'.implode('`, " ", `', array_map([ApiMain::$mysqli, 'real_escape_string'], $key)).'`) LIKE "%'.ApiMain::$mysqli->real_escape_string($value).'%" ';
+                    return 'CONCAT(`'.implode('`, " ", `', array_map([ApiBase::getMysql(), 'real_escape_string'], $key)).'`) LIKE "%'.ApiBase::getMysql()->real_escape_string($value).'%" ';
             }
         }
         #a boolean parameter (true/false needed since 0 isn't passed properly)
@@ -503,9 +502,9 @@
                     case 'wiki':
                     case 'list':
                         if ($value=='false')
-                            return '`'.ApiMain::$mysqli->real_escape_string($key).'` = ""';
+                            return '`'.ApiBase::getMysql()->real_escape_string($key).'` = ""';
                         else
-                            return '`'.ApiMain::$mysqli->real_escape_string($key).'` != ""';
+                            return '`'.ApiBase::getMysql()->real_escape_string($key).'` != ""';
                         break;
                     case 'same':
                         if ($value=='false')
@@ -529,9 +528,9 @@
                         # 'ugc', 'inside', 'removed':
                         #these should have bit(1) parameters
                         if ($value=='false')
-                            return '`'.ApiMain::$mysqli->real_escape_string($key).'` = "0"';
+                            return '`'.ApiBase::getMysql()->real_escape_string($key).'` = "0"';
                         else
-                            return '`'.ApiMain::$mysqli->real_escape_string($key).'` = "1"';
+                            return '`'.ApiBase::getMysql()->real_escape_string($key).'` = "1"';
                 }
             }
         }
@@ -548,7 +547,7 @@
          */
          #returns a list of muni names and id's
         private static function getAdminNames($admin){
-            $query = 'SELECT id, name FROM `'.ApiMain::$mysqli->real_escape_string($admin).'_table`';
+            $query = 'SELECT id, name FROM `'.ApiBase::getMysql()->real_escape_string($admin).'_table`';
             $rows = self::doQuery($query);
             $names = Array();
             foreach ($rows as $r)
@@ -566,11 +565,11 @@
             if(is_array($id)){
                 $idQuery = 'IN (';
                 foreach ($id as $i)
-                    $idQuery .= '"'.ApiMain::$mysqli->real_escape_string($id).'", "';
+                    $idQuery .= '"'.ApiBase::getMysql()->real_escape_string($id).'", "';
                 $idQuery = substr($idQuery, 0, -strlen(', "')); #remove trailing ', "'
             }
             else
-                $idQuery = '= "'.ApiMain::$mysqli->real_escape_string($id).'"';
+                $idQuery = '= "'.ApiBase::getMysql()->real_escape_string($id).'"';
             $query = 'SELECT CONCAT_WS(" ", first_name, last_name) AS name, wiki FROM `artist_table` WHERE id IN';
             $query .= '   (SELECT artist FROM `artist_links` WHERE artist_links.object '.$idQuery.')';
             return self::doQuery($query);
@@ -678,6 +677,14 @@
         #string comparison
         static function startsWith($haystack, $needle){
             return !strncmp($haystack, $needle, strlen($needle));
+        }
+
+        static function initMysql($dbServer,$dbUser,$dbPassword, $dbDatabase) {
+            self::$mysqli = new mysqli($dbServer, $dbUser, $dbPassword, $dbDatabase);
+        }
+
+        static function getMysql() {
+            return self::$mysqli;
         }
     }
 

@@ -9,8 +9,6 @@
     $helpurl='https://se.wikimedia.org/wiki/Offentligkonst.se/Teknisk_dokumentation/Api';
 
     class ApiMain{
-        public static $mysqli;
-
         public static function search(){
             # Database info (including username+pass) in external file
             if ( file_exists('/home/andre/config.php')){
@@ -34,10 +32,10 @@
              * Trying to connect to mysql server and database
              * Output Temporary error if unable to.
              */
-            $errors = null;
+            $errors = 0;
             $results = null;
-            self::$mysqli = new mysqli($dbServer,$dbUser,$dbPassword, $dbDatabase);
-            if(!self::$mysqli){
+            ApiBase::initMysql($dbServer, $dbUser, $dbPassword, $dbDatabase);
+            if(!ApiBase::getMysql()){
                 $results = ApiBase::makeErrorResult(
                 '500',
                 'Temporary Error. '.
@@ -68,7 +66,7 @@
              * let's proceed with our queries
              */
             if(!$errors){
-                self::$mysqli->query("SET CHARACTER SET utf8");
+                ApiBase::getMysql()->query("SET CHARACTER SET utf8");
 
                 #deal with general constraints
                 try{
@@ -103,7 +101,7 @@
             }
             if(!$errors){
                 #switch by action; return results array
-                $action = null;
+                $action = '';
                 if(key_exists('action', $_GET)) {
                     $action = strtolower($_GET['action']);
                 }
@@ -181,7 +179,7 @@
                     Format::outputDefault($results);
                 }
             }
-            self::$mysqli->close();
+            ApiBase::getMysql()->close();
         }
     }
 ?>

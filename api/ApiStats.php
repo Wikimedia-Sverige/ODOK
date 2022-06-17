@@ -43,8 +43,8 @@
 
         private static function countSingleTable($target, $constraints){
             $query = '
-                    SELECT COUNT(*) AS `'.ApiMain::$mysqli->real_escape_string($target).'`
-                    FROM `'.ApiMain::$mysqli->real_escape_string($target).'_table`
+                    SELECT COUNT(*) AS `'.ApiBase::getMysql()->real_escape_string($target).'`
+                    FROM `'.ApiBase::getMysql()->real_escape_string($target).'_table`
                 ';
             if (($target == 'main') or ($target == 'audit'))
                 $query = isset($constraints) ? ApiBase::addConstraints($query.'Where ', $constraints) : $query;
@@ -77,7 +77,7 @@
 
         private static function countSingleColumn($column, $constraints){
             $query = '
-                SELECT COUNT(*) AS `'.ApiMain::$mysqli->real_escape_string($column).'`
+                SELECT COUNT(*) AS `'.ApiBase::getMysql()->real_escape_string($column).'`
                 FROM `main_table`
                 WHERE ';
             $query = ApiBase::notEmpty($query, $column);
@@ -121,14 +121,14 @@
         }
 
         private static function splitBy($sp_table, $table, $column, $constraints){
-            $num_label_sql = isset($column) ? ApiMain::$mysqli->real_escape_string($column) : $table;
-            $sp_table_sql = ApiMain::$mysqli->real_escape_string($sp_table).'_table';
-            $label_sql = ApiMain::$mysqli->real_escape_string($sp_table).'_name';
-            $real_table_sql = ApiMain::$mysqli->real_escape_string($table).'_table';
+            $num_label_sql = isset($column) ? ApiBase::getMysql()->real_escape_string($column) : $table;
+            $sp_table_sql = ApiBase::getMysql()->real_escape_string($sp_table).'_table';
+            $label_sql = ApiBase::getMysql()->real_escape_string($sp_table).'_name';
+            $real_table_sql = ApiBase::getMysql()->real_escape_string($table).'_table';
             $query = '
                 SELECT `'.$sp_table_sql.'`.`name` AS `'.$label_sql.'`, COUNT(*) AS `'.$num_label_sql.'`
                 FROM `'.$real_table_sql.'`, `'.$sp_table_sql.'`
-                WHERE `'.$real_table_sql.'`.`'.ApiMain::$mysqli->real_escape_string($sp_table).'` = `'.$sp_table_sql.'`.`id`
+                WHERE `'.$real_table_sql.'`.`'.ApiBase::getMysql()->real_escape_string($sp_table).'` = `'.$sp_table_sql.'`.`id`
                 ';
             $query = isset($column) ? ApiBase::notEmpty($query.'AND ', $column) : $query;
             $query = isset($constraints) ? ApiBase::addConstraints($query.'AND ', $constraints) : $query;
