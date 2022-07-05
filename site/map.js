@@ -26,21 +26,18 @@ $(document).ready(function() {
     var attribution = 'Ett projekt från <a href="//wikimedia.se/">Wikimedia Sverige</a> med stöd av <a href="http://www.vinnova.se">Vinnova</a>. | ';
 
     // settings for OSM Sweden
-    var osmSE = L.tileLayer('https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+    var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
-        attribution: attribution + 'Kartdata © <a href="https://openstreetmap.org">OpenStreetMap</a>-bidragsgivare, kartrendering av <a href="https://openstreetmap.se">OpenStreetMap Sweden</a>'
+        attribution: attribution + 'Kartdata © <a href="//openstreetmap.org">OpenStreetMap</a>-bidragsgivare, kartrendering av <a href="http://openstreetmap.se">OpenStreetMap Sweden</a>'
     }).addTo(map);
-    // OSM SE is down due to server crash
-    // map.addLayer(osmSE);
+    map.addLayer(osmSE);
 
     // settings for OSM
-    var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: attribution + 'Kartdata © <a href="https://openstreetmap.org">OpenStreetMap</a>-bidragsgivare',
+    var osm = L.tileLayer("//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: attribution + 'Kartdata © <a href="//openstreetmap.org">OpenStreetMap</a>-bidragsgivare',
         maxZoom: 19,
     });
-    // Defaulting to OSMF while OSM SE is down due to server crash
-    map.addLayer(osm);
 
     // set-up markers
     var noPicIcon = L.icon({
@@ -177,7 +174,7 @@ function makePopup(feature) {
         else {
             showImage = properties.image.replace(/\s/g, '_');
         }
-        desc += '<a href="https://commons.wikimedia.org/wiki/File:' + showImage + '" target="_blank">';
+        desc += '<a href="http://commons.wikimedia.org/wiki/File:' + showImage + '" target="_blank">';
         desc += '<img src="https://commons.wikimedia.org/w/thumb.php?f=' + showImage + '&width=100" class="thumb" />';
         desc += '</a>';
 

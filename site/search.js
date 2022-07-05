@@ -347,7 +347,7 @@ window.onload = function load() {
             $('#muni_selector').chosen();
     });
 
-    // load basic Leaflet map
+    // Load map from OSM
     var bounds = [[55.2, 10.8], [69.1, 24.4]];
     map = L.map('main', {'zoomControl':false}).fitBounds(bounds);
     map.addControl(
@@ -357,23 +357,14 @@ window.onload = function load() {
         })
     );
     // settings for tile Layer
-    var osmSE = L.tileLayer('https://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+    var osmSE = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
         maxZoom: 18,
         subdomains: 'abc',
         attribution: messages.osmSE_attrib
-                    .replace('{OSM_link}','<a href="https://openstreetmap.org">OpenStreetMap</a>')
-                    .replace('{OSM_Sweden}','<a href="https://openstreetmap.se">OpenStreetMap Sweden</a>')
+                    .replace('{OSM_link}','<a href="//openstreetmap.org">OpenStreetMap</a>')
+                    .replace('{OSM_Sweden}','<a href="http://openstreetmap.se">OpenStreetMap Sweden</a>')
     }).addTo(map);
-    // OSM SE is down due to server crash
-    // map.addLayer(osmSE);
-
-    // settings for OSM
-    var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: 'Kartdata © <a href="https://openstreetmap.org">OpenStreetMap</a>-bidragsgivare',
-        maxZoom: 19,
-    });
-    // Defaulting to OSMF while OSM SE is down due to server crash
-    map.addLayer(osm);
+    map.addLayer(osmSE);
 
     markers = L.featureGroup();
     map.addLayer(markers);

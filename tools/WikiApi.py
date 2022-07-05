@@ -948,7 +948,7 @@ class WikiApi(object):
             return self._apiurl + "?action=" + action + "&format=" + form
 
     def logout(self):
-        self.httpPOST('logout', [('token', str(self.edittoken))])
+        self.httpPOST('logout', [('', '')])
 
     def output(self, text):
         """
