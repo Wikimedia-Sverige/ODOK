@@ -40,7 +40,7 @@ function executeSearch(a, t, m, c, i, yf, yt) {
 
     rObjs = [];
     warnings = '';
-    url = "http://offentligkonst.se/api/api.php?" +
+    url = "https://api.offentligkonst.se/api.php?" +
           "action=get" +
           "&limit=" + toManyResults +
           "&has_same=false";
