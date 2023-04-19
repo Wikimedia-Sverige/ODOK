@@ -7,7 +7,7 @@ The project consists of a database, an open API, a webpage to display the databa
 
 For more information see:
 * https://se.wikimedia.org/wiki/Offentligkonst.se
-* http://www.offentligkonst.se
+* https://www.offentligkonst.se
 
 
 ## See also
