@@ -35,7 +35,7 @@ $(document).ready(function() {
     // map.addLayer(osmSE);
 
     // settings for OSM
-    var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    var osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: attribution + 'Kartdata © <a href="https://openstreetmap.org">OpenStreetMap</a>-bidragsgivare',
         maxZoom: 19,
     });
