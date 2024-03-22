@@ -5,13 +5,13 @@
      *   If some but not all artists have artist_table entries then only these are included
      */
     class FormatGeojson{
-        private function initialise(){
+        private static function initialise(){
             /* Setting headers */
             @header ("content-type: application/vnd.geo+json; charset=utf-8");
             header ("Access-Control-Allow-Origin: *");
         }
         
-        private function finalise($features, $head){
+        private static function finalise($features, $head){
             /*Final wrapping*/
             $geo = Array(
                          'type' => 'FeatureCollection',
@@ -21,7 +21,7 @@
             return ($geo);
         }
         
-        private function writeRowFull($row){
+        private static function writeRowFull($row){
             # rows to skip
             $skip = Array('created', 'changed', 'ugc', 'year_cmt', 'cmt', 'owner', 'official_url');
             
@@ -113,7 +113,7 @@
         }
 
         
-        private function writeRowBasic($row){
+        private static function writeRowBasic($row){
             $row = $row['hit'];
             #Ignore rows without coords
             if (!empty($row['lat']) and !empty($row['lon'])){
@@ -143,7 +143,7 @@
             }
         }
         
-        function output($results, $full=False, $compact=False){
+        static function output($results, $full=False, $compact=False){
             if($results['head']['status'] == '0') #Fall back to xml if errors
                 Format::outputXml($results);
             else{

@@ -22,7 +22,7 @@
         #individual stats modules
 
         #TABLE: this will give you the number of entries in a given table.
-        private function countTable($target, $constraints){
+        private static function countTable($target, $constraints){
             $allowedTables = Array('main', 'artist', 'audit', 'county', 'muni', 'source', 'ugc', 'aka');
             if ($target == 'all')
                 $tables = $allowedTables;
@@ -41,10 +41,10 @@
             return $rows;
         }
 
-        private function countSingleTable($target, $constraints){
+        private static function countSingleTable($target, $constraints){
             $query = '
-                    SELECT COUNT(*) AS `'.mysql_real_escape_string($target).'`
-                    FROM `'.mysql_real_escape_string($target).'_table`
+                    SELECT COUNT(*) AS `'.ApiBase::getMysql()->real_escape_string($target).'`
+                    FROM `'.ApiBase::getMysql()->real_escape_string($target).'_table`
                 ';
             if (($target == 'main') or ($target == 'audit'))
                 $query = isset($constraints) ? ApiBase::addConstraints($query.'Where ', $constraints) : $query;
@@ -55,7 +55,7 @@
         }
 
         #COLUMN: Shows the number of items in the main table where the given column is non-zero
-        private function countColumn($column, $constraints){
+        private static function countColumn($column, $constraints){
             $allowedcols = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt', 'type', 'material', 'inside', 'address', 'county', 'muni', 'district', 'lat', 'lon', 'removed', 'image', 'source', 'ugc', 'changed', 'created', 'wiki', 'list', 'commons_cat', 'official_url', 'same_as', 'free', 'cmt', 'owner'); #etc.
             if ($column == 'all')
                 $cols = $allowedcols;
@@ -75,9 +75,9 @@
             return $rows;
         }
 
-        private function countSingleColumn($column, $constraints){
+        private static function countSingleColumn($column, $constraints){
             $query = '
-                SELECT COUNT(*) AS `'.mysql_real_escape_string($column).'`
+                SELECT COUNT(*) AS `'.ApiBase::getMysql()->real_escape_string($column).'`
                 FROM `main_table`
                 WHERE ';
             $query = ApiBase::notEmpty($query, $column);
@@ -90,7 +90,7 @@
         }
 
         #SPLIT: Showes the result broken down by municipality, county or source
-        private function splitSelector($split, $table, $column, $constraints, $warning){
+        private static function splitSelector($split, $table, $column, $constraints, $warning){
             if (isset($split)){
                 $splitable = Array('main', 'audit');
                 if (count(explode('|', $table))>1 or count(explode('|', $column))>1)
@@ -120,15 +120,15 @@
             return Array($response, $warning);
         }
 
-        private function splitBy($sp_table, $table, $column, $constraints){
-            $num_label_sql = isset($column) ? mysql_real_escape_string($column) : $table;
-            $sp_table_sql = mysql_real_escape_string($sp_table).'_table';
-            $label_sql = mysql_real_escape_string($sp_table).'_name';
-            $real_table_sql = mysql_real_escape_string($table).'_table';
+        private static function splitBy($sp_table, $table, $column, $constraints){
+            $num_label_sql = isset($column) ? ApiBase::getMysql()->real_escape_string($column) : $table;
+            $sp_table_sql = ApiBase::getMysql()->real_escape_string($sp_table).'_table';
+            $label_sql = ApiBase::getMysql()->real_escape_string($sp_table).'_name';
+            $real_table_sql = ApiBase::getMysql()->real_escape_string($table).'_table';
             $query = '
                 SELECT `'.$sp_table_sql.'`.`name` AS `'.$label_sql.'`, COUNT(*) AS `'.$num_label_sql.'`
                 FROM `'.$real_table_sql.'`, `'.$sp_table_sql.'`
-                WHERE `'.$real_table_sql.'`.`'.mysql_real_escape_string($sp_table).'` = `'.$sp_table_sql.'`.`id`
+                WHERE `'.$real_table_sql.'`.`'.ApiBase::getMysql()->real_escape_string($sp_table).'` = `'.$sp_table_sql.'`.`id`
                 ';
             $query = isset($column) ? ApiBase::notEmpty($query.'AND ', $column) : $query;
             $query = isset($constraints) ? ApiBase::addConstraints($query.'AND ', $constraints) : $query;
@@ -145,7 +145,7 @@
         }
 
         #Loads the parameters and decides which statistics funtion to run
-        function run($constraints){
+        static function run($constraints){
             /*
              * use options to choose a query generating function
              * then
@@ -153,7 +153,7 @@
             $table = isset($_GET['table']) ? strtolower($_GET['table']) : null;
             $column = isset($_GET['column']) ? strtolower($_GET['column']) : null;
             $split = isset($_GET['split']) ? strtolower($_GET['split']) : null;
-
+            $warning = '';
             #choose function based on given parameters
             try{
                 if (isset($table) and isset($column)){

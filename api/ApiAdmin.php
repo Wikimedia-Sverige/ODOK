@@ -13,10 +13,10 @@
 
     class ApiAdmin{
         #assist function for getChanges
-        private function colAsmPrefix($col){
+        private static function colAsmPrefix($col){
             return $col.'` AS m_'.$col;
         }
-        private function colAsaPrefix($col){
+        private static function colAsaPrefix($col){
             return $col.'` AS a_'.$col;
         }
 
@@ -25,7 +25,7 @@
          * and returns a list of the changes that have been made wrt.
          * the original (audit).
          */
-        private function getChanges($limit, $offset, $constraints){
+        private static function getChanges($limit, $offset, $constraints){
             #list of columns available in the audit_table
             $cols = Array('id', 'title', 'artist', 'descr', 'year', 'year_cmt', 'type', 'material', 'inside', 'address', 'county', 'muni', 'district', 'lat', 'lon', 'source', 'official_url', 'owner', 'cmt', 'created');
             #prepare sql statement
@@ -39,7 +39,7 @@
                 AND `main_table`.`id` = `audit_table`.`id`
                 ';
             $query = isset($constraints) ? ApiBase::addConstraints($query.'AND `main_table`.', $constraints, '`main_table`.') : $query;
-            $query .= 'LIMIT '.mysql_real_escape_string($offset).', '.mysql_real_escape_string($limit).'
+            $query .= 'LIMIT '.ApiBase::getMysql()->real_escape_string($offset).', '.ApiBase::getMysql()->real_escape_string($limit).'
                 ';
             #run query
             $error=false;
@@ -69,21 +69,23 @@
         }
 
         #displays all known info about a given object
-        private function getInfo($table, $id){
+        private static function getInfo($table, $id){
             $query = '
                 SELECT *
-                FROM `'.mysql_real_escape_string($table).'_table`
-                WHERE id = "'.mysql_real_escape_string($id).'"
+                FROM `'.ApiBase::getMysql()->real_escape_string($table).'_table`
+                WHERE id = "'.ApiBase::getMysql()->real_escape_string($id).'"
                 ';
             #run query
             try{
                 $response = ApiBase::doQuery($query);
             }catch (Exception $e){throw $e;}
-            return ApiBase::sanitizeBit1($response[0]);
+            if($response) {
+                return ApiBase::sanitizeBit1($response[0]);
+            }
         }
 
         #displays all known list ids
-        private function getLists(){
+        private static function getLists(){
             $query = '
                 SELECT SQL_CALC_FOUND_ROWS DISTINCT(`list`)
                 FROM `main_table`
@@ -100,7 +102,7 @@
         }
 
         #returns a list of artists withouth any linked objects
-        private function getArtistlessObject($limit, $offset){
+        private static function getArtistlessObject($limit, $offset){
             $query = '
                 SELECT SQL_CALC_FOUND_ROWS id, title, artist
                 FROM `main_table`
@@ -118,7 +120,7 @@
         }
 
         #returns a list of objects without any artists
-        private function getObjectlessArtist($limit, $offset){
+        private static function getObjectlessArtist($limit, $offset){
             $query = '
                 SELECT SQL_CALC_FOUND_ROWS id, CONCAT_WS(" ", first_name, last_name) AS name
                 FROM `artist_table`
@@ -137,7 +139,7 @@
 
         #returns a list of artists (name and id) without any linked objects
         #convert date to year for comparisson
-        private function getYearlessArtist($limit, $offset){
+        private static function getYearlessArtist($limit, $offset){
             $query = '
                 SELECT SQL_CALC_FOUND_ROWS id, CONCAT_WS(" ", first_name, last_name) AS name, `birth_year`, `death_year`
                 FROM `artist_table`
@@ -160,12 +162,12 @@
             return Array($body, $hits);
         }
 
-        function run($constraints){
+        static function run($constraints){
             #set limit
-            list ($limit, $w) = ApiBase::setLimit($_GET['limit']);
+            list ($limit, $w) = ApiBase::setLimit(key_exists('limit', $_GET) ? $_GET['limit'] : null);
             $warning = isset($w) ? $w : null;
             #set offset
-            list ($offset, $w) = ApiBase::setOffset($_GET['offset']);
+            list ($offset, $w) = ApiBase::setOffset(key_exists('offset', $_GET) ? $_GET['offset'] : null);
             $warning .= isset($w) ? $w : '';
 
             try{

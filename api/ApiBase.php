@@ -37,11 +37,12 @@
     class ApiBase{
         const maxChar = 512; # max bytes allowed per url parameter
         const group_concat_max_len = 2500; # max characters allowed per group_concat response
+        static private $mysqli;
 
         /*
          * Produce standardised output arrays
          */
-        function makeErrorResult($error_num, $error_msg, $warning){
+        static function makeErrorResult($error_num, $error_msg, $warning){
             #global $helpurl;
             $results['head'] = Array(
                             'status' => '0',
@@ -54,7 +55,7 @@
             #$results['body'] = $helpurl;#Could include help or helplink here
             return $results;
         }
-        function makeSuccessResult($warning, $body){
+        static function makeSuccessResult($warning, $body){
             $results['head'] = Array(
                             'status' => '1'
                         );
@@ -65,7 +66,7 @@
             return $results;
         }
         #same as makeSuccessResult() but more parameters than the warning may be passed to the header
-        function makeSuccessResultHead($head, $body){
+        static function makeSuccessResultHead($head, $body){
             $results['head'] = Array(
                         'status' => '1'
                     );
@@ -77,7 +78,7 @@
             return $results;
         }
         #display bitwise operators [bit(1) in sql] as numbers
-        function sanitizeBit1($array){
+        static function sanitizeBit1($array){
             $bitParams = Array('ugc', 'inside', 'real_id', 'removed');
             foreach ($bitParams as $bp){
                 if (in_array($bp, array_keys($array)))
@@ -86,7 +87,7 @@
             return $array;
         }
         #mod to the above for the admin/diff output
-        function sanitizeBit1diff($array){
+        static function sanitizeBit1diff($array){
             $bitParams = Array('ugc', 'inside', 'real_id', 'removed');
             foreach ($bitParams as $bp){
                 if (in_array('m_'.$bp, array_keys($array))){
@@ -101,14 +102,15 @@
          * Query related functions
          */
         #given a query it returns resulting rows or throws an exception containing the mysql_error
-        function doQuery($query){
-            if($_GET['debug']=='true'){
+        static function doQuery($query){
+            if(key_exists('debug', $_GET) && $_GET['debug']=='true'){
                 echo($query);
             }
-            if(!@$go = mysql_query($query)){
-                throw new Exception(mysql_error());
-            } else {
-                while ($row = mysql_fetch_assoc($go)){
+            if(!@$go = ApiBase::getMysql()->query($query)){
+                throw new Exception(ApiBase::getMysql()->error());
+            } elseif($go !== true) {
+                $rows = [];
+                while ($row = $go->fetch_assoc()){
                     $rows[] = $row;
                 }
                 return $rows;
@@ -117,7 +119,7 @@
 
         #adds constraints to a query (also deals with the output of readConstraints() )
         #prefix allows to specify which table
-        function addConstraints($query, $constraints, $prefix = ''){
+        static function addConstraints($query, $constraints, $prefix = ''){
             foreach($constraints as $key => $value){
                 switch ($key){
                     case 'bbox':
@@ -150,10 +152,10 @@
                     default: #(pipe separated) constraints
                         $v = explode('|', $value);
                         if (count($v)==1){
-                            $query .= '`'.mysql_real_escape_string($key).'` = "'.mysql_real_escape_string($value).'"
+                            $query .= '`'.ApiBase::getMysql()->real_escape_string($key).'` = "'.ApiBase::getMysql()->real_escape_string($value).'"
                 AND '.$prefix;
                         }else{
-                            $query .= '`'.mysql_real_escape_string($key).'` IN ("'.implode('" , "', array_map('mysql_real_escape_string', $v)).'")
+                            $query .= '`'.ApiBase::getMysql()->real_escape_string($key).'` IN ("'.implode('" , "', array_map([ApiBase::getMysql(), 'real_escape_string'], $v)).'")
                 AND '.$prefix;
                         }
                 }
@@ -162,20 +164,20 @@
             return $query;
         }
         #adds (pipe separated) column-not-empty constraints to a query
-        function notEmpty($query, $columns){
+        static function notEmpty($query, $columns){
             $cols = explode('|', $columns);
             foreach($cols as $column){
                 switch ($column){
                     case 'lat':
                     case 'lon':
                     case 'year':
-                        $query .= '`'.mysql_real_escape_string($column).'` IS NOT NULL
+                        $query .= '`'.ApiBase::getMysql()->real_escape_string($column).'` IS NOT NULL
                 AND ';
                         break;
                     case 'ugc':
                     case 'inside':
                     case 'removed':
-                        $query .= '`'.mysql_real_escape_string($column).'` != "0"
+                        $query .= '`'.ApiBase::getMysql()->real_escape_string($column).'` != "0"
                 AND ';
                         break;
                     case 'coords':
@@ -183,7 +185,7 @@
                 AND ';
                         break;
                     default:
-                        $query .= '`'.mysql_real_escape_string($column).'` != ""
+                        $query .= '`'.ApiBase::getMysql()->real_escape_string($column).'` != ""
                 AND ';
                 }
             }
@@ -192,11 +194,12 @@
         }
 
         /* Read in limit (must be in range 1-500, defaults to 10)*/
-        function setLimit($lim){
+        static function setLimit($lim){
             $max_limit = 500;
             $min_limit = 1;
             $default_limit = 10;
             $limit = isset($lim) ? intval($lim) : $default_limit;
+            $warning = '';
             if (!empty($lim) and !is_numeric($lim)){
                 $warning = 'Limit must be a number; your limit was changed from "'.$lim.'" to '.$default_limit.'. ';
                 $limit = $default_limit;
@@ -211,10 +214,11 @@
             return Array($limit, $warning);
         }
         /* Read in offset (must be >=0, defaults to 0)*/
-        function setOffset($off){
+        static function setOffset($off){
             $default_off = 0;
             $min_off = 0;
             $offset = isset($off) ? intval($off) : $default_off;
+            $warning = '';
             if (!empty($off) and !is_numeric($off)){
                 $warning = 'Offset must be a number; your offset was changed from "'.$off.'" to '.$default_off.'. ';
                 $offset = $default_off;
@@ -225,10 +229,17 @@
             return Array($offset, $warning);
         }
         /* Test if any of the parameters is to large for $_GET to handle */
-        function largeParam(){
+        static function largeParam(){
+            if(!key_exists('QUERY_STRING', $_SERVER)){
+                return;
+            }
             $maxChar = self::maxChar;
             $queries = explode('&', $_SERVER['QUERY_STRING']);
             foreach ($queries as $q) {
+                if(!$q) {
+                    break;
+                }
+
                 $v = explode('=',$q);
                 $v[1] = strlen(urldecode($v[1]));
                 if ($v[1]>$maxChar){
@@ -237,7 +248,7 @@
             }
         }
         /* Test if any group_concat values hit the max char limit */
-        function groupConcatTest($response, $column, $type){
+        static function groupConcatTest($response, $column, $type){
             $maxChar = self::group_concat_max_len;
             foreach ($response as $r) {
                 if (strlen($r[$column])>=$maxChar){
@@ -253,7 +264,7 @@
          * TO DO:
          *    wildcard/keyword searches (in e.g. descr)
          */
-        function readConstraints(){
+        static function readConstraints(){
             #define list of allowed generic constraints
             #Should material be added (if so it's soft)? Left out for now due to municipal concerns
             $getConstraints = Array(
@@ -272,85 +283,86 @@
             try{
                 ApiBase::largeParam();
             }catch (Exception $e){throw $e;}
-            if(empty($_GET))
+            if(empty($_GET)){
                 return null;
-            else{
-                try{
-                    foreach ($_GET as $key => $value){
-                        if(empty($value)){
-                            continue;
-                        }
-                        elseif (!in_array($key, $allowed)){
-                            continue;
-                        }
-                        elseif (substr_count($value, '|') > $maxValues){
-                            throw new ValueLimitException('You can enter a maximum of '. $maxValues .' values per parameter (you entered '. substr_count($value, '|') .' values for the parameter "'. $key .'").');
-                            continue;
-                        }
-                        switch ($key){
-                        case 'BBOX': #dynamicKml gives comma separated bbox
-                            $value = implode('|',explode(',', $value));
-                        case 'bbox':
-                            $params[$key] = self::bboxParam($key, $value);
-                            break;
-                        case 'lifespan':
-                            $params[$key] = self::multiRangedParam('birth_year', 'death_year', $value);
-                            break;
-                        case 'year':
-                        case 'created':
-                        case 'changed':
-                        case 'birth_year':
-                        case 'death_year':
-                            $params[$key] = self::rangedParam($key, $value);
-                            break;
-                        case 'muni_name':
-                        case 'county_name':
-                            $keyparts = explode('_', $key);
-                            $params[$keyparts[0]] = self::namedParam($keyparts[0], $value);
-                            break;
-                        case 'is_inside':
-                        case 'is_removed':
-                        case 'has_ugc':
-                        case 'has_coords':
-                        case 'has_cmt':
-                        case 'has_image':
-                        case 'has_wiki':
-                        case 'has_list':
-                        case 'has_same':
-                        case 'is_dead':
-                            $val = self::boolParam($key, $value);
-                            if (!empty($val)){
-                                $keyparts = explode('_', $key);
-                                if ($keyparts[1] == 'wiki') {
-                                    $params['has_wiki'] = $val; # since 'wiki' is already claimed
-                                }elseif($keyparts[1] == 'list') {
-                                    $params['has_list'] = $val; # since 'list' is already claimed
-                                }else{
-                                    $params[$keyparts[1]] = $val;
-                                }
-                            }
-                            break;
-                        case 'artist':
-                        case 'title':
-                        case 'address':
-                        case 'first_name':
-                            $params[$key] = self::softParam($key, $value);
-                            break;
-                        case 'name':
-                            $params[$key] = self::softParam(Array('first_name', 'last_name'), $value);
-                            break;
-                        default:
-                            $params[$key] = $value;
-                            break;
-                        }
-                    }
-                }catch (Exception $e){throw $e;}
-            return $params;
             }
+
+            $params = [];
+            try{
+                foreach ($_GET as $key => $value){
+                    if(empty($value)){
+                        continue;
+                    }
+                    elseif (!in_array($key, $allowed)){
+                        continue;
+                    }
+                    elseif (substr_count($value, '|') > $maxValues){
+                        throw new ValueLimitException('You can enter a maximum of '. $maxValues .' values per parameter (you entered '. substr_count($value, '|') .' values for the parameter "'. $key .'").');
+                        continue;
+                    }
+                    switch ($key){
+                    case 'BBOX': #dynamicKml gives comma separated bbox
+                        $value = implode('|',explode(',', $value));
+                    case 'bbox':
+                        $params[$key] = self::bboxParam($key, $value);
+                        break;
+                    case 'lifespan':
+                        $params[$key] = self::multiRangedParam('birth_year', 'death_year', $value);
+                        break;
+                    case 'year':
+                    case 'created':
+                    case 'changed':
+                    case 'birth_year':
+                    case 'death_year':
+                        $params[$key] = self::rangedParam($key, $value);
+                        break;
+                    case 'muni_name':
+                    case 'county_name':
+                        $keyparts = explode('_', $key);
+                        $params[$keyparts[0]] = self::namedParam($keyparts[0], $value);
+                        break;
+                    case 'is_inside':
+                    case 'is_removed':
+                    case 'has_ugc':
+                    case 'has_coords':
+                    case 'has_cmt':
+                    case 'has_image':
+                    case 'has_wiki':
+                    case 'has_list':
+                    case 'has_same':
+                    case 'is_dead':
+                        $val = self::boolParam($key, $value);
+                        if (!empty($val)){
+                            $keyparts = explode('_', $key);
+                            if ($keyparts[1] == 'wiki') {
+                                $params['has_wiki'] = $val; # since 'wiki' is already claimed
+                            }elseif($keyparts[1] == 'list') {
+                                $params['has_list'] = $val; # since 'list' is already claimed
+                            }else{
+                                $params[$keyparts[1]] = $val;
+                            }
+                        }
+                        break;
+                    case 'artist':
+                    case 'title':
+                    case 'address':
+                    case 'first_name':
+                        $params[$key] = self::softParam($key, $value);
+                        break;
+                    case 'name':
+                        $params[$key] = self::softParam(Array('first_name', 'last_name'), $value);
+                        break;
+                    default:
+                        $params[$key] = $value;
+                        break;
+                    }
+                }
+            }catch (Exception $e){throw $e;}
+            return $params;
         }
         #search by municipal/county name requires there to be a lookup so as to identify id numbers
         #misspelt names are ignored
-        private function namedParam($table, $value){
+        private static function namedParam($table, $value){
             $vArray = explode('|', $value);
             #remove any empty parameters
             $i=0;
@@ -362,8 +374,8 @@
             }
             if (!empty($vArray)){ #since all elements may have been removed
                 $query = 'SELECT `id`, `name`
-            FROM `'.mysql_real_escape_string($table).'_table`
-            WHERE `name` IN ("'.implode('" , "', array_map('mysql_real_escape_string', $vArray)).'")
+            FROM `'.ApiBase::getMysql()->real_escape_string($table).'_table`
+            WHERE `name` IN ("'.implode('" , "', array_map([ApiBase::getMysql(), 'real_escape_string'], $vArray)).'")
             ';
                 try{
                     $response = ApiBase::doQuery($query);
@@ -378,9 +390,10 @@
          *  if two then from|to,
          *  if more then wrong
          */
-        private function rangedParam($key, $value){
+        private static function rangedParam($key, $value){
             $validSizes = Array(4,8,14); # YYYY, YYYYMMDD, YYYYMMDDHHMMSS
             $vArray = explode('|', $value);
+            $errors = false;
             foreach ($vArray as $v)
                 if (!empty($v) and !is_numeric($v)){
                     $errors = true;
@@ -394,14 +407,14 @@
                 }
             if (!$errors){
                 if (count($vArray)==1)
-                    return '`'.mysql_real_escape_string($key).'` = "'.mysql_real_escape_string($vArray[0]).'"';
+                    return '`'.ApiBase::getMysql()->real_escape_string($key).'` = "'.ApiBase::getMysql()->real_escape_string($vArray[0]).'"';
                 elseif (count($vArray)==2){
                     if ( empty($vArray[0]) and !empty($vArray[1]) )
-                        return '`'.mysql_real_escape_string($key).'` <= "'.mysql_real_escape_string($vArray[1]).'"';
+                        return '`'.ApiBase::getMysql()->real_escape_string($key).'` <= "'.ApiBase::getMysql()->real_escape_string($vArray[1]).'"';
                     elseif ( !empty($vArray[0]) and empty($vArray[1]) )
-                        return '`'.mysql_real_escape_string($key).'` >= "'.mysql_real_escape_string($vArray[0]).'"';
+                        return '`'.ApiBase::getMysql()->real_escape_string($key).'` >= "'.ApiBase::getMysql()->real_escape_string($vArray[0]).'"';
                     elseif ( !empty($vArray[0]) and !empty($vArray[1]) )
-                        return '`'.mysql_real_escape_string($key).'` BETWEEN "'.mysql_real_escape_string($vArray[0]).'" AND "'.mysql_real_escape_string($vArray[1]).'"';
+                        return '`'.ApiBase::getMysql()->real_escape_string($key).'` BETWEEN "'.ApiBase::getMysql()->real_escape_string($vArray[0]).'" AND "'.ApiBase::getMysql()->real_escape_string($vArray[1]).'"';
                     else
                         throw new Exception('The "'.$key.'" parameter was formatted illegally (both values were empty). ');
                 } else
@@ -409,7 +422,8 @@
             }
         }
         /* This is ranged but over two separate keys */
-        private function multiRangedParam($key1, $key2, $value){
+        private static function multiRangedParam($key1, $key2, $value){
+            $errors = false;
             if (substr_count($value, '|') != 1){
                 $errors = true;
                 throw new Exception('The "'.$key1.'-'.$key2.'" parameter was formatted illegally (must be a piped range). ');
@@ -434,7 +448,7 @@
 
         #creates a mapconstraint based on bbox=bl_lon|bl_lat|tr_lon|tr_lat
         #bl = bottom left, tr = top right, note that coords must be given wit "." as decimal
-        private function bboxParam($key, $value){
+        private static function bboxParam($key, $value){
             $vArray = explode('|', $value);
             if(count($vArray)!=4){
                 $errors = true;
@@ -455,13 +469,14 @@
                 throw new Exception('The "'.$key.'" parameter speciifed an invalid bounding box. ');
             }
             if (!$errors){
-                $txt =      '`lat` BETWEEN "'.mysql_real_escape_string($coords[1]).'" AND "'.mysql_real_escape_string($coords[3]).'" AND ';
-                return $txt.'`lon` BETWEEN "'.mysql_real_escape_string($coords[0]).'" AND "'.mysql_real_escape_string($coords[2]).'"';
+                $txt =      '`lat` BETWEEN "'.ApiBase::getMysql()->real_escape_string($coords[1]).'" AND "'.ApiBase::getMysql()->real_escape_string($coords[3]).'" AND ';
+                return $txt.'`lon` BETWEEN "'.ApiBase::getMysql()->real_escape_string($coords[0]).'" AND "'.ApiBase::getMysql()->real_escape_string($coords[2]).'"';
             }
         }
         #a soft/wildcard parameter
-        private function softParam($key, $value){
+        private static function softParam($key, $value){
             $vArray = explode('|', $value);
+            $errors = false;
             if(count($vArray)>1){
                 $errors = true;
                 if (is_array($key))
@@ -470,13 +485,13 @@
             }
             if (!$errors){
                 if (!is_array($key))
-                    return '`'.mysql_real_escape_string($key).'` LIKE "%'.mysql_real_escape_string($value).'%" ';
+                    return '`'.ApiBase::getMysql()->real_escape_string($key).'` LIKE "%'.ApiBase::getMysql()->real_escape_string($value).'%" ';
                 else
-                    return 'CONCAT(`'.implode('`, " ", `', array_map('mysql_real_escape_string', $key)).'`) LIKE "%'.mysql_real_escape_string($value).'%" ';
+                    return 'CONCAT(`'.implode('`, " ", `', array_map([ApiBase::getMysql(), 'real_escape_string'], $key)).'`) LIKE "%'.ApiBase::getMysql()->real_escape_string($value).'%" ';
             }
         }
         #a boolean parameter (true/false needed since 0 isn't passed properly)
-        private function boolParam($key, $value){
+        private static function boolParam($key, $value){
             if($value != 'true' and $value != 'false'){
                 throw new Exception('The "'.$key.'" parameter was formatted illegally (must be "true" or "false"). ');
             }
@@ -488,9 +503,9 @@
                     case 'wiki':
                     case 'list':
                         if ($value=='false')
-                            return '`'.mysql_real_escape_string($key).'` = ""';
+                            return '`'.ApiBase::getMysql()->real_escape_string($key).'` = ""';
                         else
-                            return '`'.mysql_real_escape_string($key).'` != ""';
+                            return '`'.ApiBase::getMysql()->real_escape_string($key).'` != ""';
                         break;
                     case 'same':
                         if ($value=='false')
@@ -514,14 +529,14 @@
                         # 'ugc', 'inside', 'removed':
                         #these should have bit(1) parameters
                         if ($value=='false')
-                            return '`'.mysql_real_escape_string($key).'` = "0"';
+                            return '`'.ApiBase::getMysql()->real_escape_string($key).'` = "0"';
                         else
-                            return '`'.mysql_real_escape_string($key).'` = "1"';
+                            return '`'.ApiBase::getMysql()->real_escape_string($key).'` = "1"';
                 }
             }
         }
         #A wrapper function for setting has_coords constraint outside of the normal procedure
-        function requireCoords(){
+        static function requireCoords(){
             return self::boolParam('has_coords', 'true');
         }
         /*
@@ -532,30 +547,30 @@
          * Interactions with other tables
          */
          #returns a list of muni names and id's
-        private function getAdminNames($admin){
-            $query = 'SELECT id, name FROM `'.mysql_real_escape_string($admin).'_table`';
+        private static function getAdminNames($admin){
+            $query = 'SELECT id, name FROM `'.ApiBase::getMysql()->real_escape_string($admin).'_table`';
             $rows = self::doQuery($query);
             $names = Array();
             foreach ($rows as $r)
                 $names[$r['id']] = $r['name'];
             return $names;
         }
-        function getMuniNames(){
+        static function getMuniNames(){
             return self::getAdminNames('muni');
         }
-        function getCountyNames(){
+        static function getCountyNames(){
             return self::getAdminNames('county');
         }
         #gets the artist info (possibly several) for a given object id
-        function getArtistInfo($id){
+        static function getArtistInfo($id){
             if(is_array($id)){
                 $idQuery = 'IN (';
                 foreach ($id as $i)
-                    $idQuery .= '"'.mysql_real_escape_string($id).'", "';
+                    $idQuery .= '"'.ApiBase::getMysql()->real_escape_string($id).'", "';
                 $idQuery = substr($idQuery, 0, -strlen(', "')); #remove trailing ', "'
             }
             else
-                $idQuery = '= "'.mysql_real_escape_string($id).'"';
+                $idQuery = '= "'.ApiBase::getMysql()->real_escape_string($id).'"';
             $query = 'SELECT CONCAT_WS(" ", first_name, last_name) AS name, wiki FROM `artist_table` WHERE id IN';
             $query .= '   (SELECT artist FROM `artist_links` WHERE artist_links.object '.$idQuery.')';
             return self::doQuery($query);
@@ -565,7 +580,7 @@
          * Given the filename on Commons this returns the url of the
          * thumbnail of the given size
          */
-        function getImageFromCommons($filename, $size) {
+        static function getImageFromCommons($filename, $size) {
             if ($filename and $size) {
                 $filename = ucfirst($filename);
                 $filename = str_replace(' ', '_', $filename);
@@ -574,7 +589,7 @@
             }
         }
         /* gets the data from a URL */
-        function get_curl_data($url) {
+        static function get_curl_data($url) {
             $ch = curl_init();
             $timeout = 5;
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -587,7 +602,7 @@
         }
         #Given a wikidata ID this returns the url (for the svwiki article)
         #returns an array if given an array otherwise only the id
-        function getArticleFromWikidata($entity, $getUrl=true) {
+        static function getArticleFromWikidata($entity, $getUrl=true) {
             if ($entity) {
                 if(is_array($entity)){
                     $elist ='';
@@ -624,7 +639,7 @@
             }
         }
         #Given an article this returns the intro of this article. Also removes any cooridinates tag
-        function getArticleIntro($article) {
+        static function getArticleIntro($article) {
             if ($article) {
                 $maxChar = 250; #Could for some reason not set this through param in function call
                 $apiurl = 'https://sv.wikipedia.org/w/api.php?';
@@ -661,8 +676,16 @@
             }
         }
         #string comparison
-        function startsWith($haystack, $needle){
+        static function startsWith($haystack, $needle){
             return !strncmp($haystack, $needle, strlen($needle));
+        }
+
+        static function initMysql($dbServer,$dbUser,$dbPassword, $dbDatabase) {
+            self::$mysqli = new mysqli($dbServer, $dbUser, $dbPassword, $dbDatabase);
+        }
+
+        static function getMysql() {
+            return self::$mysqli;
         }
     }
 

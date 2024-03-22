@@ -9,7 +9,7 @@
     $helpurl='https://se.wikimedia.org/wiki/Offentligkonst.se/Teknisk_dokumentation/Api';
 
     class ApiMain{
-        function search(){
+        static function search(){
             # Database info (including username+pass) in external file
             if ( file_exists('/home/andre/config.php')){
                 require_once('/home/andre/config.php');
@@ -32,19 +32,14 @@
              * Trying to connect to mysql server and database
              * Output Temporary error if unable to.
              */
-            if(!@mysql_connect($dbServer,$dbUser,$dbPassword)){
+            $errors = 0;
+            $results = null;
+            ApiBase::initMysql($dbServer, $dbUser, $dbPassword, $dbDatabase);
+            if(!ApiBase::getMysql()){
                 $results = ApiBase::makeErrorResult(
                 '500',
                 'Temporary Error. '.
-                            'Our server might be down, please try again later.['.mysql_error().']',
-                null);
-                $errors=1;
-            }
-            if(!@mysql_select_db($dbDatabase)){
-                $results = ApiBase::makeErrorResult(
-                '500',
-                'Temporary Error. '.
-                            'Our server might be down, please try again later.['.mysql_error().']',
+                            'Our server might be down, please try again later.',
                 null);
                 $errors=1;
             }
@@ -52,7 +47,10 @@
             /*
              * Set up jsonp compatibility
              */
-            if(strtolower($_GET['format']) == 'jsonp'){
+            if(
+                key_exists('format', $_GET) &&
+                strtolower($_GET['format']) == 'jsonp'
+            ){
                 if(!isset($_GET['callback'])){
                     $results = ApiBase::makeErrorResult(
                     '640',
@@ -69,7 +67,7 @@
              * let's proceed with our queries
              */
             if(!$errors){
-                mysql_query("SET CHARACTER SET utf8");
+                ApiBase::getMysql()->query("SET CHARACTER SET utf8");
 
                 #deal with general constraints
                 try{
@@ -94,13 +92,21 @@
                     $errors=1;
                 }
                 #if kml/geojson output format then make sure has_coords is set
-                if(($_GET['format']=='kml' or $_GET['format']=='geojson') and !isset($_GET['has_coords'])){
+                if(
+                    key_exists('format', $_GET)
+                    and ($_GET['format']=='kml' or $_GET['format']=='geojson')
+                    and !isset($_GET['has_coords'])
+                ){
                     $constraints['coords'] = ApiBase::requireCoords();
                 }
             }
             if(!$errors){
                 #switch by action; return results array
-                switch (strtolower($_GET['action'])) {
+                $action = '';
+                if(key_exists('action', $_GET)) {
+                    $action = strtolower($_GET['action']);
+                }
+                switch ($action) {
                     case 'get':
                         $results = ApiGet::run($constraints);
                         break;
@@ -128,8 +134,8 @@
                         $results = ApiBase::makeErrorResult(
                                     '601',
                                     'Action Failed. '.
-                                        'Sorry but "'.$_GET['action'].'" is not a valid action for this api.',
-                                    $warning
+                                        'Sorry but "'.$action.'" is not a valid action for this api.',
+                                    null
                                     );
                         break;
                 }
@@ -174,8 +180,7 @@
                     Format::outputDefault($results);
                 }
             }
-
-            mysql_close();
+            ApiBase::getMysql()->close();
         }
     }
 ?>

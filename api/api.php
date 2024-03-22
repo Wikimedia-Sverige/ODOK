@@ -4,15 +4,13 @@
      *
      */
     #dynamickml does not require a proper search. Just return the output.
-    if($_GET['format']=='dynamickml'){
+    if(key_exists('format', $_GET) and $_GET['format']=='dynamickml') {
         include('FormatDynamicKml.php');
         FormatDynamicKml::output();
-    }
-    elseif($_GET['format']=='googlemaps'){
+    } elseif(key_exists('format', $_GET) and $_GET['format']=='googlemaps') {
         include('FormatDynamicKml.php');
         GoogleMaps::output();
-    }
-    else{
+    } else {
         include('ApiMain.php');
         ApiMain::search();
     }

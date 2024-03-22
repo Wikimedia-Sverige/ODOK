@@ -16,7 +16,7 @@
     class ApiArtist{
 
         # set which parameters to include in output
-        private function setSelect($show, $prefix = NULL){
+        private static function setSelect($show, $prefix = NULL){
             $getWorks = true; # default behaviour
             if (isset($prefix)){
                 $prefix = $prefix.'.';
@@ -28,6 +28,7 @@
             $allowed = Array('id', 'first_name', 'last_name', 'wiki',
                              'changed', 'birth_date', 'death_date',
                              'birth_year', 'death_year', 'creator');
+            $warning = '';
             if(isset($show)){
                 $shows = explode('|', $show);
 
@@ -50,16 +51,16 @@
                     }
                     $i++;
                 }
-                $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map('mysql_real_escape_string', $shows)).'`';
+                $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map([ApiBase::getMysql(), 'real_escape_string'], $shows)).'`';
                 return Array($select, $getWorks, $warning);
             }else{
-                $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map('mysql_real_escape_string', $allowed)).'`';
+                $select = $prefix.'`'.implode('`, '.$prefix.'`', array_map([ApiBase::getMysql(), 'real_escape_string'], $allowed)).'`';
                 return Array($select, $getWorks, $warning);
             }
         }
 
         #given a list of artists this returns all of their associated works
-        private function getWorks($artist, $warning){
+        private static function getWorks($artist, $warning){
             # set group_concat_max_len explicitly so that we are always testing agains the same limit
             ApiBase::doQuery('SET SESSION group_concat_max_len = '.ApiBase::group_concat_max_len);
             $query = '
@@ -67,7 +68,7 @@
                 FROM `artist_links` al
                 INNER JOIN `artist_table` at ON at.`id` = al.`artist`
                 WHERE at.`id` in (
-                "'.implode('", "',array_map('mysql_real_escape_string', $artist)).'"
+                "'.implode('", "',array_map([ApiBase::getMysql(), 'real_escape_string'], $artist)).'"
                 )
                 GROUP BY artist;';
 
@@ -83,6 +84,7 @@
                 );
             }
 
+            $w = '';
             #check that results were not truncated, since this is a silent fail
             try{
                 ApiBase::groupConcatTest($response, 'objects', 'works');
@@ -102,7 +104,7 @@
 
         # constraints comes from ApiBase::readConstraints
         # and identifies id, wiki and year
-        function run($constraints){
+        static function run($constraints){
             #either look up on artwork_id or one of the others
             $prefix = null;
             $w = null;
@@ -117,13 +119,13 @@
             }
             $warning = isset($w) ? $w : null;
             #set limit
-            list ($limit, $w) = ApiBase::setLimit($_GET['limit']);
+            list ($limit, $w) = ApiBase::setLimit(key_exists('limit', $_GET) ? $_GET['limit'] : null);
             $warning = isset($w) ? $warning.$w : $warning;
             #set offset
-            list ($offset, $w) = ApiBase::setOffset($_GET['offset']);
+            list ($offset, $w) = ApiBase::setOffset(key_exists('offset', $_GET) ? $_GET['offset'] : null);
             $warning = isset($w) ? $warning.$w : $warning;
             #load list of parameters to select
-            list ($select, $getWorks, $w) = self::setSelect($_GET['show'], $prefix);
+            list ($select, $getWorks, $w) = self::setSelect(key_exists('show', $_GET) ? $_GET['show'] : null, $prefix);
             $warning = isset($w) ? $warning.$w : $warning;
 
             #Needs support for
@@ -138,7 +140,7 @@
                 FROM `artist_table` at
                 INNER JOIN `artist_links` al ON al.`artist` = at.`id`
                 WHERE al.`object` in (
-                "'.implode('", "',array_map('mysql_real_escape_string', explode('|', $_GET['artwork']))).'"
+                "'.implode('", "',array_map([ApiBase::getMysql(), 'real_escape_string'], explode('|', $_GET['artwork']))).'"
                 )
                 ';
             }
@@ -151,7 +153,7 @@
                 $query = isset($constraints) ? ApiBase::addConstraints($query.'WHERE ', $constraints) : $query;
             }
             # add limit
-            $query .= 'LIMIT '.mysql_real_escape_string($offset).', '.mysql_real_escape_string($limit).'
+            $query .= 'LIMIT '.ApiBase::getMysql()->real_escape_string($offset).', '.ApiBase::getMysql()->real_escape_string($limit).'
                 ';
             #run query
             try{
@@ -168,26 +170,31 @@
 
             # look up works for each artist
             $works = null;
-            if ($getWorks) {
+            if ($getWorks and $response) {
                 $artists = Array();
-                foreach ($response as $r)
-                    array_push($artists, $r['id']);
+                foreach ($response as $r) {
+                    if(key_exists('id', $r)) {
+                        array_push($artists, $r['id']);
+                    }
+                }
                 list ($works, $w) = self::getWorks($artists, $warning);
                 $warning = isset($w) ? $warning.$w : $warning;
             }
 
             #collect results
             $body = Array();
-            foreach ($response as $r) {
-                if ($getWorks) {
-                    $r['works'] = Array();
-                    if (isset($works[$r['id']])){
-                        foreach ($works[$r['id']] as $work) {
-                            array_push($r['works'], Array('work' => $work)); # so that xml plays nice
+            if($response) {
+                foreach ($response as $r) {
+                    if ($getWorks) {
+                        $r['works'] = Array();
+                        if (key_exists('id', $r) and isset($works[$r['id']])){
+                            foreach ($works[$r['id']] as $work) {
+                                array_push($r['works'], Array('work' => $work)); # so that xml plays nice
+                            }
                         }
                     }
+                    array_push($body, Array('hit' => ApiBase::sanitizeBit1($r))); # so that xml plays nice
                 }
-                array_push($body, Array('hit' => ApiBase::sanitizeBit1($r))); # so that xml plays nice
             }
             #Did we get all?
             $hits = $hits[0]['FOUND_ROWS()'];
